@@ -168,7 +168,7 @@ const BlindSniperMinigame = ({ onClose, currentPlayer }) => {
                                     <p className="text-green-400 font-bold text-xl">
                                         🏆 ¡PUNTERÍA LÁSER!
                                     </p>
-                                    <p className="text-sm text-gray-400">Reparte 4 tragos.</p>
+                                    <p className="text-sm text-gray-400">Reparte 5 tragos.</p>
                                 </div>
                             )}
                         </div>

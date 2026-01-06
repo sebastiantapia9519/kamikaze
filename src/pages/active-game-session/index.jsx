@@ -17,6 +17,7 @@ import GameCompletionModal from './components/GameCompletionModal';
 import PlayerTurnIndicator from './components/PlayerTurnIndicator';
 import ChaosRouletteModal from './components/ChaosRouletteModal';
 import Icon from '../../components/AppIcon';
+import kamikazeLogo from '../../assets/images/iconKamikaze180x180.png';
 
 // --- MINIGAMES ---
 import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
@@ -71,20 +72,25 @@ const ActiveGameSession = () => {
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
 
             {/* Header */}
-            <header className="relative z-10 bg-background/95 backdrop-blur-sm border-b border-border">
-                <div className="px-4 py-4 flex items-center justify-between">
+            <header className="relative z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3 shadow-lg">
+                <div className="flex items-center justify-between max-w-2xl mx-auto">
                     <div className="flex items-center space-x-3">
-                        {/* Usamos el logo de public directo */}
+
                         <img
-                            src="/iconKamikaze512x512.png"
+                            src={kamikazeLogo}
                             alt="Kamikaze Logo"
-                            className="w-16 h-16 object-contain"
+                            className="w-12 h-12 object-contain rounded-lg shadow-md bg-black/20"
                         />
-                        <div>
-                            <h1 className="font-heading text-xl text-text-primary">Kamikaze!</h1>
-                            <p className="text-sm text-text-secondary">Juego en progreso • {totalChallenges} retos</p>
+                        <div className="flex flex-col">
+                            <h1 className="font-heading text-xl text-primary leading-none italic tracking-tighter shadow-black drop-shadow-sm">
+                                Kamikaze!
+                            </h1>
+                            <p className="text-xs text-text-secondary font-medium uppercase tracking-widest">
+                                Partida en progreso
+                            </p>
                         </div>
                     </div>
+
                 </div>
             </header>
 
@@ -144,18 +150,18 @@ const ActiveGameSession = () => {
             {showSniperMinigame && (
                 <BlindSniperMinigame onClose={actions.closeSniper} currentPlayer={currentPlayer} />
             )}
-            {/* 👆 Minijuego: Ruleta de Dedos (NUEVO) */}
-            {state.showFingerRoulette && (
+            {/* Minijuego: Ruleta de Dedos*/}
+            {showFingerRoulette && (
                 <FingerRouletteMinigame
                     onClose={actions.closeRoulette}
                 />
             )}
 
-            {/* 🥊 Minijuego: Batalla de Taps (NUEVO) */}
-            {state.showTapBattle && (
+            {/* Minijuego: Batalla de Taps*/}
+            {showTapBattle && (
                 <TapBattleMinigame
                     onClose={actions.closeBattle}
-                    players={state.players} // Necesita saber los jugadores para poner nombres
+                    players={players}
                 />
             )}
         </div>
