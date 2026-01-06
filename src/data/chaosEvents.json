@@ -1,5 +1,23 @@
 [
     {
+        "id": 2,
+        "type": "EVERYBODY_DRINKS",
+        "title": "Happy Hour",
+        "description": "¡Salud! Todos los jugadores deben beber un trago ahora mismo."
+    },
+    {
+        "id": 9,
+        "type": "MINIGAME_RACE",
+        "title": "¡Carrera de Ajolotes!",
+        "description": "Se abren las apuestas. ¡Elijan a su campeón y apuesten sus tragos!"
+    },
+    {
+        "id": 10,
+        "type": "MINIGAME_BOMB",
+        "title": "¡CÓRTALE!",
+        "description": "Una bomba ha aparecido. Tienes 10 segundos para cortar el cable correcto. ¡Si fallas, bebes todo!"
+    },
+    {
         "id": 11,
         "type": "MINIGAME_SNIPER",
         "title": "EL FRANCOTIRADOR",
