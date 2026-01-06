@@ -1,9 +1,51 @@
 [
     {
+        "id": 1,
+        "type": "REVERSE_TURN",
+        "title": "Gira Inversa",
+        "description": "¡El orden de los turnos se invierte por el resto de la partida!"
+    },
+    {
         "id": 2,
-        "type": "MINIGAME_BOMB",
-        "title": "💣 ¡BOMBA DE TIEMPO!",
-        "description": "Pásense el celular RÁPIDO. Al que le explote, PIERDE."
+        "type": "EVERYBODY_DRINKS",
+        "title": "Happy Hour",
+        "description": "¡Salud! Todos los jugadores deben beber un trago ahora mismo."
+    },
+    {
+        "id": 3,
+        "type": "TEXT_ONLY",
+        "title": "Duelo de Pulgares",
+        "description": "El jugador en turno elige a un oponente. El primero que pierda un duelo de pulgares, bebe 3 tragos."
+    },
+    {
+        "id": 4,
+        "type": "TEXT_ONLY",
+        "title": "Rey por un Turno",
+        "description": "El jugador en turno puede crear una regla que todos deben seguir. La regla dura hasta la próxima ruleta."
+    },
+    {
+        "id": 5,
+        "type": "TEXT_ONLY",
+        "title": "Voto de Silencio",
+        "description": "Nadie puede hablar hasta el siguiente turno. ¡El primero que hable, bebe!"
+    },
+    {
+        "id": 6,
+        "type": "TEXT_ONLY",
+        "title": "Cascada",
+        "description": "¡CASCADA! El jugador en turno empieza a beber. El de su derecha no puede empezar hasta que él lo haga, y así sucesivamente."
+    },
+    {
+        "id": 7,
+        "type": "TEXT_ONLY",
+        "title": "Ronda Rápida",
+        "description": "¡DOBLE О NADA! Durante las próximas 3 rondas, todos los castigos de bebida se duplican."
+    },
+    {
+        "id": 8,
+        "type": "TEXT_ONLY",
+        "title": "El Dedo Acusador",
+        "description": "¡A SEÑALAR! El jugador en turno elige a otro jugador para que cumpla el siguiente reto."
     },
     {
         "id": 9,
@@ -22,5 +64,23 @@
         "type": "MINIGAME_SNIPER",
         "title": "EL FRANCOTIRADOR",
         "description": "Detén el tiempo exactamente en 5.00 segundos. ¡Pero cuidado! La pantalla se apagará a la mitad."
+    },
+    {
+        "id": 12,
+        "type": "MINIGAME_ROULETTE",
+        "title": "👆 RULETA RUSA DACTILAR",
+        "description": "Todos pongan un dedo en la pantalla. La App elegirá a la víctima."
+    },
+    {
+        "id": 13,
+        "type": "MINIGAME_BATTLE",
+        "title": "🥊 BATALLA DE PULGARES",
+        "description": "Duelo 1 vs 1. Toca tu lado de la pantalla más rápido que tu rival."
+    },
+    {
+        "id": 14,
+        "type": "MINIGAME_BOMB",
+        "title": "💣 ¡BOMBA DE TIEMPO!",
+        "description": "Pásense el celular RÁPIDO. Al que le explote, PIERDE."
     }
 ]
