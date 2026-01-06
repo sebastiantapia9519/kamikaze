@@ -1,0 +1,432 @@
+{
+    "regular": [
+        {
+            "text": "Haz el oso: cuenta una historia penosa de tu infancia o bebe 3 tragos."
+        },
+        {
+            "text": "Búrlate de un compa: imita a otro jugador durante los próximos 3 turnos. Bebes 2 tragos cada vez que se te olvide."
+        },
+        {
+            "text": "Bebe 2 tragos y cuenta la historia de tu peor date."
+        },
+        {
+            "text": "Canta el coro de una rola de reggaetón a todo pulmón o bebe 5 tragos."
+        },
+        {
+            "text": "Saca los trapitos al sol: confiesa algo que no le has dicho a nadie de aquí o bebe 5 tragos."
+        },
+        {
+            "text": "Échate un bailecito sin música durante 30 segundos o bebe 3 tragos."
+        },
+        {
+            "text": "Llama a un contacto al azar y dile que lo/la extrañas, o bebe 5 tragos."
+        },
+        {
+            "text": "Cuenta el choro más grande que has dicho en tu vida o bebe 4 tragos."
+        },
+        {
+            "text": "Hazle como animal hasta que la banda adivine cuál eres. Si no adivinan en 30 segundos, bebes 3 tragos."
+        },
+        {
+            "text": "Bebe un trago por cada persona que besaste este año."
+        },
+        {
+            "text": "Habla con acento fresa durante los próximos 3 turnos o bebe 4 tragos."
+        },
+        {
+            "text": "Cuenta tu sueño más raro o bebe 3 tragos."
+        },
+        {
+            "text": "Ponte mamado: haz 20 sentadillas o bebe 5 tragos."
+        },
+        {
+            "text": "Cuenta el secreto más ñono que guardas o bebe 2 tragos."
+        },
+        {
+            "text": "Imita a un famoso hasta que alguien adivine quién es o bebe 3 tragos."
+        },
+        {
+            "text": "Regla personal: bebes un trago extra cada vez que alguien diga tu nombre."
+        },
+        {
+            "text": "Cuenta algo que tus jefes (padres) no saben de ti o bebe 4 tragos."
+        },
+        {
+            "text": "Haz tu mejor imitación de un personaje de película o bebe 2 tragos."
+        },
+        {
+            "text": "Cuenta tu mayor miedo y por qué. Después, échate 3 shots para el susto."
+        },
+        {
+            "text": "Un shot por cada tatuaje que tengas. Si no tienes, bebes 2 por limpio."
+        },
+        {
+            "text": "Canta tu rola favorita a todo pulmón o bebe 3 tragos."
+        },
+        {
+            "text": "Cuenta la vez que hiciste el oso más grande de tu vida o bebe 4 tragos."
+        },
+        {
+            "text": "El primero en decir un refrán reparte 3 tragos."
+        },
+        {
+            "text": "El que traiga más lana en la cartera reparte 5 tragos."
+        },
+        {
+            "text": "El más viajado: el último que se subió a un avión, bebe 3."
+        },
+        {
+            "text": "Reto de miradas: al que veas a los ojos le toca un shot. Ahora él la sigue."
+        },
+        {
+            "text": "¡Quema a la banda! Di una cualidad (buena o mala) de cada jugador y bebe un trago por cada uno."
+        },
+        {
+            "text": "¡Aguas! Prohibido tocar la mesa. El que lo haga, bebe 3 tragos."
+        },
+        {
+            "text": "¿Qué plan? ¿Cine o restaurante? Voten. La minoría bebe 3."
+        },
+        {
+            "text": "¡Caricachupas! de marcas de autos. ¡El que pierda, 4 shots!"
+        },
+        {
+            "text": "¡Caricachupas! de marcas de chelas. ¡El que pierda, 4 shots!"
+        },
+        {
+            "text": "¡Caricachupas! de los exes del jugador en turno. ¡El que pierda, 4 shots!"
+        },
+        {
+            "text": "¡Caricachupas! Tú pones el tema. El perdedor se echa 3 tragos."
+        },
+        {
+            "text": "A sacar los trapitos al sol: ronda de 'Yo nunca, nunca...'"
+        },
+        {
+            "text": "El más 'old school': el jugador de más edad bebe 3 tragos."
+        },
+        {
+            "text": "El 'newbie': el jugador de menos edad bebe 3 tragos."
+        },
+        {
+            "text": "El que tenga más pares de tenis reparte 4 tragos."
+        },
+        {
+            "text": "¿Qué prefieres, poder convertirte en cualquier animal o en cualquier persona? Todos votan, la minoría bebe 3."
+        },
+        {
+            "text": "¡Manos de estómago! Prohibido usar las manos para agarrar el vaso por 5 minutos. El que falle, bebe 2."
+        },
+        {
+            "text": "El que fume, se aguanta. Nadie puede prender un cigarro por 10 minutos. El que no aguante, turbocheve."
+        },
+        {
+            "text": "¿Quién es el ñoño del grupo? Voten. El más votado se echa 4 shots por sabelotodo."
+        },
+        {
+            "text": "Imita una tortuga por 5 laaaargos segundos y después bebe 3 tragos."
+        },
+        {
+            "text": "Bebe 4 tragos sin hacer gestos."
+        },
+        {
+            "text": "¡Pulgares arriba! El jugador en turno pone el pulgar en la mesa. El último de los demás en copiarlo, bebe."
+        },
+        {
+            "text": "¡Actúas como si te pagaran! Elige un cómplice. Si los demás no adivinan la mímica, ustedes beben 5. Si adivinan, ustedes reparten 5."
+        },
+        {
+            "text": "Reparte 3 tragos al compa que conozcas desde hace más tiempo."
+        },
+        {
+            "text": "Estado civil: 1 shot si andas soltero/a, 2 si tienes pareja, 3 si 'es complicado...'"
+        },
+        {
+            "text": "Elige una palabra. El primero que cante una rola que la contenga, reparte 3 tragos."
+        },
+        {
+            "text": "Andas de romántico: por 5 minutos, cada que te toque beber, tienes que brindar con alguien."
+        },
+        {
+            "text": "¡Al doble! El castigo del siguiente jugador se multiplica por dos."
+        },
+        {
+            "text": "¡Caricachupas! de películas donde rescatan a alguien (ej. Búsqueda Implacable). 3 tragos de castigo."
+        },
+        {
+            "text": "¡Caricachupas! de personajes de La Familia P. Luche. 3 tragos de castigo."
+        },
+        {
+            "text": "¡Caricachupas! de nombres de drinks. 3 tragos de castigo."
+        },
+        {
+            "text": "¿Quién se va a quedar a vestir santos? Todos señalan. El más votado bebe 3 tragos."
+        },
+        {
+            "text": "El jugador en turno elige una palabra prohibida (ej: 'güey'). Durante una ronda, quien la diga se echa 2 shots."
+        },
+        {
+            "text": "Memoria de borracho: El jugador en turno dice “En la peda había…”. El siguiente lo repite y agrega algo. El primero que la cague, bebe 3 tragos."
+        },
+        {
+            "text": "El jugador en turno debe decir la primera impresión que tuvo de cada persona. Bebe un trago por cada uno."
+        },
+        {
+            "text": "El jugador en turno revela su anécdota más peda. Después, bebe 3 tragos para conmemorar."
+        },
+        {
+            "text": "Prohibido ir al baño por los próximos 10 minutos. El que no aguante, bebe 5 tragos."
+        },
+        {
+            "text": "¡Mina Kamikaze! Bebes 2 tragos y los jugadores a tus costados beben 1."
+        },
+        {
+            "text": "Kamikaze Dirigido: Elige a un jugador para que beba 2 tragos. Sus vecinos de los lados beben 1."
+        },
+        {
+            "text": "Pregunta o Castigo: Lánzale una pregunta incómoda a otro jugador. Si no contesta, bebe 4. Si contesta, el que se chinga los 4 tragos eres tú."
+        },
+        {
+            "text": "¡Discrepo!: Di una palabra. El siguiente dice una palabra relacionada, y así en cadena. Si crees que la palabra de alguien no tiene nada que ver, grita '¡DISCREPO!'. Si la mayoría te apoya, el desconectado bebe 3 tragos."
+        },
+        {
+            "text": "¡A sus órdenes, mi General! Por 10 minutos, eres 'Mi General'. Todos deben referirse a ti así. Puedes ordenarle 1 trago a quien quieras, y deben responder 'Sí, mi General'. Cada falta de respeto cuesta 2 tragos."
+        },
+        {
+            "text": "El Filósofo: Tienes 30 segundos para dar un discurso profundo y mamador sobre por qué la cerveza es la mejor bebida del mundo. Si no convences a la banda, bebes 3 tragos."
+        },
+        {
+            "text": "Modo Avión: Nadie puede tocar su celular por los próximos 10 minutos. El que no aguante la tentación, bebe 4 tragos. (Se vale si eres el que controla el juego, obvio)."
+        },
+        {
+            "text": "El Poeta: Tienes un minuto para componer un poema de cuatro líneas sobre el jugador que tienes enfrente. Tiene que rimar. Si tu obra no inspira aplausos, bebes 4 tragos."
+        },
+        {
+            "text": "Muro de los Lamentos: Nombra las últimas 3 compras más pendejas que has hecho. Bebe un trago para conmemorar cada una."
+        },
+        {
+            "text": "Modo Musical: Por las próximas 3 rondas, solo puedes hablar cantando. Si se te olvida y hablas normal, bebes 2 tragos cada vez."
+        },
+        {
+            "text": "El Chef Raro: Cada jugador confiesa su gusto culposo o la combinación de comida más rara que le guste. Por votación, el que tenga el gusto más asqueroso, bebe 3 tragos."
+        }
+    ],
+    "epic": [
+        {
+            "text": "El compa de tu derecha te da una cachetada... con cariño. Si no quieres, ambos beben 5 tragos."
+        },
+        {
+            "text": "Publica una foto tuya haciendo una cara de menso en tus historias de Instagram o bebe 5 tragos."
+        },
+        {
+            "text": "Deja que el jugador de tu izquierda decida cuántos shots te tocan. Ni modo."
+        },
+        {
+            "text": "Cuenta tu fantasía más loca o bebe hasta terminar tu vaso (fondo)."
+        },
+        {
+            "text": "Haz una videollamada a un contacto al azar y deja que la banda decida de qué lo tienes que convencer. Si lo logras, repartes 10 tragos."
+        },
+        {
+            "text": "¿Verdad o Reto? El jugador que está frente a ti elige qué haces."
+        },
+        {
+            "text": "¡Andas generoso! Los próximos 3 castigos que te toquen, los puedes repartir como quieras."
+        },
+        {
+            "text": "Habla con acento de Monterrey (o el más exagerado que puedas) por 10 minutos. Si se te olvida, bebes un trago."
+        },
+        {
+            "text": "Intenta hacer el baile ruso. Si no te sale, bebes 3 tragos. Si te sale, repartes 5."
+        },
+        {
+            "text": "Deja que otro jugador suba una story a tu Instagram. Si no quieres, bebe 5 tragos."
+        },
+        {
+            "text": "Confiesa algo (levemente) ilegal que hayas hecho y que nadie sepa, o bebe 6 tragos."
+        },
+        {
+            "text": "Llama a tu mamá o papá y pídeles lana. Si te la prestan, repartes 15 tragos. Si no, bebes 10."
+        },
+        {
+            "text": "Confiesa tu gusto más culposo o bebe 4 tragos."
+        },
+        {
+            "text": "Confiesa la peor pendejada que has hecho estando pedo/a o bebe 7 tragos."
+        },
+        {
+            "text": "¡Invitas tú! Reparte de lo que estás tomando a todos los jugadores."
+        },
+        {
+            "text": "Llama a un contacto y convéncelo de que estás en un concurso y necesitas su ayuda. Tienes 2 minutos. Si no te la cree, bebes 5."
+        },
+        {
+            "text": "Haz algo que nunca harías sobrio/a (pero no te pases de lanza) o bebe 5 tragos."
+        },
+        {
+            "text": "Cuenta el día que hiciste el oso de tu vida, con lujo de detalles, o bebe 6 tragos."
+        },
+        {
+            "text": "Elige a tu víctima: repártele todos los tragos que quieras."
+        },
+        {
+            "text": "Concurso de gemidos de mona china. El ganador (elegido por la banda) reparte 10 tragos."
+        },
+        {
+            "text": "Duelo vaquero: nombra a dos personas. Deben señalarse y gritar '¡BANG!'. El más lento, bebe."
+        },
+        {
+            "text": "Pues bueno... ¡Fondo!"
+        },
+        {
+            "text": "¡SALUD! Todos se tienen que acabar su vaso actual. ¡Ahora!"
+        },
+        {
+            "text": "Prepara un 'shot kamikaze': deja que cada jugador ponga un chorrito de su bebida en tu vaso y bébetelo."
+        },
+        {
+            "text": "Si logras quedarte 5 minutos sin decir ni pío (a pesar de todo), al final repartes un fondo a quien tú quieras."
+        },
+        {
+            "text": "Por 5 minutos, elige a tu 'guardaespaldas'. Cada vez que te toque beber, él o ella bebe contigo."
+        },
+        {
+            "text": "¡ERES EL REY! Pon una regla que dure hasta el final del juego. (Se anula si sale otro rey)."
+        },
+        {
+            "text": "Bomba de Tiempo: Pon una alarma en secreto entre 1 y 10 minutos. Cuando suene, te chingas 4 tragos. ¡Nadie puede ver el temporizador!"
+        },
+        {
+            "text": "Elige tu Destino: Escoge una de tres, sin llorar: 1) Fondo, 2) No vas al baño por el resto del juego, o 3) Contesta una pregunta súper comprometedora de otro jugador."
+        },
+        {
+            "text": "Sentencia Divina: Eres un dios por un momento. Sentencia a un mortal de tu elección a beber 3 tragos (o 1 shot)."
+        },
+        {
+            "text": "El Meserito: Felicidades, te tocó ser el mesero/a del grupo por el resto del juego. Tienes que servirle la bebida a todos. PERO, si alguien te lo pide de mala manera (sin 'por favor'), esa persona se convierte en el nuevo meserito."
+        },
+        {
+            "text": "Bautizo Grupal: Empezando por ti, cada jugador le pone un apodo al de su derecha. Esos apodos se usan por el resto del juego. Cada vez que alguien use un nombre real en lugar del apodo, bebe 2 tragos."
+        },
+        {
+            "text": "Subasta de Valor: Propón un reto que estés dispuesto a hacer (ej. 'llamarle a mi ex'). Los demás 'pujan' con el número de tragos que te tomarías si fallas. El que puje más alto, gana. Si cumples el reto, el que pujó reparte esa cantidad de tragos. Si fallas, te los bebes tú."
+        },
+        {
+            "text": "El Escultor: Elige a un jugador para que sea tu 'arcilla'. Ponlo en la pose más ridícula que se te ocurra. Debe quedarse congelado en esa pose por 2 rondas completas. Si se mueve o se ríe, bebe 7 tragos. Obviamente, las fotos están permitidas."
+        }
+    ],
+    "multiplayer": [
+        {
+            "text": "Todos cuentan su secreto más oscuro. El que se niegue o el que tenga el secreto más 'light' (la banda decide), bebe 3.",
+            "players": "all"
+        },
+        {
+            "text": "El jugador en turno tararea una rola. Dos jugadores compiten por adivinarla. El que adivine reparte 3 tragos. Si nadie adivina, el que tarareó bebe.",
+            "players": 3
+        },
+        {
+            "text": "El jugador en turno dice un trabalenguas. Los demás lo repiten uno por uno. El que se trabe, bebe 3 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "El jugador en turno le hace una pregunta incómoda a otro. Si no contesta, bebe 3. Si contesta, el que preguntó bebe 2.",
+            "players": 2
+        },
+        {
+            "text": "El jugador en turno escoge a un rival. Carrera de fondos. El que tarde más, bebe 2 tragos extra.",
+            "players": 2
+        },
+        {
+            "text": "Inicia una historia con una palabra. El siguiente repite todo y añade otra. El primero que la cague, bebe 5 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Todos confiesan (en secreto) con quién de los presentes tendrían un date. Se leen las respuestas en voz alta.",
+            "players": "all"
+        },
+        {
+            "text": "Juego de 'Verdad o Reto': dos jugadores se retan mutuamente. El que no cumpla, bebe 4.",
+            "players": 2
+        },
+        {
+            "text": "¡Todos al mismo tiempo! El último en terminar su trago cumple el siguiente reto, no importa de quién era el turno.",
+            "players": "all"
+        },
+        {
+            "text": "Todos eligen en secreto al más guapo/a del grupo. El más votado reparte 5 tragos como quiera.",
+            "players": "all"
+        },
+        {
+            "text": "Voten por el jugador con más chance de hacer una pendejada esta noche. Esa persona bebe 2 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Juego del 21: Dos jugadores cuentan hasta 21. Pueden decir 1, 2 o 3 números por turno. El que se vea forzado a decir '21', bebe.",
+            "players": 2
+        },
+        {
+            "text": "Con los ojos cerrados, todos señalan al que creen que está más pedo. El más señalado bebe 3 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Competencia grupal de quién aguanta más la respiración. El primero en rendirse, bebe 3.",
+            "players": "all"
+        },
+        {
+            "text": "Dos jugadores tienen 1 minuto para convencer al grupo de una teoría de conspiración bien fumada. El menos convincente (por votación) bebe 4.",
+            "players": 2
+        },
+        {
+            "text": "Dos jugadores cuentan una anécdota chida que tengan juntos. Después, ambos brindan por los buenos tiempos.",
+            "players": 2
+        },
+        {
+            "text": "Círculo de cumplidos: todos deben decir algo chido de cada jugador. Al final, todos beben un trago en honor a la amistad.",
+            "players": "all"
+        },
+        {
+            "text": "Guerra de miradas: dos jugadores se ven fijamente. El primero en reírse o voltear, bebe 2 tragos.",
+            "players": 2
+        },
+        {
+            "text": "Todos cuentan su momento más oso con sus jefes (padres). El que tenga la historia más cagada (por votación) reparte 5 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Guerra de miradas 2.0: dos jugadores se ven fijamente mientras un tercero intenta hacerlos reír. El primero que se ría, bebe 5.",
+            "players": 3
+        },
+        {
+            "text": "Beatbox Colectivo: Empieza un ritmo con tu boca. El siguiente jugador añade otro sonido, y así sucesivamente hasta crear una 'rola'. Si la banda cree que alguien la cagó, votan. El perdedor bebe 4 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Un Buen Mexa Dice...: Inicia una ronda diciendo: 'Un buen mexa no dice [X], dice [Y]'. (Ej: 'no dice 'permiso', dice 'ahí va el pinche agua''). El primero que se quede sin ideas o repita, bebe 5 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Duelo Kamikaze: Dos jugadores se enfrentan. A la de tres, deben beber hasta la mitad de su vaso. El más lento pierde y se lo tiene que acabar completo.",
+            "players": 2
+        },
+        {
+            "text": "Cadena de Preguntas: Apunta a alguien y hazle una pregunta. Esa persona, sin responder, debe apuntar a otro y hacer una pregunta diferente. El primero que conteste, se tarde, o repita una pregunta, bebe 3 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Duelo de Malos Chistes: Dos jugadores se enfrentan. Se turnan para contar chistes malísimos. El primero que se ría, aunque sea poquito, pierde y bebe 4 tragos.",
+            "players": 2
+        },
+        {
+            "text": "Orquesta de Animales: Empiezas haciendo el sonido de un animal. El de la derecha repite tu sonido y añade otro. Así en cadena. El primero que se equivoque en la secuencia o se tarde, bebe 3 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "Duelo de Piropo de Albañil: Dos jugadores se enfrentan. Por turnos, deben decirse el piropo de albañil más creativo o ridículo que se les ocurra. El primero que se quede sin ideas, repita o se ría, pierde y bebe 4 tragos.",
+            "players": 2
+        },
+        {
+            "text": "El Trío de la Verdad: El jugador en turno dice dos verdades y una mentira sobre sí mismo. Los otros dos deben adivinar cuál es la mentira. Si ambos adivinan, el mentiroso bebe 4. Si ambos fallan, ellos beben 2 cada uno. Si uno adivina y el otro no, el que falló bebe 3.",
+            "players": 3
+        }
+    ]
+}

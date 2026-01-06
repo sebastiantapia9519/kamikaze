@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Core System Colors */
+        --color-background: #1A1A1A;
+        /* deep-charcoal */
+        --color-foreground: #FFFFFF;
+        /* white */
+        --color-border: #2D2D2D;
+        /* gray-800 */
+        --color-input: #2D2D2D;
+        /* gray-800 */
+        --color-ring: #0080FF;
+        /* electric-blue */
+        --color-card: #2D2D2D;
+        /* gray-800 */
+        --color-card-foreground: #FFFFFF;
+        /* white */
+        --color-popover: #2D2D2D;
+        /* gray-800 */
+        --color-popover-foreground: #FFFFFF;
+        /* white */
+        --color-muted: #2D2D2D;
+        /* gray-800 */
+        --color-muted-foreground: #B0B0B0;
+        /* gray-400 */
+
+        /* Brand Colors */
+        --color-primary: #0080FF;
+        /* electric-blue */
+        --color-primary-foreground: #FFFFFF;
+        /* white */
+        --color-secondary: #FFD700;
+        /* vibrant-gold */
+        --color-secondary-foreground: #1A1A1A;
+        /* deep-charcoal */
+        --color-accent: #FF1493;
+        /* hot-pink */
+        --color-accent-foreground: #FFFFFF;
+        /* white */
+
+        /* Status Colors */
+        --color-success: #008B8B;
+        /* teal */
+        --color-success-foreground: #FFFFFF;
+        /* white */
+        --color-warning: #FFD700;
+        /* vibrant-gold */
+        --color-warning-foreground: #1A1A1A;
+        /* deep-charcoal */
+        --color-error: #DC143C;
+        /* crimson */
+        --color-error-foreground: #FFFFFF;
+        /* white */
+        --color-destructive: #DC143C;
+        /* crimson */
+        --color-destructive-foreground: #FFFFFF;
+        /* white */
+
+        /* Surface Colors */
+        --color-surface: #2D2D2D;
+        /* gray-800 */
+        --color-surface-foreground: #FFFFFF;
+        /* white */
+        --color-text-primary: #FFFFFF;
+        /* white */
+        --color-text-secondary: #B0B0B0;
+        /* gray-400 */
+
+        /* Border Radius */
+        --radius: 0.5rem;
+    }
+
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    /* Typography Classes */
+    .font-heading {
+        font-family: 'Fredoka One', cursive;
+    }
+
+    .font-body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .font-caption {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .font-data {
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Custom Shadow System */
+    .shadow-graffiti-sm {
+        box-shadow: 0 2px 4px rgba(0, 128, 255, 0.15), 0 1px 2px rgba(255, 20, 147, 0.1);
+    }
+
+    .shadow-graffiti-md {
+        box-shadow: 0 4px 8px rgba(0, 128, 255, 0.2), 0 2px 4px rgba(255, 20, 147, 0.15);
+    }
+
+    .shadow-graffiti-lg {
+        box-shadow: 0 8px 16px rgba(0, 128, 255, 0.25), 0 4px 8px rgba(255, 20, 147, 0.2);
+    }
+
+    /* Morphic Button Effects */
+    .morphic-pressed {
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        transform: translateY(1px);
+    }
+
+    /* Graffiti-style borders */
+    .border-graffiti {
+        border: 2px solid;
+        border-image: linear-gradient(45deg, var(--color-primary), var(--color-accent)) 1;
+    }
+
+    /* Animation utilities */
+    .animate-pulse-glow {
+        animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse-glow {
+
+        0%,
+        100% {
+            opacity: 1;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.3);
+        }
+
+        50% {
+            opacity: 0.8;
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.4);
+        }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        .animate-pulse-glow {
+            animation: none;
+        }
+
+
+    }
+}
