@@ -1,206 +1,183 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const TimeBombMinigame = ({ onClose, currentPlayer }) => {
-    const [gameState, setGameState] = useState('intro'); // 'intro', 'ticking', 'exploded', 'defused'
-    const [timeLeft, setTimeLeft] = useState(15.0);
-    const [feedback, setFeedback] = useState('');
-    const [cutWires, setCutWires] = useState([]); // ✅ Nuevo: Lista de cables ya cortados
+const TimeBombMinigame = ({ onClose }) => {
+    const [gameState, setGameState] = useState('intro'); // intro, ticking, exploded
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [fuseProgress, setFuseProgress] = useState(100);
 
-    // Configuración de cables (Aleatoria cada vez)
-    const wires = useMemo(() => {
-        const availableColors = [
-            { css: 'bg-green-500', shadow: 'shadow-green-500/50', name: 'Verde' },
-            { css: 'bg-red-500', shadow: 'shadow-red-500/50', name: 'Rojo' },
-            { css: 'bg-yellow-400', shadow: 'shadow-yellow-400/50', name: 'Amarillo' },
-            { css: 'bg-blue-500', shadow: 'shadow-blue-500/50', name: 'Azul' }
-        ];
+    // Referencias para manejar los timers sin re-renders locos
+    const explosionTimeRef = useRef(0);
+    const intervalRef = useRef(null);
+    const durationRef = useRef(0);
 
-        // Efectos: 1 Desactiva (Gana), 1 Explota (Pierde), 2 Trampas (-5 seg)
-        const possibleEffects = ['defuse', 'explode', 'speed', 'speed'];
-        const shuffledEffects = [...possibleEffects].sort(() => Math.random() - 0.5);
+    // Configuración de la bomba
+    const MIN_DURATION = 10000; // 10 segundos
+    const MAX_DURATION = 35000; // 35 segundos
 
-        return availableColors.map((color, index) => ({
-            ...color,
-            type: shuffledEffects[index],
-            id: index
-        }));
-    }, []);
-
-    // Temporizador
-    useEffect(() => {
-        if (gameState !== 'ticking') return;
-
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-                const nextTime = prev - 0.1;
-                // Vibración cardíaca (más rápida si queda poco tiempo)
-                if (nextTime < 5 && nextTime > 0 && Math.floor(nextTime) < Math.floor(prev)) {
-                    if (navigator.vibrate) navigator.vibrate(200);
-                }
-                if (nextTime <= 0) {
-                    clearInterval(timer);
-                    handleExplosion("¡SE ACABÓ EL TIEMPO!");
-                    return 0;
-                }
-                return nextTime;
-            });
-        }, 100);
-
-        return () => clearInterval(timer);
-    }, [gameState]);
-
-    const handleExplosion = (reason) => {
-        setGameState('exploded');
-        setFeedback(reason);
-        if (navigator.vibrate) navigator.vibrate([500, 100, 500]);
+    // Efecto de vibración (Haptic Feedback)
+    const vibrate = (pattern) => {
+        if (navigator.vibrate) navigator.vibrate(pattern);
     };
 
-    const handleCutWire = (wire) => {
-        if (gameState !== 'ticking') return;
-        if (cutWires.includes(wire.id)) return; // Si ya está cortado, no hacer nada
+    const startBomb = () => {
+        const randomDuration = Math.floor(Math.random() * (MAX_DURATION - MIN_DURATION + 1)) + MIN_DURATION;
+        durationRef.current = randomDuration;
+        explosionTimeRef.current = Date.now() + randomDuration;
 
-        // Marcamos este cable como cortado visualmente
-        setCutWires(prev => [...prev, wire.id]);
+        setGameState('ticking');
+        vibrate(200); // Vibración inicial
 
-        if (wire.type === 'defuse') {
-            setGameState('defused');
-            setFeedback("¡Bomba Desactivada!");
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-        }
-        else if (wire.type === 'explode') {
-            setTimeLeft(0);
-            handleExplosion("¡CABLE EQUIVOCADO!");
-        }
-        else if (wire.type === 'speed') {
-            // Trampa: Resta tiempo pero el juego sigue con los otros cables
-            setTimeLeft((prev) => Math.max(0, prev - 5));
-            setFeedback("¡TRAMPA! -5 SEGUNDOS");
-            if (navigator.vibrate) navigator.vibrate(300);
+        // Loop del reloj
+        intervalRef.current = setInterval(() => {
+            const now = Date.now();
+            const remaining = explosionTimeRef.current - now;
+            const progress = (remaining / durationRef.current) * 100;
+
+            if (remaining <= 0) {
+                explode();
+            } else {
+                setTimeLeft(remaining);
+                setFuseProgress(progress);
+
+                // Vibración progresiva: entre menos tiempo, más vibra
+                if (remaining < 5000 && Math.random() > 0.5) vibrate(50);
+                else if (remaining < 3000) vibrate(100);
+            }
+        }, 50);
+    };
+
+    const explode = () => {
+        clearInterval(intervalRef.current);
+        setGameState('exploded');
+        vibrate([500, 100, 500, 100, 1000]); // Vibración de explosión
+    };
+
+    useEffect(() => {
+        return () => clearInterval(intervalRef.current);
+    }, []);
+
+    // Variantes de animación para la bomba (latido y temblor)
+    const bombVariants = {
+        ticking: {
+            scale: [1, 1.05, 1],
+            rotate: [-2, 2, -2],
+            transition: {
+                duration: gameState === 'ticking' && timeLeft < 5000 ? 0.2 : 0.8,
+                repeat: Infinity
+            }
+        },
+        exploded: {
+            scale: 20,
+            opacity: 0,
+            transition: { duration: 0.5 }
         }
     };
 
     return (
         <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
+            className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-colors duration-200 ${gameState === 'exploded' ? 'bg-red-600' :
+                    gameState === 'ticking' && timeLeft < 5000 ? 'bg-red-900/90' : 'bg-black/95'
+                }`}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         >
-            <div className="max-w-md w-full text-center space-y-6">
+            <div className="max-w-md w-full text-center relative z-10">
 
-                {/* --- INTRO --- */}
+                {/* --- FASE 1: INTRO --- */}
                 {gameState === 'intro' && (
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="bg-gray-900 border border-gray-700 p-8 rounded-2xl shadow-2xl"
-                    >
-                        <Icon name="Bomb" size={64} className="text-red-500 mx-auto mb-4 animate-pulse" />
-
-                        {/* ✅ NOMBRE DEL JUGADOR AQUI */}
-                        <div className="mb-2">
-                            <span className="text-gray-400 text-sm uppercase tracking-widest">Misión para:</span>
-                            <h2 className="text-4xl font-black text-yellow-400 mt-1">{currentPlayer?.name}</h2>
+                    <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="space-y-6">
+                        <div className="bg-gray-800 p-8 rounded-3xl border-2 border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)]">
+                            <Icon name="Bomb" size={80} className="text-red-500 mx-auto mb-4" />
+                            <h2 className="text-4xl font-black text-white uppercase italic transform -skew-x-6">¡BOMBA!</h2>
+                            <p className="text-gray-300 text-lg mt-4 leading-relaxed">
+                                Pásense el celular <span className="text-yellow-400 font-bold">RÁPIDO</span>.
+                                <br />Decidiremos quién bebe al azar.
+                            </p>
+                            <div className="bg-black/40 p-4 rounded-xl mt-6">
+                                <p className="text-red-400 font-bold text-sm uppercase">Regla:</p>
+                                <p className="text-white">Al que le explote en la mano se toma <span className="text-2xl font-black">5 TRAGOS</span>.</p>
+                            </div>
                         </div>
-
-                        <h3 className="text-2xl font-bold text-white mb-4">¡CÓRTALE!</h3>
-
-                        <p className="text-gray-300 text-lg mb-8">
-                            Corta el cable correcto para desactivar la bomba.
-                            <br />
-                            <span className="text-red-400 text-sm">⚠️ Cuidado: Algunos cables aceleran el tiempo.</span>
-                        </p>
-                        <Button onClick={() => setGameState('ticking')} size="lg" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xl py-4">
-                            ¡ESTOY LISTO!
+                        <Button
+                            onClick={startBomb}
+                            size="lg"
+                            className="w-full bg-red-600 hover:bg-red-500 text-white font-black text-xl py-6 animate-pulse"
+                        >
+                            ENCENDER MECHA 🔥
                         </Button>
                     </motion.div>
                 )}
 
-                {/* --- JUEGO --- */}
-                {gameState !== 'intro' && (
-                    <>
-                        {/* RELOJ */}
-                        <div className={`relative p-6 rounded-2xl border-4 transition-colors duration-300 ${gameState === 'exploded' ? 'border-red-600 bg-red-900/50' : gameState === 'defused' ? 'border-green-500 bg-green-900/50' : 'border-gray-700 bg-gray-900'}`}>
-                            <div className="font-mono text-7xl font-black tracking-widest text-white tabular-nums drop-shadow-[0_0_15px_rgba(255,0,0,0.6)]">
-                                {timeLeft.toFixed(1)}
-                            </div>
-                            <div className={`mt-2 font-bold text-xl uppercase h-8 ${gameState === 'exploded' ? 'text-red-400' : gameState === 'defused' ? 'text-green-400' : 'text-yellow-400'}`}>
-                                {feedback}
-                            </div>
+                {/* --- FASE 2: TIC TAC --- */}
+                {gameState === 'ticking' && (
+                    <div className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <h2 className="text-red-500 font-mono text-xl tracking-[0.5em] animate-pulse">PELIGRO</h2>
+                            <p className="text-white text-sm opacity-50">PASA EL CELULAR</p>
                         </div>
 
-                        {/* ZONA DE CABLES */}
-                        {gameState === 'ticking' ? (
-                            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-6 relative">
-                                {/* Fondo técnico (opcional) */}
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 rounded-xl pointer-events-none"></div>
-
-                                {wires.map((wire) => {
-                                    const isCut = cutWires.includes(wire.id);
-
-                                    return (
-                                        <div key={wire.id} className="relative h-14 flex items-center justify-between">
-                                            {/* Terminal Izquierda */}
-                                            <div className="w-8 h-8 bg-gray-600 rounded-full border-2 border-gray-500 z-10 shadow-lg"></div>
-
-                                            {/* EL CABLE (Botón Interactivo) */}
-                                            <button
-                                                onClick={() => handleCutWire(wire)}
-                                                disabled={isCut} // ✅ Se desactiva si está cortado
-                                                className="absolute left-4 right-4 h-full flex items-center justify-center group outline-none focus:outline-none"
-                                            >
-                                                {isCut ? (
-                                                    // --- CABLE CORTADO (Dos pedazos separados) ---
-                                                    <>
-                                                        <div className={`h-4 w-[45%] absolute left-0 rounded-l-full ${wire.css} opacity-60 shadow-none`}></div>
-                                                        <div className={`h-4 w-[45%] absolute right-0 rounded-r-full ${wire.css} opacity-60 shadow-none`}></div>
-                                                        {/* Icono de corte en medio */}
-                                                        <div className="z-20 text-gray-500 rotate-45 transform scale-125">✂️</div>
-                                                    </>
-                                                ) : (
-                                                    // --- CABLE INTACTO ---
-                                                    <div className={`h-6 w-full rounded-full transition-transform transform group-active:scale-95 ${wire.css} ${wire.shadow} shadow-lg flex items-center justify-center`}>
-                                                        {/* Brillo del cable */}
-                                                        <div className="w-full h-1 bg-white/30 absolute top-1 rounded-full"></div>
-                                                        <Icon name="Scissors" size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
-                                                    </div>
-                                                )}
-                                            </button>
-
-                                            {/* Terminal Derecha */}
-                                            <div className="w-8 h-8 bg-gray-600 rounded-full border-2 border-gray-500 z-10 shadow-lg"></div>
-                                        </div>
-                                    );
-                                })}
+                        <motion.div
+                            variants={bombVariants}
+                            animate="ticking"
+                            className="relative"
+                        >
+                            <Icon name="Bomb" size={180} className={`${timeLeft < 5000 ? 'text-red-500' : 'text-gray-100'} transition-colors duration-300`} />
+                            {/* Mecha visual */}
+                            <div className="absolute -top-4 right-1/3">
+                                <motion.div
+                                    animate={{ opacity: [1, 0.5, 1] }}
+                                    transition={{ duration: 0.1, repeat: Infinity }}
+                                >
+                                    <Icon name="Zap" size={40} className="text-yellow-400" />
+                                </motion.div>
                             </div>
-                        ) : (
-                            /* RESULTADO FINAL */
+                        </motion.div>
+
+                        {/* Barra de progreso de la mecha (opcional, para dar ansiedad) */}
+                        <div className="w-full bg-gray-800 h-4 rounded-full overflow-hidden border border-gray-600">
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                                className="space-y-6"
-                            >
-                                <div className="bg-gray-800 p-6 rounded-lg border border-gray-600">
-                                    {gameState === 'exploded' ? (
-                                        <>
-                                            <h3 className="text-4xl font-black text-red-500 mb-2">💀 BOOM</h3>
-                                            <p className="text-gray-300 text-lg">Te toca beber <br /><span className="text-2xl font-bold text-white">TODO EL VASO</span></p>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <h3 className="text-4xl font-black text-green-500 mb-2">🏆 SALVADO</h3>
-                                            <p className="text-gray-300 text-lg">Eres un genio. <br />Reparte <span className="text-2xl font-bold text-white">3 TRAGOS</span>.</p>
-                                        </>
-                                    )}
-                                </div>
-                                <Button onClick={onClose} size="lg" className="w-full animate-pulse-glow">
-                                    Continuar Juego
-                                </Button>
-                            </motion.div>
-                        )}
-                    </>
+                                className="h-full bg-gradient-to-r from-yellow-500 to-red-600"
+                                style={{ width: `${fuseProgress}%` }}
+                            />
+                        </div>
+                    </div>
                 )}
+
+                {/* --- FASE 3: EXPLOSIÓN --- */}
+                {gameState === 'exploded' && (
+                    <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="space-y-8"
+                    >
+                        <div className="bg-white text-black p-8 rounded-3xl shadow-2xl transform rotate-1">
+                            <h1 className="text-6xl font-black text-red-600 mb-2">¡BOOM!</h1>
+                            <p className="text-2xl font-bold uppercase">Te moriste.</p>
+                            <div className="my-6 border-t-4 border-black border-dashed w-full opacity-20"></div>
+                            <p className="text-lg font-medium">Tu castigo:</p>
+                            <p className="text-5xl font-black mt-2">🍺 FONDO</p>
+                            <p className="text-sm text-gray-500 mt-1">(O 5 tragos grandes)</p>
+                        </div>
+
+                        <Button onClick={onClose} className="w-full bg-black hover:bg-gray-900 border-2 border-white text-white font-bold py-4">
+                            Sobreviví (Siguiente Ronda)
+                        </Button>
+                    </motion.div>
+                )}
+
             </div>
+
+            {/* Efectos de fondo en explosión */}
+            {gameState === 'exploded' && (
+                <motion.div
+                    className="absolute inset-0 bg-orange-500 z-0"
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 1 }}
+                />
+            )}
         </motion.div>
     );
 };
