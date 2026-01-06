@@ -1,9 +1,9 @@
 [
     {
         "id": 2,
-        "type": "EVERYBODY_DRINKS",
-        "title": "Happy Hour",
-        "description": "¡Salud! Todos los jugadores deben beber un trago ahora mismo."
+        "type": "MINIGAME_BOMB",
+        "title": "💣 ¡BOMBA DE TIEMPO!",
+        "description": "Pásense el celular RÁPIDO. Al que le explote, PIERDE."
     },
     {
         "id": 9,
