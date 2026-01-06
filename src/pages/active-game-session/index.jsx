@@ -21,7 +21,9 @@ import Icon from '../../components/AppIcon';
 // --- MINIGAMES ---
 import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
 import TimeBombMinigame from './components/TimeBombMinigame';
-import BlindSniperMinigame from './components/BlindSniperMinigame'; // ✅ CORREGIDO: Nombre correcto
+import BlindSniperMinigame from './components/BlindSniperMinigame'; // 
+import FingerRouletteMinigame from './components/FingerRouletteMinigame';
+import TapBattleMinigame from './components/TapBattleMinigame';
 
 // --- ASSETS ---
 import bgImage from '../../assets/images/graffiti-bg.png';
@@ -44,7 +46,9 @@ const ActiveGameSession = () => {
         gameCompleted,
         showRaceMinigame,
         showBombMinigame,
-        showSniperMinigame, // ✅ Estado para el Francotirador
+        showSniperMinigame,
+        showFingerRoulette,
+        showTapBattle,
         activeChaosEvent,
         currentChallenge,
         players,
@@ -139,6 +143,20 @@ const ActiveGameSession = () => {
             {/* ✅ FRANCOTIRADOR */}
             {showSniperMinigame && (
                 <BlindSniperMinigame onClose={actions.closeSniper} currentPlayer={currentPlayer} />
+            )}
+            {/* 👆 Minijuego: Ruleta de Dedos (NUEVO) */}
+            {state.showFingerRoulette && (
+                <FingerRouletteMinigame
+                    onClose={actions.closeRoulette}
+                />
+            )}
+
+            {/* 🥊 Minijuego: Batalla de Taps (NUEVO) */}
+            {state.showTapBattle && (
+                <TapBattleMinigame
+                    onClose={actions.closeBattle}
+                    players={state.players} // Necesita saber los jugadores para poner nombres
+                />
             )}
         </div>
     );

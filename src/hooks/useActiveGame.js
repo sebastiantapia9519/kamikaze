@@ -57,6 +57,8 @@ const initialState = {
     showRaceMinigame: false,
     showBombMinigame: false,
     showSniperMinigame: false,
+    showFingerRoulette: false,
+    showTapBattle: false,
 };
 
 function gameReducer(state, action) {
@@ -85,6 +87,8 @@ function gameReducer(state, action) {
                 if (event.type === 'MINIGAME_RACE') return { ...state, showRaceMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BOMB') return { ...state, showBombMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_SNIPER') return { ...state, showSniperMinigame: true, currentChallenge: nextNum };
+                if (event.type === 'MINIGAME_ROULETTE') return { ...state, showFingerRoulette: true, currentChallenge: nextNum };
+                if (event.type === 'MINIGAME_BATTLE') return { ...state, showTapBattle: true, currentChallenge: nextNum };
 
                 return { ...state, activeChaosEvent: event, currentChallenge: nextNum };
             }
@@ -107,6 +111,16 @@ function gameReducer(state, action) {
             const { settings } = action.payload;
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
             return { ...state, showSniperMinigame: false, currentPlayerIndex: nextPlayer };
+        }
+        case 'CLOSE_ROULETTE': {
+            const { settings } = action.payload;
+            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
+            return { ...state, showFingerRoulette: false, currentPlayerIndex: nextPlayer };
+        }
+        case 'CLOSE_BATTLE': {
+            const { settings } = action.payload;
+            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
+            return { ...state, showTapBattle: false, currentPlayerIndex: nextPlayer };
         }
         case 'CLOSE_CHAOS': {
             const { settings } = action.payload;
@@ -217,6 +231,8 @@ export const useActiveGame = (locationState) => {
         closeMinigame: () => dispatch({ type: 'CLOSE_MINIGAME', payload: { settings } }),
         closeBomb: () => dispatch({ type: 'CLOSE_BOMB', payload: { settings } }),
         closeSniper: () => dispatch({ type: 'CLOSE_SNIPER', payload: { settings } }),
+        closeRoulette: () => dispatch({ type: 'CLOSE_ROULETTE', payload: { settings } }), // NUEVO
+        closeBattle: () => dispatch({ type: 'CLOSE_BATTLE', payload: { settings } }),
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
         endGame: () => dispatch({ type: 'END_GAME' }),
         restartGame: () => {
