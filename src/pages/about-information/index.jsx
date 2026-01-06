@@ -29,25 +29,24 @@ const AboutInformation = () => {
     return (
         // Contenedor principal de la página con un color de fondo definido en el tema.
         <div className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden" style={{ backgroundImage: `url(${bgImage})` }}>
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+            {/* Capa oscura para que el texto resalte sobre el graffiti */}
+            <div className="absolute inset-0 bg-gray-950/90 backdrop-blur-sm"></div>
 
             {/* --- SEO y Metadatos de la Página --- */}
-            {/* Este bloque usa React Helmet para inyectar etiquetas en el <head> del HTML. */}
-            {/* Es crucial para el posicionamiento en buscadores (SEO) y no es visible en la página. */}
             <Helmet>
                 <title>Acerca de - Kamikaze Drinking Game</title>
                 <meta name="description" content="Descubre todo sobre Kamikaze, el juego de beber más emocionante. Aprende las reglas, propón nuevos retos y únete a nuestra comunidad." />
                 <meta name="keywords" content="kamikaze, juego de beber, retos, fiesta, amigos, PWA, drinking game" />
             </Helmet>
 
-            {/* Renderiza el encabezado principal de la aplicación (la barra de navegación superior). */}
+            {/* Renderiza el encabezado principal de la aplicación */}
             <Header />
 
             {/* Contenedor del contenido principal de la página. */}
             <main className="pb-24 px-4 sm:px-6 lg:px-8 pt-2.5 relative z-10">
                 <div className="max-w-4xl mx-auto">
 
-                    {/* Componente para la navegación de regreso. Muestra un enlace para "Volver al Inicio". */}
+                    {/* Componente para la navegación de regreso. */}
                     <ContextualBackNavigation
                         customBackPath="/home-dashboard"
                         customLabel="Volver al Inicio"
@@ -56,60 +55,66 @@ const AboutInformation = () => {
 
                     {/* --- Encabezado Visual de la Página --- */}
                     <div className="text-center mb-12">
-                        {/* Círculo con el ícono de Información, con un degradado y una animación de pulso. */}
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center mx-auto mb-6 shadow-graffiti-lg animate-pulse-glow">
+                        {/* Círculo con el ícono de Información */}
+                        <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/20 animate-pulse">
                             <Icon name="Info" size={36} className="text-white" />
                         </div>
-                        {/* Título principal de la página con un efecto de texto degradado. */}
-                        <h1 className="font-heading text-4xl md:text-5xl text-transparent bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text mb-4">
+                        {/* Título principal */}
+                        <h1 className="font-heading text-4xl md:text-5xl text-white mb-4 drop-shadow-lg">
                             Acerca de Kamikaze
                         </h1>
-                        {/* Subtítulo o eslogan de la página. */}
-                        <p className="font-body text-lg text-text-secondary max-w-2xl mx-auto">
-                            El juego de beber definitivo que transformará tus reuniones en experiencias épicas e inolvidables
+                        {/* Subtítulo */}
+                        <p className="font-body text-lg text-gray-400 max-w-2xl mx-auto">
+                            El juego de beber definitivo que transformará tus reuniones en experiencias épicas e inolvidables.
                         </p>
                     </div>
 
                     {/* --- Secciones de Contenido Informativo --- */}
-                    {/* Este contenedor agrupa todas las secciones principales de la página. */}
                     <div className="space-y-8">
-                        <GameDescriptionSection />      {/* Sección que explica qué es el juego. */}
-                        <GameFeaturesGrid />            {/* Sección que muestra las características principales. */}
-                        <ChallengeProposalSection />    {/* Sección que invita a los usuarios a proponer retos. */}
-                        <ResponsibleDrinkingReminder /> {/* Recordatorio sobre el consumo responsable de alcohol. */}
-                        <InstallationGuideSection />    {/* Guía para instalar la app (PWA). */}
-                        <CommunityGuidelinesSection />  {/* Reglas de la comunidad. */}
+                        <GameDescriptionSection />      {/* Qué es el juego */}
+                        <GameFeaturesGrid />            {/* Características */}
+                        <ChallengeProposalSection />    {/* Proponer retos */}
+                        <ResponsibleDrinkingReminder /> {/* Consumo responsable */}
+                        <InstallationGuideSection />    {/* Guía PWA */}
+                        <CommunityGuidelinesSection />  {/* Reglas comunidad */}
                     </div>
 
-                    {/* --- Información de Pie de Página y Créditos --- */}
+                    {/* --- Información de Pie de Página y Créditos (ACTUALIZADO AL MODO OSCURO) --- */}
                     <div className="mt-12 text-center">
-                        <div className="bg-surface/30 p-6 rounded-lg border border-border">
-                            <div className="flex items-center justify-center space-x-2 mb-3">
-                                <Icon name="Calendar" size={18} className="text-text-secondary" />
-                                <span className="font-body text-text-secondary">
-                                    {/* Obtiene el año actual dinámicamente para mantener la fecha actualizada sin editar el código. */}
-                                    Última actualización: Octubre {new Date()?.getFullYear()}
-                                </span>
-                            </div>
-                            {/* Párrafo de créditos y contexto del proyecto. */}
-                            <p className="font-body text-sm text-text-secondary">
-                                Kamikaze es un proyecto de escrito con el corazón y código, inspirado en noches con caguamas y jueguitos para empedarnos.
-                                <br />
-                                Dev. Sebastian Tapia
-                            </p>
-                            {/* Pequeños íconos con puntos clave sobre el proyecto. */}
-                            <div className="flex items-center justify-center space-x-6 mt-4 text-sm text-text-secondary">
-                                <div className="flex items-center space-x-1">
-                                    <Icon name="Users" size={14} />
-                                    <span>Comunidad Global</span>
+                        <div className="bg-gray-900 p-8 rounded-2xl border border-white/10 shadow-xl relative overflow-hidden">
+
+                            {/* Decoración sutil */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-center space-x-2 mb-3">
+                                    <Icon name="Calendar" size={18} className="text-purple-400" />
+                                    <span className="font-body text-gray-400 text-sm">
+                                        Última actualización: Enero {new Date()?.getFullYear()}
+                                    </span>
                                 </div>
-                                <div className="flex items-center space-x-1">
-                                    <Icon name="Zap" size={14} />
-                                    <span>PWA Nativo</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                    <Icon name="Shield" size={14} />
-                                    <span>Juego Responsable</span>
+
+                                {/* Créditos */}
+                                <p className="font-body text-sm text-gray-300 leading-relaxed max-w-lg mx-auto">
+                                    Kamikaze es un proyecto escrito con el corazón y código, inspirado en noches con caguamas y jueguitos para empedarnos.
+                                    <br />
+                                    <span className="text-white font-bold mt-2 block">Dev. Sebastian Tapia</span>
+                                </p>
+
+                                {/* Iconos finales */}
+                                <div className="flex items-center justify-center space-x-6 mt-6 text-xs text-gray-500 uppercase tracking-widest font-bold">
+                                    <div className="flex items-center space-x-1">
+                                        <Icon name="Users" size={12} />
+                                        <span>Comunidad</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <Icon name="Zap" size={12} />
+                                        <span>PWA</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <Icon name="Shield" size={12} />
+                                        <span>Seguridad</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

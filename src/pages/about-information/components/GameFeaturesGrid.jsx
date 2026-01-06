@@ -2,66 +2,80 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const GameFeaturesGrid = () => {
+    // Definimos las características aquí para mantener el JSX limpio
     const features = [
         {
-            icon: 'Shuffle',
-            title: 'Retos Aleatorios',
-            description: 'Sistema inteligente que evita repeticiones durante 30 rondas completas',
-            color: 'text-primary'
+            icon: "Shuffle",
+            color: "text-blue-400",
+            bg: "bg-blue-400/10",
+            title: "Retos Aleatorios",
+            desc: "Sistema inteligente que evita repeticiones durante 30 rondas completas."
         },
         {
-            icon: 'Users',
-            title: 'Multijugador',
-            description: 'Perfecto para grupos de 2 a 8 jugadores con asignación automática',
-            color: 'text-secondary'
+            icon: "Users",
+            color: "text-green-400",
+            bg: "bg-green-400/10",
+            title: "Multijugador",
+            desc: "Perfecto para grupos de 2 a 8 jugadores con asignación automática."
         },
         {
-            icon: 'Smartphone',
-            title: 'PWA Móvil',
-            description: 'Instálalo como app nativa en iOS y Android para acceso offline',
-            color: 'text-accent'
+            icon: "Smartphone",
+            color: "text-pink-400",
+            bg: "bg-pink-400/10",
+            title: "PWA Móvil",
+            desc: "Instálalo como app nativa en iOS y Android para acceso offline."
         },
         {
-            icon: 'Settings',
-            title: 'Personalizable',
-            description: 'Activa o desactiva categorías según las preferencias del grupo',
-            color: 'text-success'
+            icon: "Settings",
+            color: "text-cyan-400",
+            bg: "bg-cyan-400/10",
+            title: "Personalizable",
+            desc: "Activa o desactiva categorías según las preferencias del grupo."
         },
         {
-            icon: 'Palette',
-            title: 'Estilo Graffiti',
-            description: 'Diseño urbano vibrante que captura la energía de la fiesta',
-            color: 'text-warning'
+            icon: "PenTool", // O el icono que uses para arte/graffiti
+            color: "text-yellow-400",
+            bg: "bg-yellow-400/10",
+            title: "Estilo Graffiti",
+            desc: "Diseño urbano vibrante que captura la energía de la fiesta."
         },
         {
-            icon: 'Shield',
-            title: 'Juego Responsable',
-            description: 'Incluye recordatorios de consumo responsable y límites saludables',
-            color: 'text-error'
+            icon: "Shield",
+            color: "text-red-400",
+            bg: "bg-red-400/10",
+            title: "Juego Responsable",
+            desc: "Incluye recordatorios de consumo responsable y límites saludables."
         }
     ];
 
     return (
-        <div className="mb-8">
-            <h3 className="font-heading text-xl text-text-primary mb-6 text-center">
+        <div className="space-y-6">
+            <h2 className="text-2xl font-black text-white text-center mb-6 shadow-black drop-shadow-md">
                 Características Principales
-            </h3>
+            </h2>
+
+            {/* GRID RESPONSIVE */}
+            {/* grid-cols-1 en móvil, grid-cols-2 en tablet, grid-cols-3 en escritorio */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {features?.map((feature, index) => (
+                {features.map((feature, index) => (
+                    // CARTA INDIVIDUAL CON ESTILO OSCURO UNIFICADO
                     <div
                         key={index}
-                        className="bg-surface/30 p-4 rounded-lg border border-border hover:shadow-graffiti-sm transition-all duration-300"
+                        className="bg-gray-900 rounded-xl p-5 border border-white/10 shadow-lg hover:border-white/20 transition-colors duration-300"
                     >
-                        <div className="flex items-start space-x-3">
-                            <div className={`p-2 rounded-lg bg-background/50 ${feature?.color}`}>
-                                <Icon name={feature?.icon} size={20} />
+                        <div className="flex items-start space-x-4">
+                            {/* CAJA DEL ICONO */}
+                            <div className={`p-3 rounded-lg ${feature.bg} ${feature.color} shadow-inner`}>
+                                <Icon name={feature.icon} size={24} />
                             </div>
-                            <div className="flex-1">
-                                <h4 className="font-body font-semibold text-text-primary mb-1">
-                                    {feature?.title}
-                                </h4>
-                                <p className="text-sm text-text-secondary leading-relaxed">
-                                    {feature?.description}
+
+                            {/* TEXTOS */}
+                            <div>
+                                <h3 className="text-white font-bold text-lg mb-1">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-gray-400 text-sm leading-snug">
+                                    {feature.desc}
                                 </p>
                             </div>
                         </div>

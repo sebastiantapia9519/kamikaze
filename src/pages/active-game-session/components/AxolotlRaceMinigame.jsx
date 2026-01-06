@@ -1,160 +1,172 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
-
-// Importamos los SVGs que acabamos de crear (Asegúrate de que la ruta sea correcta)
+// 👇 AQUÍ ESTÁ EL CAMBIO CLAVE: Importamos AjoloteMoradoSVG en vez del Dorado
 import {
     AjoloteRosaSVG,
     AjoloteAzulSVG,
-    AjoloteDoradoSVG,
+    AjoloteMoradoSVG,
     AjoloteVerdeSVG,
     AjoloteRojoSVG
-} from '../../../components/ui/AjoloteSvgs';
+} from '../../../components/ui/AjoloteSvgs'; // Ajusta esta ruta si tus SVGs están en otra carpeta
 
-const AxolotlRaceMinigame = ({ players, onClose }) => {
-    // Definimos los corredores aquí, ya no en el archivo principal
-    const racers = useMemo(() => [
-        { id: 'ajolote-rosa', name: 'Ajolote Rosa', Component: AjoloteRosaSVG },
-        { id: 'ajolote-azul', name: 'Ajolote Azul', Component: AjoloteAzulSVG },
-        { id: 'ajolote-dorado', name: 'Ajolote Dorado', Component: AjoloteDoradoSVG },
-        { id: 'ajolote-verde', name: 'Ajolote Verde', Component: AjoloteVerdeSVG },
-        { id: 'ajolote-rojo', name: 'Ajolote Rojo', Component: AjoloteRojoSVG },
-    ], []);
-
-    // Estado interno del minijuego (ya no ensucia el estado global)
-    const [bets, setBets] = useState({});
-    const [phase, setPhase] = useState('betting'); // 'betting', 'racing', 'results'
-    const [positions, setPositions] = useState({});
+const AxolotlRaceMinigame = ({ onClose, players = [] }) => {
+    const [gameState, setGameState] = useState('betting'); // betting, racing, finished
+    const [positions, setPositions] = useState([0, 0, 0, 0, 0]);
     const [winner, setWinner] = useState(null);
+    const raceInterval = useRef(null);
 
-    // Lógica de apuestas
-    const handleBetChange = (playerName, partialBet) => {
-        setBets(prev => ({ ...prev, [playerName]: { ...(prev[playerName] || {}), ...partialBet } }));
-    };
-    const isBettingComplete = players.every(p => bets[p.name]?.racerId && bets[p.name]?.amount > 0);
+    // Configuración de los corredores
+    const racers = [
+        { id: 'rosa', name: 'Rosita', color: 'text-pink-400', Component: AjoloteRosaSVG },
+        { id: 'azul', name: 'Azulito', color: 'text-cyan-400', Component: AjoloteAzulSVG },
+        { id: 'morado', name: 'Uva', color: 'text-purple-400', Component: AjoloteMoradoSVG }, // 👈 Usamos el nuevo
+        { id: 'verde', name: 'Limón', color: 'text-green-400', Component: AjoloteVerdeSVG },
+        { id: 'rojo', name: 'Diablito', color: 'text-red-400', Component: AjoloteRojoSVG },
+    ];
 
     // Iniciar carrera
-    const handleStartRace = () => {
-        setPositions(racers.reduce((acc, racer) => ({ ...acc, [racer.id]: 0 }), {}));
-        setWinner(null);
-        setPhase('racing');
-    };
+    const startRace = () => {
+        setGameState('racing');
 
-    // Lógica de la carrera (useEffect)
-    useEffect(() => {
-        if (phase !== 'racing' || winner) return;
-
-        const raceInterval = setInterval(() => {
+        raceInterval.current = setInterval(() => {
             setPositions(prev => {
-                const newPositions = { ...prev };
-                let winnerFound = false;
+                const newPositions = [...prev];
+                let raceFinished = false;
+                let winningIndex = -1;
 
-                for (const racer of racers) {
-                    if (winnerFound) continue;
-
-                    const current = newPositions[racer.id] || 0;
-                    if (current < 100) {
-                        // Velocidad aleatoria
-                        newPositions[racer.id] = current + (Math.random() * 5 + 1);
+                // Movemos cada ajolote una distancia aleatoria
+                for (let i = 0; i < 5; i++) {
+                    // Probabilidad de moverse: 70%
+                    if (Math.random() > 0.3) {
+                        const speed = Math.random() * 2 + 0.5; // Velocidad variable
+                        newPositions[i] += speed;
                     }
 
-                    if (newPositions[racer.id] >= 100) {
-                        newPositions[racer.id] = 100;
-                        winnerFound = true;
-                        setWinner(racer);
-                        clearInterval(raceInterval);
-                        setTimeout(() => setPhase('results'), 1500);
+                    // Checar si llegó a la meta (100%)
+                    if (newPositions[i] >= 90 && !raceFinished) {
+                        raceFinished = true;
+                        winningIndex = i;
                     }
                 }
+
+                if (raceFinished) {
+                    clearInterval(raceInterval.current);
+                    setWinner(racers[winningIndex]);
+                    setGameState('finished');
+                }
+
                 return newPositions;
             });
-        }, 200);
+        }, 100);
+    };
 
-        return () => clearInterval(raceInterval);
-    }, [phase, winner, racers]);
+    // Limpieza al salir
+    useEffect(() => {
+        return () => clearInterval(raceInterval.current);
+    }, []);
 
     return (
-        <motion.div className="fixed inset-0 bg-background/90 backdrop-blur-lg flex items-center justify-center z-50 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <AnimatePresence mode="wait">
+        <div className="fixed inset-0 z-50 bg-gray-900 flex flex-col overflow-hidden">
 
-                {/* FASE 1: APUESTAS */}
-                {phase === 'betting' && (
-                    <motion.div key="betting" className="bg-card/90 border border-border/50 rounded-lg shadow-graffiti-lg max-w-2xl w-full text-center p-6 sm:p-8 flex flex-col" initial={{ scale: 0.7 }} animate={{ scale: 1 }} exit={{ scale: 0.7, opacity: 0 }}>
-                        <div className="flex-shrink-0"><Icon name="Gamepad2" size={40} className="text-primary mx-auto mb-4" /><h2 className="font-heading text-3xl text-primary mb-2">¡Carrera de Ajolotes!</h2><p className="text-text-secondary mb-4">Cada jugador elija un campeón y apueste sus tragos.</p></div>
-                        <div className="flex justify-center items-center gap-4 mb-6 flex-wrap">{racers.map(racer => (<div key={racer.id} className="flex flex-col items-center"><racer.Component size={28} /><span className="text-xs text-text-secondary mt-1">{racer.name.split(' ')[1]}</span></div>))}</div>
-                        <div className="flex-grow space-y-4 text-left mb-8 pr-2 -mr-2 overflow-y-auto max-h-72">{players.map(player => { const currentBet = bets[player.name]; return (<div key={player.id || player.name} className="bg-surface/50 p-3 rounded-lg"><span className="font-semibold text-text-primary mb-2 block">{player.name} apuesta:</span><div className="flex items-center gap-3"><div className="flex-grow flex justify-around items-center bg-background/50 p-2 rounded-md">{racers.map(racer => (<motion.button key={racer.id} onClick={() => handleBetChange(player.name, { racerId: racer.id })} className={`p-1 rounded-full transition-all duration-200 ${currentBet?.racerId === racer.id ? 'bg-primary/20 ring-2 ring-primary' : 'bg-transparent'}`} whileTap={{ scale: 0.9 }}><racer.Component size={32} /></motion.button>))}</div><div className="flex-shrink-0 w-24"><input type="number" min="1" placeholder="Tragos" className="bg-background border border-border rounded px-2 py-2 w-full text-sm text-center h-full" onChange={(e) => handleBetChange(player.name, { amount: parseInt(e.target.value, 10) || 0 })} /></div></div></div>); })}</div>
-                        <div className="flex-shrink-0"><Button onClick={handleStartRace} size="lg" className="w-full disabled:bg-muted disabled:shadow-none disabled:cursor-not-allowed" disabled={!isBettingComplete}>¡Que comience la carrera!</Button><Button onClick={onClose} variant="ghost" className="mt-2 text-text-secondary">Saltar minijuego</Button></div>
-                    </motion.div>
+            {/* ENCABEZADO */}
+            <div className="p-4 bg-gray-800 border-b border-white/10 flex justify-between items-center z-10 shadow-md">
+                <h2 className="text-xl font-black text-white italic">🏁 CARRERA DE AJOLOTES</h2>
+                {gameState === 'finished' && (
+                    <Button onClick={onClose} size="sm" className="bg-white/10">Cerrar</Button>
                 )}
+            </div>
 
-                {/* FASE 2: CARRERA */}
-                {phase === 'racing' && (
-                    <motion.div key="racing" className="bg-card/90 border border-border/50 rounded-lg shadow-graffiti-lg max-w-2xl w-full p-6 sm:p-8" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-                        <h2 className="font-heading text-3xl text-primary mb-6 text-center">¡La carrera está en curso!</h2>
-                        <div className="relative space-y-2 mt-8">
-                            {racers.map((racer) => (
-                                <div key={racer.id} className="relative h-10 w-full bg-surface/50 rounded-full overflow-hidden flex items-center shadow-inner text-white">
-                                    <div className="absolute z-10" style={{ left: `${positions[racer.id] || 0}%`, transform: 'translateX(-100%)', transition: 'left 0.2s linear' }}>
-                                        <racer.Component size={32} />
-                                    </div>
-                                </div>
-                            ))}
-                            <div className="absolute top-0 bottom-0 right-0 w-2 bg-gradient-to-b from-primary to-accent rounded-full opacity-70 z-0"></div>
-                        </div>
-                    </motion.div>
-                )}
+            {/* PISTA DE CARRERAS */}
+            <div className="flex-1 relative bg-gray-900 p-4 flex flex-col justify-center space-y-4 overflow-y-auto">
 
-                {/* FASE 3: RESULTADOS */}
-                {phase === 'results' && winner && (
-                    <motion.div key="results" className="bg-card/90 border border-border/50 rounded-lg shadow-graffiti-lg max-w-2xl w-full text-center p-6 sm:p-8 flex flex-col" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <div className="flex-shrink-0">
-                            <winner.Component size={40} className="mx-auto mb-4" />
-                            <h2 className="font-heading text-3xl text-secondary mb-2">¡Ganó el {winner.name}!</h2>
-                        </div>
-                        <div className="flex-grow space-y-4 text-left my-8 overflow-y-auto max-h-72">
-                            {(() => {
-                                const anyPlayerWon = players.some(p => bets[p.name]?.racerId === winner.id);
-                                return (
-                                    <>
-                                        {!anyPlayerWon ? (
-                                            <div className="text-center p-3 mb-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-                                                <h3 className="font-semibold text-destructive text-lg">¡Nadie le atinó!</h3>
-                                                <p className="text-text-secondary text-sm">Todos toman la mitad de lo que apostaron.</p>
-                                            </div>
-                                        ) : (
-                                            <h3 className="font-semibold text-text-primary text-lg text-center">Resultados de las Apuestas:</h3>
-                                        )}
-                                        {players.map(player => {
-                                            const bet = bets[player.name];
-                                            const didWin = bet?.racerId === winner.id;
-                                            const sipsToTake = Math.ceil((bet?.amount || 0) / 2);
-                                            return (
-                                                <div key={player.name} className={`p-3 rounded-lg flex justify-between items-center text-sm ${didWin ? 'bg-success/20' : 'bg-destructive/10'}`}>
-                                                    <span className="font-medium text-text-primary">{player.name}</span>
-                                                    {didWin ? (
-                                                        <span className="font-semibold text-success">🏆 Reparte {bet.amount * 2} tragos</span>
-                                                    ) : (
-                                                        !anyPlayerWon ? (
-                                                            <span className="font-semibold text-destructive">🍺 Toma {sipsToTake} {sipsToTake === 1 ? 'trago' : 'tragos'}</span>
-                                                        ) : (
-                                                            <span className="text-text-secondary">Apostó {bet.amount} por el {racers.find(r => r.id === bet?.racerId)?.name.split(' ')[1] || '...'}</span>
-                                                        )
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </>
-                                );
-                            })()}
-                        </div>
-                        <div className="flex-shrink-0">
-                            <Button onClick={onClose} size="lg" className="w-full">Continuar Juego</Button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.div>
+                {/* LÍNEA DE META */}
+                <div className="absolute top-0 bottom-0 right-8 w-2 border-r-4 border-dashed border-white/30 z-0" />
+                <div className="absolute top-0 bottom-0 right-4 text-xs text-white/30 writing-vertical flex items-center">META</div>
+
+                {racers.map((racer, index) => (
+                    <div key={racer.id} className="relative w-full h-12 flex items-center">
+                        {/* Carril */}
+                        <div className="absolute inset-x-0 h-px bg-white/10 top-1/2" />
+
+                        {/* Corredor */}
+                        <motion.div
+                            className="relative z-10"
+                            animate={{ left: `${Math.min(positions[index], 90)}%` }}
+                            transition={{ type: 'tween', ease: 'linear', duration: 0.1 }}
+                            style={{ position: 'absolute' }}
+                        >
+                            <div className="flex flex-col items-center transform -translate-x-1/2">
+                                <racer.Component size={40} className="filter drop-shadow-lg" />
+                                <span className={`text-[10px] font-bold ${racer.color} bg-black/50 px-1 rounded`}>
+                                    {racer.name}
+                                </span>
+                            </div>
+                        </motion.div>
+                    </div>
+                ))}
+            </div>
+
+            {/* CONTROLES / ESTADO */}
+            <div className="p-6 bg-gray-800 border-t border-white/10 z-20">
+                <AnimatePresence mode="wait">
+
+                    {/* FASE 1: APUESTAS */}
+                    {gameState === 'betting' && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+                            className="text-center space-y-4"
+                        >
+                            <p className="text-cyan-300 font-bold text-lg animate-pulse">
+                                ¡HAGAN SUS APUESTAS!
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                                Elijan su ajolote favorito. Los perdedores beben.
+                            </p>
+                            <Button onClick={startRace} className="w-full bg-green-500 hover:bg-green-600 text-white font-black text-xl py-4 shadow-lg shadow-green-900/20">
+                                🔫 DISPARAR SALIDA
+                            </Button>
+                        </motion.div>
+                    )}
+
+                    {/* FASE 2: CARRERA EN CURSO */}
+                    {gameState === 'racing' && (
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="text-center"
+                        >
+                            <p className="text-2xl font-black text-white animate-bounce">
+                                ¡CORRAN! 💨
+                            </p>
+                        </motion.div>
+                    )}
+
+                    {/* FASE 3: GANADOR */}
+                    {gameState === 'finished' && winner && (
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                            className="text-center space-y-4"
+                        >
+                            <p className="text-gray-400 uppercase text-xs tracking-widest">El ganador es</p>
+                            <h2 className={`text-4xl font-black ${winner.color} drop-shadow-md`}>
+                                ¡{winner.name.toUpperCase()}!
+                            </h2>
+                            <div className="bg-black/30 p-4 rounded-xl border border-white/10">
+                                <p className="text-white font-bold mb-1">Castigo:</p>
+                                <p className="text-gray-300 text-sm">
+                                    Si no apostaste por <span className={winner.color}>{winner.name}</span>, <br />
+                                    <span className="text-xl text-white font-black">BEBE 3 TRAGOS 🍺</span>
+                                </p>
+                            </div>
+                            <Button onClick={onClose} className="w-full bg-white/10 hover:bg-white/20 border-2 border-white/50">
+                                Continuar
+                            </Button>
+                        </motion.div>
+                    )}
+
+                </AnimatePresence>
+            </div>
+        </div>
     );
 };
 

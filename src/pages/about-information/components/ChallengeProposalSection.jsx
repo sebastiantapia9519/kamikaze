@@ -1,90 +1,55 @@
-/**
- * @file ChallengeProposalSection.jsx
- * @description Componente que muestra una tarjeta invitando a los usuarios a proponer nuevos retos para el juego.
- * Al hacer clic en el botón, se abre un Google Form en una nueva pestaña.
- */
-
-import React, { useState } from 'react';
-import Button from '../../../components/ui/Button';
+import React from 'react';
 import Icon from '../../../components/AppIcon';
+import Button from '../../../components/ui/Button';
 
 const ChallengeProposalSection = () => {
-    // Estado para mostrar un indicador de carga en el botón mientras se abre el formulario.
-    // Esto le da al usuario una respuesta visual inmediata de que su clic funcionó.
-    const [isFormOpening, setIsFormOpening] = useState(false);
-
-    /**
-     * Manejador que se ejecuta al hacer clic en el botón "Proponer un Reto".
-     */
-    const handleProposalClick = () => {
-        // 1. Activamos el estado de carga para que el botón muestre un spinner.
-        setIsFormOpening(true);
-
-        // 2. Aquí está tu URL real del Google Form que creaste.
-        const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdh8UgeB7FeJ8oH1MrXoAAnJItzh572sRPuLkghbR8xUvkWFg/viewform?usp=dialog";
-
-        // 3. Usamos un pequeño temporizador (medio segundo) para que el usuario alcance a ver la animación de carga.
-        //    Esto mejora la experiencia de usuario (UX).
-        setTimeout(() => {
-            // 4. Abrimos el formulario en una nueva pestaña del navegador.
-            //    'noopener' y 'noreferrer' son atributos de seguridad importantes al abrir nuevos enlaces.
-            window.open(googleFormUrl, '_blank', 'noopener,noreferrer');
-
-            // 5. Desactivamos el estado de carga una vez que el enlace se ha abierto.
-            setIsFormOpening(false);
-        }, 500);
-    };
-
     return (
-        // Contenedor principal de la sección con un fondo degradado y estilos visuales.
-        <div className="bg-gradient-to-br from-accent/10 to-primary/10 p-6 rounded-lg shadow-graffiti-lg mb-8 border border-accent/20">
-            <div className="text-center">
-                {/* Ícono de la bombilla */}
-                <div className="w-16 h-16 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-graffiti-md">
-                    <Icon name="Lightbulb" size={28} className="text-white" />
+        // CONTENEDOR PRINCIPAL
+        // bg-gray-900: Fondo oscuro sólido (igual que la tarjeta PWA).
+        // rounded-2xl: Bordes muy redondeados.
+        // border-white/10: Borde sutil blanco semitransparente.
+        // shadow-xl: Sombra pronunciada para dar profundidad.
+        <div className="bg-gray-900 rounded-2xl p-8 border border-white/10 shadow-xl text-center relative overflow-hidden">
+
+            {/* DECORACIÓN: Degradado suave desde arriba (púrpura muy bajito) */}
+            <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent pointer-events-none" />
+
+            {/* CONTENIDO CENTRADO (z-10 para estar sobre el fondo) */}
+            <div className="relative z-10 flex flex-col items-center">
+
+                {/* ICONO GRANDE CIRCULAR */}
+                {/* bg-purple-500/20: Círculo traslúcido morado */}
+                <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(168,85,247,0.2)]">
+                    <Icon name="Zap" size={32} className="text-purple-400" />
                 </div>
 
-                {/* Título principal de la sección */}
-                <h3 className="font-heading text-2xl text-accent mb-3">
-                    ¡Contribuye con la Comunidad!
-                </h3>
+                {/* TÍTULO Y SUBTÍTULO */}
+                <h2 className="text-2xl font-black text-white mb-2">
+                    ¿Tienes una idea malvada?
+                </h2>
 
-                {/* Textos que invitan al usuario a participar */}
-                <p className="font-body text-text-primary mb-2">
-                    ¿Tienes una idea genial para un nuevo reto?
-                </p>
-                <p className="font-body text-text-secondary mb-6 max-w-md mx-auto">
-                    En Kamikaze! sabemos que la comunidad es súper ingeniosa. ¡Déjanos aquí tus propuestas para nuevos retos!
-                    <br /><br />
-                    <span className="font-semibold">Tu privacidad es primero: todas las propuestas son 100% anónimas y no recopilamos ningún dato personal.</span>
+                <p className="text-gray-400 text-sm max-w-md mx-auto mb-6">
+                    Envía tus mejores retos para que aparezcan en la próxima actualización.
+                    Tu creatividad (y crueldad) es bienvenida.
                 </p>
 
-                {/* Botón principal de acción */}
+                {/* BOTÓN DE ACCIÓN CON TU LINK */}
+                {/* Al hacer click, abre tu Google Forms en una pestaña nueva */}
                 <Button
-                    variant="default"
-                    size="lg"
-                    onClick={handleProposalClick}
-                    loading={isFormOpening} // La prop 'loading' mostrará un spinner cuando isFormOpening sea true.
-                    className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-graffiti-md hover:shadow-graffiti-lg transition-all duration-300"
+                    className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-purple-900/20 transition-all transform hover:scale-105"
+                    onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSdh8UgeB7FeJ8oH1MrXoAAnJItzh572sRPuLkghbR8xUvkWFg/viewform?usp=dialog', '_blank')}
                 >
-                    <Icon name="Plus" size={20} />
-                    <span className="ml-2 font-semibold">Proponer un Reto</span>
+                    <div className="flex items-center space-x-2">
+                        <Icon name="Plus" size={20} />
+                        <span>Proponer un Reto</span>
+                    </div>
                 </Button>
 
-                {/* Pequeños íconos con información adicional (tiempo, comunidad, etc.) */}
-                <div className="mt-4 flex items-center justify-center space-x-4 text-sm text-text-secondary">
-                    <div className="flex items-center space-x-1">
-                        <Icon name="Clock" size={14} />
-                        <span>2 minutos</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                        <Icon name="Users" size={14} />
-                        <span>Comunidad global</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                        <Icon name="Heart" size={14} />
-                        <span>Gratis</span>
-                    </div>
+                {/* PIE DE TARJETA: Iconos informativos pequeños */}
+                <div className="mt-6 flex items-center justify-center space-x-4 text-xs text-gray-500">
+                    <span className="flex items-center"><Icon name="Clock" size={12} className="mr-1" /> 2 minutos</span>
+                    <span className="flex items-center"><Icon name="Globe" size={12} className="mr-1" /> Comunidad global</span>
+                    <span className="flex items-center"><Icon name="Heart" size={12} className="mr-1" /> Gratis</span>
                 </div>
             </div>
         </div>
