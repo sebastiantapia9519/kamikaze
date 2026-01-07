@@ -3,12 +3,15 @@
  * @description Vista principal. Lógica movida a hooks/useActiveGame.js
  */
 
-import React from 'react';
+// 👇 1. Agregamos useEffect aquí
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 // --- LOGIC HOOK ---
 import { useActiveGame } from '../../hooks/useActiveGame';
+// 👇 2. Importamos el hook de efectos de sonido/vibración
+import { useGameEffects } from '../../hooks/useGameEffects';
 
 // --- COMPONENTS ---
 import ChallengeCard from './components/ChallengeCard';
@@ -22,7 +25,7 @@ import kamikazeLogo from '../../assets/images/iconKamikaze180x180.png';
 // --- MINIGAMES ---
 import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
 import TimeBombMinigame from './components/TimeBombMinigame';
-import BlindSniperMinigame from './components/BlindSniperMinigame'; // 
+import BlindSniperMinigame from './components/BlindSniperMinigame';
 import FingerRouletteMinigame from './components/FingerRouletteMinigame';
 import TapBattleMinigame from './components/TapBattleMinigame';
 
@@ -32,7 +35,7 @@ import bgImage from '../../assets/images/graffiti-bg.png';
 const ActiveGameSession = () => {
     const location = useLocation();
 
-    // Invocamos el Hook
+    // Invocamos el Hook de lógica del juego
     const {
         state,
         totalChallenges,
@@ -41,6 +44,9 @@ const ActiveGameSession = () => {
         isLastChallenge,
         actions
     } = useActiveGame(location.state);
+
+    // 👇 3. Invocamos el Hook de efectos
+    const { playSound } = useGameEffects();
 
     const {
         isLoading,
@@ -55,6 +61,14 @@ const ActiveGameSession = () => {
         players,
         gameDuration
     } = state;
+
+    // 👇 4. EFECTO: Sonido al cambiar de carta ("Slashhh!")
+    useEffect(() => {
+        // Reproducir sonido solo si ya cargó el juego y hay un reto activo
+        if (!isLoading && currentChallenge > 0) {
+            playSound('whoosh'); // Asegúrate de tener whoosh.mp3 en public/sounds/
+        }
+    }, [currentChallenge, isLoading, playSound]);
 
     if (isLoading) {
         return (

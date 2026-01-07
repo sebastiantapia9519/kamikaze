@@ -11,83 +11,91 @@ const ConfigurationActions = ({
 }) => {
     return (
         <div className="space-y-6">
-            {/* Save/Reset Actions */}
+            {/* ACCIONES PRINCIPALES (Guardar / Reset) */}
             <div className="flex flex-col sm:flex-row gap-4">
+
+                {/* Botón GUARDAR */}
                 <Button
                     variant="default"
                     onClick={onSave}
                     disabled={!hasChanges || isSaving}
                     loading={isSaving}
-                    className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-graffiti-md">
-
-                    <Icon name="Save" size={18} />
-                    <span className="ml-2">
-                        {isSaving ? 'Guardando...' : 'Guardar Configuración'}
+                    // Gradiente vibrante y sombra fuerte
+                    className={`flex-1 font-bold text-white shadow-lg transition-all transform active:scale-95
+                        ${!hasChanges
+                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-white/5'
+                            : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 shadow-blue-500/20 hover:shadow-blue-500/40'
+                        }`}
+                >
+                    <Icon name="Save" size={20} />
+                    <span className="ml-2 uppercase tracking-wide">
+                        {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                     </span>
                 </Button>
 
+                {/* Botón RESTABLECER */}
                 <Button
                     variant="outline"
                     onClick={onReset}
-                    className="flex-1 border-error text-error hover:bg-error hover:text-error-foreground">
-
+                    // Borde rojo sutil y texto rojo que brilla al pasar el mouse
+                    className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500 hover:text-red-300 transition-all font-bold"
+                >
                     <Icon name="RotateCcw" size={18} />
                     <span className="ml-2">Restablecer</span>
                 </Button>
             </div>
 
-            {/* Navigation Actions */}
-            <div className="flex-col sm:flex-row gap-4 hidden">
+            {/* Navigation Actions (Ocultos según tu código original, pero estilizados por si acaso) */}
+            <div className="hidden flex-col sm:flex-row gap-4">
                 <Button
                     variant="ghost"
                     onClick={onBackToHome}
-                    className="flex-1 text-text-secondary hover:text-text-primary hover:bg-surface/50">
-
+                    className="flex-1 text-gray-400 hover:text-white hover:bg-white/5"
+                >
                     <Icon name="Home" size={18} />
                     <span className="ml-2">Volver al Inicio</span>
                 </Button>
-
-                <Button
-                    variant="secondary"
-                    onClick={() => window.location.href = '/player-setup'}
-                    className="flex-1 bg-secondary text-secondary-foreground hover:bg-secondary/90">
-
-                    <Icon name="Users" size={18} />
-                    <span className="ml-2">Configurar Jugadores</span>
-                </Button>
             </div>
 
-            {/* Changes Indicator */}
-            {hasChanges &&
-                <div className="bg-warning/10 border border-warning/20 p-4 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                        <Icon name="AlertCircle" size={18} className="text-warning" />
-                        <span className="text-warning font-medium">
-                            Tienes cambios sin guardar
-                        </span>
+            {/* MENSAJE: CAMBIOS SIN GUARDAR */}
+            {hasChanges && (
+                <div className="bg-yellow-900/20 border border-yellow-500/30 p-4 rounded-xl animate-pulse-slow">
+                    <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-yellow-500/10 rounded-full">
+                            <Icon name="AlertCircle" size={20} className="text-yellow-400" />
+                        </div>
+                        <div>
+                            <span className="text-yellow-200 font-bold block">
+                                Tienes cambios sin guardar
+                            </span>
+                            <p className="text-sm text-yellow-200/70 mt-0.5 leading-tight">
+                                No olvides guardar tu configuración antes de salir.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-sm text-text-secondary mt-1">
-                        No olvides guardar tu configuración antes de iniciar un juego.
-                    </p>
                 </div>
-            }
+            )}
 
-            {/* Success Message */}
-            {!hasChanges && !isSaving &&
-                <div className="bg-success/10 border border-success/20 p-4 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                        <Icon name="CheckCircle" size={18} className="text-success" />
-                        <span className="text-success font-medium">
-                            Configuración guardada correctamente
-                        </span>
+            {/* MENSAJE: ÉXITO / GUARDADO */}
+            {!hasChanges && !isSaving && (
+                <div className="bg-green-900/20 border border-green-500/30 p-4 rounded-xl">
+                    <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-green-500/10 rounded-full">
+                            <Icon name="CheckCircle" size={20} className="text-green-400" />
+                        </div>
+                        <div>
+                            <span className="text-green-200 font-bold block">
+                                Configuración guardada
+                            </span>
+                            <p className="text-sm text-green-200/70 mt-0.5 leading-tight">
+                                Tus preferencias están listas para el próximo juego.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-sm text-text-secondary mt-1">
-                        Tus preferencias están listas para el próximo juego.
-                    </p>
                 </div>
-            }
-        </div>);
-
+            )}
+        </div>
+    );
 };
 
 export default ConfigurationActions;

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import ContextualBackNavigation from '../../components/ui/ContextualBackNavigation';
 import CategoryToggleSection from './components/CategoryToggleSection';
-import ThemeSwitcher from './components/ThemeSwitcher';
+// Se eliminó ThemeSwitcher
 import GameplaySettings from './components/GameplaySettings';
 import ConfigurationActions from './components/ConfigurationActions';
 import Icon from '../../components/AppIcon';
@@ -19,7 +19,7 @@ const GameConfiguration = () => {
         multiplayer: true
     });
 
-    const [theme, setTheme] = useState('dark');
+    // Se eliminó el estado 'theme'
 
     const [gameplaySettings, setGameplaySettings] = useState({
         difficulty: 'medium',
@@ -37,15 +37,10 @@ const GameConfiguration = () => {
     // Load settings from localStorage on mount
     useEffect(() => {
         const savedCategories = localStorage.getItem('kamikazeCategories');
-        const savedTheme = localStorage.getItem('kamikazeTheme');
         const savedGameplay = localStorage.getItem('kamikazeGameplaySettings');
 
         if (savedCategories) {
             setCategories(JSON.parse(savedCategories));
-        }
-
-        if (savedTheme) {
-            setTheme(savedTheme);
         }
 
         if (savedGameplay) {
@@ -55,7 +50,6 @@ const GameConfiguration = () => {
         // Store original settings for comparison
         setOriginalSettings({
             categories: savedCategories ? JSON.parse(savedCategories) : categories,
-            theme: savedTheme || theme,
             gameplay: savedGameplay ? JSON.parse(savedGameplay) : gameplaySettings
         });
     }, []);
@@ -65,25 +59,19 @@ const GameConfiguration = () => {
         if (originalSettings) {
             const currentSettings = {
                 categories,
-                theme,
                 gameplay: gameplaySettings
             };
 
             const hasChanged = JSON.stringify(currentSettings) !== JSON.stringify(originalSettings);
             setHasChanges(hasChanged);
         }
-    }, [categories, theme, gameplaySettings, originalSettings]);
+    }, [categories, gameplaySettings, originalSettings]);
 
     const handleCategoryChange = (categoryId, enabled) => {
         setCategories((prev) => ({
             ...prev,
             [categoryId]: enabled
         }));
-    };
-
-    const handleThemeChange = (newTheme) => {
-        setTheme(newTheme);
-        document.documentElement?.setAttribute('data-theme', newTheme);
     };
 
     const handleGameplaySettingChange = (key, value) => {
@@ -99,12 +87,11 @@ const GameConfiguration = () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             localStorage.setItem('kamikazeCategories', JSON.stringify(categories));
-            localStorage.setItem('kamikazeTheme', theme);
+            // Se eliminó guardado de theme
             localStorage.setItem('kamikazeGameplaySettings', JSON.stringify(gameplaySettings));
 
             setOriginalSettings({
                 categories,
-                theme,
                 gameplay: gameplaySettings
             });
 
@@ -133,14 +120,11 @@ const GameConfiguration = () => {
         };
 
         setCategories(defaultCategories);
-        setTheme('dark');
         setGameplaySettings(defaultGameplay);
 
         localStorage.removeItem('kamikazeCategories');
-        localStorage.removeItem('kamikazeTheme');
+        // Se eliminó borrado de theme
         localStorage.removeItem('kamikazeGameplaySettings');
-
-        document.documentElement?.setAttribute('data-theme', 'dark');
     };
 
     const handleBackToHome = () => {
@@ -153,8 +137,8 @@ const GameConfiguration = () => {
         <div className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden"
             style={{ backgroundImage: `url(${bgImage})` }}>
 
-            {/* ✅ Capa de oscurecimiento */}
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+            {/* Capa de oscurecimiento */}
+            <div className="absolute inset-0 bg-gray-950/90 backdrop-blur-sm"></div>
 
             {/* Header */}
             <Header />
@@ -169,31 +153,28 @@ const GameConfiguration = () => {
 
                     {/* Page Header */}
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full shadow-graffiti-lg mb-4">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full shadow-lg shadow-cyan-500/20 mb-4 animate-pulse-glow">
                             <Icon name="Settings" size={32} className="text-white" />
                         </div>
-                        <h1 className="font-heading text-3xl sm:text-4xl text-text-primary mb-2">
+                        <h1 className="font-heading text-3xl sm:text-4xl text-white mb-2 drop-shadow-md">
                             Configuración
                         </h1>
-                        <p className="text-text-secondary text-lg">
+                        <p className="text-gray-400 text-lg">
                             Personaliza tu experiencia Kamikaze
                         </p>
                     </div>
 
-                    {/* Configuration Summary */}
-                    <div className="bg-surface/50 p-4 rounded-lg border border-border/30 mb-8">
+                    {/* Configuration Summary - TARJETA NEGRA SÓLIDA */}
+                    <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-8 shadow-lg">
                         <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2">
-                                    <Icon name="Target" size={16} className="text-primary" />
-                                    <span className="text-text-secondary">Categorías:</span>
-                                    <span className="font-data text-text-primary">{activeCategoriesCount}/3</span>
+                            <div className="flex flex-wrap gap-4 justify-center sm:justify-start w-full">
+                                {/* Badge de Categorías */}
+                                <div className="flex items-center space-x-2 bg-gray-800/50 px-3 py-1.5 rounded-lg border border-white/5">
+                                    <Icon name="Target" size={16} className="text-cyan-400" />
+                                    <span className="text-gray-400">Categorías:</span>
+                                    <span className="font-bold text-white">{activeCategoriesCount}/3</span>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                    <Icon name="Palette" size={16} className="text-accent" />
-                                    <span className="text-text-secondary">Tema:</span>
-                                    <span className="font-data text-text-primary capitalize">{theme}</span>
-                                </div>
+                                {/* Se eliminó el Badge de Tema */}
                             </div>
                         </div>
                     </div>
@@ -204,9 +185,7 @@ const GameConfiguration = () => {
                             categories={categories}
                             onCategoryChange={handleCategoryChange} />
 
-                        <ThemeSwitcher
-                            currentTheme={theme}
-                            onThemeChange={handleThemeChange} />
+                        {/* Se eliminó el componente ThemeSwitcher */}
 
                         <GameplaySettings
                             settings={gameplaySettings}
