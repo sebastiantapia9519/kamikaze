@@ -183,14 +183,6 @@ const ActiveGameSession = () => {
                 />
             )}
 
-            {/* Minijuego: Agita la Champaña */}
-            {showChampagneShake && (
-                <ChampagneShakeMinigame
-                    onClose={actions.closeChampagne}
-                    currentPlayer={currentPlayer}
-                />
-            )}
-
             {/* Minijuego: Cartas del Destino */}
             {showHighLowCard && (
                 <HighLowCardMinigame

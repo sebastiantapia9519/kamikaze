@@ -25,16 +25,12 @@ const FingerRouletteMinigame = ({ onClose }) => {
 
     // Refs para lógica interna sin re-renderizar
     const timerRef = useRef(null);
-    const availableColorsRef = useRef(new Set(FINGER_COLORS.map((_, i) => i))); // Indices disponibles
+    const availableColorsRef = useRef(new Set(FINGER_COLORS.map((_, i) => i)));
 
     // --- MANEJO DE TOQUES (TOUCH EVENTS) ---
 
-    // Al poner un dedo
     const handleTouchStart = (e) => {
         if (gameState === 'RESULT' || gameState === 'CHOOSING') return;
-
-        // Prevenimos scroll y zoom
-        // e.preventDefault(); // Nota: React a veces se queja si no es pasivo, pero intentaremos manejarlo visualmente.
 
         const newFingers = { ...fingers };
         const changedTouches = e.changedTouches;
@@ -49,7 +45,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
                 availableColorsRef.current.delete(nextColor);
                 colorIndex = nextColor;
             } else {
-                // Fallback si se acaban los colores (recicla al azar)
                 colorIndex = Math.floor(Math.random() * FINGER_COLORS.length);
             }
 
@@ -64,7 +59,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
         checkGameStart(Object.keys(newFingers).length);
     };
 
-    // Al mover un dedo (actualizar posición del círculo)
     const handleTouchMove = (e) => {
         if (gameState === 'RESULT') return;
 
@@ -84,7 +78,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
         setFingers(newFingers);
     };
 
-    // Al quitar un dedo
     const handleTouchEnd = (e) => {
         if (gameState === 'RESULT') return;
 
@@ -96,7 +89,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
             const fingerData = newFingers[touch.identifier];
 
             if (fingerData) {
-                // Liberar color
                 availableColorsRef.current.add(fingerData.colorIndex);
                 delete newFingers[touch.identifier];
             }
@@ -104,7 +96,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
 
         setFingers(newFingers);
 
-        // Si alguien quita el dedo durante la cuenta o elección, cancelamos
         if (gameState === 'COUNTDOWN' || gameState === 'CHOOSING') {
             cancelGame();
         }
@@ -113,7 +104,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
     // --- LÓGICA DEL JUEGO ---
 
     const checkGameStart = (fingerCount) => {
-        // Necesitamos al menos 2 dedos para jugar
         if (fingerCount >= 2 && gameState === 'WAITING') {
             if (!timerRef.current) {
                 startCountdown();
@@ -150,7 +140,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
     const chooseLoser = () => {
         setGameState('CHOOSING');
 
-        // Simular ruleta (efecto visual rápido)
         setTimeout(() => {
             const touchIds = Object.keys(fingers);
             if (touchIds.length === 0) {
@@ -158,7 +147,6 @@ const FingerRouletteMinigame = ({ onClose }) => {
                 return;
             }
 
-            // Elegir aleatoriamente UN perdedor
             const randomIndex = Math.floor(Math.random() * touchIds.length);
             const selectedLoserId = touchIds[randomIndex];
             const loserFinger = fingers[selectedLoserId];
@@ -168,20 +156,21 @@ const FingerRouletteMinigame = ({ onClose }) => {
             setLoserColorName(colorName);
             setGameState('RESULT');
 
-        }, 1500); // 1.5 segundos de tensión
+        }, 1500);
     };
 
     // --- RENDERIZADO ---
     return (
         <div
-            className="fixed inset-0 z-50 bg-gray-900 touch-none select-none overflow-hidden"
+            // CORRECCIÓN: Usamos h-[100dvh] para evitar problemas con la barra del navegador
+            className="fixed inset-0 z-50 bg-gray-900 touch-none select-none overflow-hidden h-[100dvh] w-screen"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchEnd}
         >
             {/* INSTRUCCIONES DE FONDO */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center select-none">
                 {gameState === 'WAITING' && (
                     <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 2 }}>
                         <Icon name="Hand" size={64} className="text-gray-600 mb-4 mx-auto" />
@@ -219,19 +208,20 @@ const FingerRouletteMinigame = ({ onClose }) => {
                         key={id}
                         initial={{ scale: 0 }}
                         animate={{
-                            scale: isLoser ? 1.5 : (isWinner ? 0 : 1), // El perdedor crece, los otros desaparecen
+                            scale: isLoser ? 1.5 : (isWinner ? 0 : 1),
                             opacity: isWinner ? 0 : 1,
-                            x: finger.x - 50, // Centrar círculo (100px ancho / 2)
+                            // Framer Motion usa transform, así que x/y funcionan bien SI el origen es correcto
+                            x: finger.x - 50,
                             y: finger.y - 50
                         }}
-                        className="absolute w-[100px] h-[100px] rounded-full flex items-center justify-center pointer-events-none"
+                        // CORRECCIÓN IMPORTANTE: top-0 left-0 para forzar el origen en la esquina (0,0)
+                        className="absolute top-0 left-0 w-[100px] h-[100px] rounded-full flex items-center justify-center pointer-events-none"
                     >
-                        {/* Anillo exterior animado */}
+                        {/* Anillo exterior */}
                         <div className={`absolute inset-0 rounded-full border-4 ${colorData.tw.replace('bg-', 'border-')} opacity-50 animate-ping`} />
 
                         {/* Círculo sólido interior */}
                         <div className={`w-16 h-16 rounded-full ${colorData.tw} ${colorData.shadow} shadow-[0_0_30px_rgba(0,0,0,0.5)] border-2 border-white flex items-center justify-center`}>
-                            {/* Icono de calavera si pierde */}
                             {isLoser && <Icon name="Skull" className="text-white animate-bounce" size={24} />}
                         </div>
                     </motion.div>
@@ -244,7 +234,7 @@ const FingerRouletteMinigame = ({ onClose }) => {
                     <motion.div
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="absolute bottom-10 left-4 right-4 bg-gray-800/90 backdrop-blur-md rounded-2xl border border-white/10 p-6 text-center pointer-events-auto"
+                        className="absolute bottom-10 left-4 right-4 bg-gray-800/90 backdrop-blur-md rounded-2xl border border-white/10 p-6 text-center pointer-events-auto z-[60]"
                     >
                         <h2 className="text-3xl font-bold text-white mb-2">
                             ¡Perdió el <span className={`uppercase font-black ${fingers[loserId] ? FINGER_COLORS[fingers[loserId].colorIndex].tw.replace('bg-', 'text-') : 'text-white'}`}>{loserColorName}</span>!
@@ -259,10 +249,10 @@ const FingerRouletteMinigame = ({ onClose }) => {
                 )}
             </AnimatePresence>
 
-            {/* Botón de salida de emergencia (siempre visible arriba) */}
+            {/* Botón de salida */}
             <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-gray-800/50 rounded-full text-gray-400 hover:text-white pointer-events-auto z-50"
+                className="absolute top-4 right-4 p-2 bg-gray-800/50 rounded-full text-gray-400 hover:text-white pointer-events-auto z-[60]"
             >
                 <Icon name="X" size={24} />
             </button>

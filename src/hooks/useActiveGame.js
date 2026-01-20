@@ -7,7 +7,6 @@ import chaosEventsData from '../data/chaosEvents.json';
 const gameLengthMap = { quick: 15, standard: 30, extended: 45 };
 
 // --- ALGORITMO DE BARAJADO PROFESIONAL (Fisher-Yates) ---
-// Esto evita que se formen "grupos" de cartas repetidas
 const shuffleArray = (array) => {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
@@ -18,7 +17,7 @@ const shuffleArray = (array) => {
     return array;
 };
 
-// Pre-procesamiento de retos (Solo se hace una vez al cargar la app)
+// Pre-procesamiento de retos
 const challengesWithIds = (() => {
     let idCounter = 1;
     const all = [];
@@ -45,7 +44,7 @@ const getNextPlayerIndex = (currentIndex, order, playerCount, turnDirection) => 
 // --- REDUCER ---
 const initialState = {
     players: [],
-    shuffledChallenges: [], // Aquí vivirán los retos ya barajados
+    shuffledChallenges: [],
     currentChallenge: 1,
     currentPlayerIndex: 0,
     gameCompleted: false,
@@ -54,13 +53,13 @@ const initialState = {
     activeChaosEvent: null,
     turnDirection: 1,
     isLoading: true,
+    // Estados de visibilidad de minijuegos
     showRaceMinigame: false,
     showBombMinigame: false,
     showSniperMinigame: false,
     showFingerRoulette: false,
     showTapBattle: false,
-    showChampagneMinigame: false, // <--- NUEVO
-    showCardsMinigame: false,     // <--- NUEVO
+    showCardsMinigame: false,
 };
 
 function gameReducer(state, action) {
@@ -82,18 +81,16 @@ function gameReducer(state, action) {
                 return { ...state, gameCompleted: true, gameDuration: Math.floor((Date.now() - state.startTime) / 1000) };
             }
 
-            // Lógica Caos
+            // Lógica de Eventos de Caos (cada 7 turnos)
             if (nextNum % 7 === 0) {
                 const event = chaosEventsData[Math.floor(Math.random() * chaosEventsData.length)];
 
-                // Detectar tipos de minijuegos
+                // Detectar tipos de minijuegos y activar el estado correspondiente
                 if (event.type === 'MINIGAME_RACE') return { ...state, showRaceMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BOMB') return { ...state, showBombMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_SNIPER') return { ...state, showSniperMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_ROULETTE') return { ...state, showFingerRoulette: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BATTLE') return { ...state, showTapBattle: true, currentChallenge: nextNum };
-                // --- NUEVOS CASOS ---
-                if (event.type === 'MINIGAME_CHAMPAGNE') return { ...state, showChampagneMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_CARDS') return { ...state, showCardsMinigame: true, currentChallenge: nextNum };
 
                 return { ...state, activeChaosEvent: event, currentChallenge: nextNum };
@@ -103,6 +100,7 @@ function gameReducer(state, action) {
             return { ...state, currentChallenge: nextNum, currentPlayerIndex: nextPlayer };
         }
 
+        // --- CIERRE DE MINIJUEGOS ---
         case 'CLOSE_MINIGAME': {
             const { settings } = action.payload;
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
@@ -128,12 +126,6 @@ function gameReducer(state, action) {
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
             return { ...state, showTapBattle: false, currentPlayerIndex: nextPlayer };
         }
-        // --- NUEVOS CASOS DE CIERRE ---
-        case 'CLOSE_CHAMPAGNE': {
-            const { settings } = action.payload;
-            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
-            return { ...state, showChampagneMinigame: false, currentPlayerIndex: nextPlayer };
-        }
         case 'CLOSE_CARDS': {
             const { settings } = action.payload;
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
@@ -150,7 +142,6 @@ function gameReducer(state, action) {
         case 'END_GAME':
             return { ...state, gameCompleted: true, gameDuration: Math.floor((Date.now() - state.startTime) / 1000) };
         case 'RESTART':
-            // Al reiniciar, barajamos de nuevo todo
             const reshuffled = shuffleArray([...challengesWithIds]);
             return { ...initialState, players: state.players, shuffledChallenges: reshuffled, startTime: Date.now(), isLoading: false };
         case 'SET_COMPLETED':
@@ -173,7 +164,7 @@ export const useActiveGame = (locationState) => {
     const [state, dispatch] = useReducer(gameReducer, initialState);
     const totalChallenges = useMemo(() => gameLengthMap[settings.gameLength] || 30, [settings.gameLength]);
 
-    // 1. INICIALIZACIÓN INTELIGENTE (FILTRO DE REPETIDOS)
+    // INICIALIZACIÓN
     useEffect(() => {
         const pState = locationState?.players || [];
         const pStorage = JSON.parse(localStorage.getItem('kamikazeGamePlayers') || '[]');
@@ -184,30 +175,22 @@ export const useActiveGame = (locationState) => {
             return;
         }
 
-        // Cargar historial de IDs usados (Persistencia Global)
+        // Historial de IDs usados
         const globalUsedIds = new Set(JSON.parse(localStorage.getItem('kamikazeGlobalUsedChallenges') || '[]'));
-
-        // Filtrar: Solo queremos los que NO se han usado
         let available = challengesWithIds.filter(c => !globalUsedIds.has(c.id));
 
-        // CRITERIO DE RECICLAJE:
-        // Si no nos alcanzan las cartas para ESTA partida (con un margen de seguridad de 5),
-        // borramos el historial y reseteamos el mazo.
+        // Reciclaje de baraja si se acaban
         if (available.length < (totalChallenges + 5)) {
             console.log("♻️ Reciclando baraja de retos...");
             available = challengesWithIds;
             localStorage.removeItem('kamikazeGlobalUsedChallenges');
-        } else {
-            console.log(`✅ Usando baraja filtrada. Quedan ${available.length} retos nuevos.`);
         }
 
-        // Barajado Fuerte
         const shuffled = shuffleArray([...available]);
-
         dispatch({ type: 'INITIALIZE', payload: { players: currentPlayers, shuffledChallenges: shuffled } });
     }, [locationState, navigate, totalChallenges]);
 
-    // Helper para obtener datos del reto actual
+    // Obtener datos del reto actual
     const getCurrentChallengeData = useCallback(() => {
         if (!state.shuffledChallenges.length) return null;
         const idx = (state.currentChallenge - 1) % state.shuffledChallenges.length;
@@ -221,7 +204,6 @@ export const useActiveGame = (locationState) => {
             let assigned = [];
             if (final.players === 'all') assigned = state.players.map(p => p.name);
             else {
-                // Barajar jugadores también para que no siempre sea el mismo
                 const shuffledPlayers = shuffleArray([...state.players]);
                 assigned = shuffledPlayers.slice(0, typeof final.players === 'number' ? final.players : 2).map(p => p.name);
             }
@@ -230,13 +212,11 @@ export const useActiveGame = (locationState) => {
         return final;
     }, [state.shuffledChallenges, state.currentChallenge, state.players]);
 
-    // 2. GUARDADO INMEDIATO (QUEMA DE CARTAS)
-    // Cada vez que cambia el reto actual, lo marcamos como "usado" en localStorage
+    // Guardado inmediato (Quema de cartas)
     useEffect(() => {
         const currentData = getCurrentChallengeData();
         if (currentData && currentData.id) {
             const usedList = JSON.parse(localStorage.getItem('kamikazeGlobalUsedChallenges') || '[]');
-            // Solo agregar si no existe ya (para evitar duplicados en el array)
             if (!usedList.includes(currentData.id)) {
                 usedList.push(currentData.id);
                 localStorage.setItem('kamikazeGlobalUsedChallenges', JSON.stringify(usedList));
@@ -250,10 +230,10 @@ export const useActiveGame = (locationState) => {
         closeBomb: () => dispatch({ type: 'CLOSE_BOMB', payload: { settings } }),
         closeSniper: () => dispatch({ type: 'CLOSE_SNIPER', payload: { settings } }),
         closeRoulette: () => dispatch({ type: 'CLOSE_ROULETTE', payload: { settings } }),
-        closeChampagne: () => dispatch({ type: 'CLOSE_CHAMPAGNE', payload: { settings } }),
-        closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
         closeBattle: () => dispatch({ type: 'CLOSE_BATTLE', payload: { settings } }),
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
+        closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
+
         endGame: () => dispatch({ type: 'END_GAME' }),
         restartGame: () => {
             const reshuffled = shuffleArray([...challengesWithIds]);

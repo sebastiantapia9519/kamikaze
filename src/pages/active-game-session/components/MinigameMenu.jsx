@@ -18,15 +18,12 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
 
     if (!isOpen) return null;
 
-    // --- AQUÍ ESTABA EL DETALLE: AGREGAMOS LOS NUEVOS JUEGOS ---
     const minigames = [
         { id: 'race', label: 'Carrera de Ajolotes', icon: 'Trophy', color: 'text-pink-400', border: 'border-pink-500/50' },
         { id: 'sniper', label: 'Francotirador', icon: 'Crosshair', color: 'text-red-400', border: 'border-red-500/50' },
         { id: 'roulette', label: 'Ruleta Dactilar', icon: 'Hand', color: 'text-purple-400', border: 'border-purple-500/50' },
         { id: 'battle', label: 'Batalla de Pulgares', icon: 'Zap', color: 'text-yellow-400', border: 'border-yellow-500/50' },
         { id: 'bomb', label: '¡Córtale! (Bomba)', icon: 'Timer', color: 'text-cyan-400', border: 'border-cyan-500/50' },
-        // 👇 NUEVOS
-        { id: 'champagne', label: 'Agita la Champaña', icon: 'Activity', color: 'text-emerald-400', border: 'border-emerald-500/50' },
         { id: 'cards', label: 'Cartas del Destino', icon: 'Layers', color: 'text-blue-400', border: 'border-blue-500/50' },
     ];
 
