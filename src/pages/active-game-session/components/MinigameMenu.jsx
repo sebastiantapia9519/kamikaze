@@ -5,12 +5,12 @@ import Button from '../../../components/ui/Button';
 
 // --- LISTA DE ICONOS DE BEBIDA ---
 const DRINK_ICONS = [
-    { name: 'Beer', color: 'text-yellow-400', bg: 'bg-yellow-500/10' },   // Cheve
-    { name: 'Wine', color: 'text-red-400', bg: 'bg-red-500/10' },         // Vino
-    { name: 'Martini', color: 'text-emerald-400', bg: 'bg-emerald-500/10' }, // Coctel
-    { name: 'Flame', color: 'text-orange-500', bg: 'bg-orange-500/10' },   // Shot fuego
-    { name: 'Zap', color: 'text-blue-400', bg: 'bg-blue-500/10' },         // Energía
-    { name: 'Skull', color: 'text-gray-400', bg: 'bg-gray-500/10' }        // Muerte súbita
+    { name: 'Beer', color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+    { name: 'Wine', color: 'text-red-400', bg: 'bg-red-500/10' },
+    { name: 'Martini', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+    { name: 'Flame', color: 'text-orange-500', bg: 'bg-orange-500/10' },
+    { name: 'Zap', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+    { name: 'Skull', color: 'text-gray-400', bg: 'bg-gray-500/10' }
 ];
 
 const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers }) => {
@@ -24,7 +24,10 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
         { id: 'roulette', label: 'Ruleta Dactilar', icon: 'Hand', color: 'text-purple-400', border: 'border-purple-500/50' },
         { id: 'battle', label: 'Batalla de Pulgares', icon: 'Zap', color: 'text-yellow-400', border: 'border-yellow-500/50' },
         { id: 'bomb', label: '¡Córtale! (Bomba)', icon: 'Timer', color: 'text-cyan-400', border: 'border-cyan-500/50' },
+
+        // --- JUEGOS NUEVOS ---
         { id: 'cards', label: 'Cartas del Destino', icon: 'Layers', color: 'text-blue-400', border: 'border-blue-500/50' },
+        { id: 'sequence', label: 'Secuencia Tóxica', icon: 'Activity', color: 'text-fuchsia-400', border: 'border-fuchsia-500/50' },
     ];
 
     // --- LOGICA DE JUGADORES ---

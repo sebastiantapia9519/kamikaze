@@ -28,8 +28,9 @@ import TimeBombMinigame from './components/TimeBombMinigame';
 import BlindSniperMinigame from './components/BlindSniperMinigame';
 import FingerRouletteMinigame from './components/FingerRouletteMinigame';
 import TapBattleMinigame from './components/TapBattleMinigame';
-import ChampagneShakeMinigame from './components/ChampagneShakeMinigame';
 import HighLowCardMinigame from './components/HighLowCardMinigame';
+import ToxicSequenceMinigame from './components/ToxicSequenceMinigame';
+import TrafficLightMinigame from './components/TrafficLightMinigame';
 
 // --- ASSETS ---
 import bgImage from '../../assets/images/graffiti-bg.png';
@@ -58,10 +59,11 @@ const ActiveGameSession = () => {
         showSniperMinigame,
         showFingerRoulette,
         showTapBattle,
-        showChampagneShake,
         showHighLowCard,
+        showSequenceMinigame,
         activeChaosEvent,
         currentChallenge,
+        showTrafficMinigame,
         players,
         gameDuration
     } = state;
@@ -187,6 +189,19 @@ const ActiveGameSession = () => {
             {showHighLowCard && (
                 <HighLowCardMinigame
                     onClose={actions.closeCards}
+                    currentPlayer={currentPlayer}
+                />
+            )}
+
+            {/* Minijuego: Semáforo Borracho */}
+            {showTrafficLightMinigame && (
+                <DrunkenTrafficLightMinigame onClose={actions.closeTrafficLight} />
+            )}
+
+            {/* Minijuego: Secuencia Tóxica */}
+            {showSequenceMinigame && (
+                <ToxicSequenceMinigame
+                    onClose={actions.closeSequence}
                     currentPlayer={currentPlayer}
                 />
             )}

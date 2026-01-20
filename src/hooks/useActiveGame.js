@@ -60,6 +60,7 @@ const initialState = {
     showFingerRoulette: false,
     showTapBattle: false,
     showCardsMinigame: false,
+    showSequenceMinigame: false, // ✅ Ya estaba aquí
 };
 
 function gameReducer(state, action) {
@@ -81,8 +82,8 @@ function gameReducer(state, action) {
                 return { ...state, gameCompleted: true, gameDuration: Math.floor((Date.now() - state.startTime) / 1000) };
             }
 
-            // Lógica de Eventos de Caos (cada 7 turnos)
-            if (nextNum % 7 === 0) {
+            // Lógica de Eventos de Caos (cada 5 turnos según tu código)
+            if (nextNum % 5 === 0) {
                 const event = chaosEventsData[Math.floor(Math.random() * chaosEventsData.length)];
 
                 // Detectar tipos de minijuegos y activar el estado correspondiente
@@ -92,6 +93,9 @@ function gameReducer(state, action) {
                 if (event.type === 'MINIGAME_ROULETTE') return { ...state, showFingerRoulette: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BATTLE') return { ...state, showTapBattle: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_CARDS') return { ...state, showCardsMinigame: true, currentChallenge: nextNum };
+
+                // 👇 FALTABA ESTE AQUÍ:
+                if (event.type === 'MINIGAME_SEQUENCE') return { ...state, showSequenceMinigame: true, currentChallenge: nextNum };
 
                 return { ...state, activeChaosEvent: event, currentChallenge: nextNum };
             }
@@ -130,6 +134,11 @@ function gameReducer(state, action) {
             const { settings } = action.payload;
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
             return { ...state, showCardsMinigame: false, currentPlayerIndex: nextPlayer };
+        }
+        case 'CLOSE_SEQUENCE': {
+            const { settings } = action.payload;
+            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
+            return { ...state, showSequenceMinigame: false, currentPlayerIndex: nextPlayer };
         }
 
         case 'CLOSE_CHAOS': {
@@ -179,7 +188,7 @@ export const useActiveGame = (locationState) => {
         const globalUsedIds = new Set(JSON.parse(localStorage.getItem('kamikazeGlobalUsedChallenges') || '[]'));
         let available = challengesWithIds.filter(c => !globalUsedIds.has(c.id));
 
-        // Reciclaje de baraja si se acaban
+        // Reciclaje
         if (available.length < (totalChallenges + 5)) {
             console.log("♻️ Reciclando baraja de retos...");
             available = challengesWithIds;
@@ -199,7 +208,7 @@ export const useActiveGame = (locationState) => {
 
         let final = { ...challenge };
 
-        // Asignación de jugadores en retos multiplayer
+        // Asignación de jugadores
         if (final.category === 'Multiplayer') {
             let assigned = [];
             if (final.players === 'all') assigned = state.players.map(p => p.name);
@@ -212,7 +221,7 @@ export const useActiveGame = (locationState) => {
         return final;
     }, [state.shuffledChallenges, state.currentChallenge, state.players]);
 
-    // Guardado inmediato (Quema de cartas)
+    // Guardado inmediato
     useEffect(() => {
         const currentData = getCurrentChallengeData();
         if (currentData && currentData.id) {
@@ -233,6 +242,9 @@ export const useActiveGame = (locationState) => {
         closeBattle: () => dispatch({ type: 'CLOSE_BATTLE', payload: { settings } }),
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
         closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
+
+        // 👇 FALTABA ESTE AQUÍ TAMBIÉN:
+        closeSequence: () => dispatch({ type: 'CLOSE_SEQUENCE', payload: { settings } }),
 
         endGame: () => dispatch({ type: 'END_GAME' }),
         restartGame: () => {
