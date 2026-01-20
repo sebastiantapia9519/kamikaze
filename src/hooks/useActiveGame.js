@@ -60,7 +60,8 @@ const initialState = {
     showFingerRoulette: false,
     showTapBattle: false,
     showCardsMinigame: false,
-    showSequenceMinigame: false, // ✅ Ya estaba aquí
+    showSequenceMinigame: false,
+    showTrafficMinigame: false,
 };
 
 function gameReducer(state, action) {
@@ -93,8 +94,7 @@ function gameReducer(state, action) {
                 if (event.type === 'MINIGAME_ROULETTE') return { ...state, showFingerRoulette: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BATTLE') return { ...state, showTapBattle: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_CARDS') return { ...state, showCardsMinigame: true, currentChallenge: nextNum };
-
-                // 👇 FALTABA ESTE AQUÍ:
+                if (event.type === 'MINIGAME_TRAFFIC') return { ...state, showTrafficMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_SEQUENCE') return { ...state, showSequenceMinigame: true, currentChallenge: nextNum };
 
                 return { ...state, activeChaosEvent: event, currentChallenge: nextNum };
@@ -139,6 +139,11 @@ function gameReducer(state, action) {
             const { settings } = action.payload;
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
             return { ...state, showSequenceMinigame: false, currentPlayerIndex: nextPlayer };
+        }
+        case 'CLOSE_TRAFFIC': {
+            const { settings } = action.payload;
+            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
+            return { ...state, showTrafficMinigame: false, currentPlayerIndex: nextPlayer };
         }
 
         case 'CLOSE_CHAOS': {
@@ -242,6 +247,7 @@ export const useActiveGame = (locationState) => {
         closeBattle: () => dispatch({ type: 'CLOSE_BATTLE', payload: { settings } }),
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
         closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
+        closeTraffic: () => dispatch({ type: 'CLOSE_TRAFFIC', payload: { settings } }),
 
         // 👇 FALTABA ESTE AQUÍ TAMBIÉN:
         closeSequence: () => dispatch({ type: 'CLOSE_SEQUENCE', payload: { settings } }),

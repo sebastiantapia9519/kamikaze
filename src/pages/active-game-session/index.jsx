@@ -30,7 +30,7 @@ import FingerRouletteMinigame from './components/FingerRouletteMinigame';
 import TapBattleMinigame from './components/TapBattleMinigame';
 import HighLowCardMinigame from './components/HighLowCardMinigame';
 import ToxicSequenceMinigame from './components/ToxicSequenceMinigame';
-import TrafficLightMinigame from './components/TrafficLightMinigame';
+import DrunkenTrafficLightMinigame from './components/DrunkenTrafficLightMinigame';
 
 // --- ASSETS ---
 import bgImage from '../../assets/images/graffiti-bg.png';

@@ -28,6 +28,7 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
         // --- JUEGOS NUEVOS ---
         { id: 'cards', label: 'Cartas del Destino', icon: 'Layers', color: 'text-blue-400', border: 'border-blue-500/50' },
         { id: 'sequence', label: 'Secuencia Tóxica', icon: 'Activity', color: 'text-fuchsia-400', border: 'border-fuchsia-500/50' },
+        { id: 'traffic', label: 'Semáforo Borracho', icon: 'Shuffle', color: 'text-orange-400', border: 'border-orange-500/50' },
     ];
 
     // --- LOGICA DE JUGADORES ---
