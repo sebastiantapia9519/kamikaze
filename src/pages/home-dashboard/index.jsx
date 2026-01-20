@@ -20,8 +20,12 @@ import TimeBombMinigame from '../active-game-session/components/TimeBombMinigame
 import BlindSniperMinigame from '../active-game-session/components/BlindSniperMinigame';
 import FingerRouletteMinigame from '../active-game-session/components/FingerRouletteMinigame';
 import TapBattleMinigame from '../active-game-session/components/TapBattleMinigame';
-import ChampagneShakeMinigame from '../active-game-session/components/ChampagneShakeMinigame';
+// (Champaña eliminada)
 import HighLowCardMinigame from '../active-game-session/components/HighLowCardMinigame';
+
+// 👇 IMPORTAMOS LOS NUEVOS JUEGOS
+import ToxicSequenceMinigame from '../active-game-session/components/ToxicSequenceMinigame';
+import DrunkenTrafficLightMinigame from '../active-game-session/components/DrunkenTrafficLightMinigame';
 
 // --- LISTA DE ICONOS DE BEBIDA (Igual que en MinigameMenu) ---
 const DRINK_ICONS = [
@@ -35,18 +39,15 @@ const DRINK_ICONS = [
 
 // ==========================================
 // 1. COMPONENTE INTERNO: QuickPlayerSetup 
-// (El formulario emergente para el modo Arcade)
 // ==========================================
 const QuickPlayerSetup = ({ onClose, onStart }) => {
-    // Inicializamos con iconIdx en lugar de gender
     const [players, setPlayers] = useState([
-        { id: 1, name: '', iconIdx: 0 }, // Cerveza por defecto
-        { id: 2, name: '', iconIdx: 1 }  // Vino por defecto
+        { id: 1, name: '', iconIdx: 0 },
+        { id: 2, name: '', iconIdx: 1 }
     ]);
 
     const addPlayer = () => {
         const newId = players.length + 1;
-        // Asignamos un icono rotativo basado en el número de jugador
         const nextIconIdx = players.length % DRINK_ICONS.length;
         setPlayers([...players, { id: newId, name: '', iconIdx: nextIconIdx }]);
     };
@@ -59,7 +60,6 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
         setPlayers(players.map(p => p.id === id ? { ...p, [field]: value } : p));
     };
 
-    // Función para rotar el icono al hacer clic
     const cycleIcon = (id, currentIdx) => {
         const nextIdx = (currentIdx + 1) % DRINK_ICONS.length;
         updatePlayer(id, 'iconIdx', nextIdx);
@@ -80,7 +80,6 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
                 animate={{ scale: 1, opacity: 1 }}
                 className="bg-gray-900 w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
             >
-                {/* Header Modal */}
                 <div className="p-4 border-b border-white/10 bg-gray-800/50 flex justify-between items-center">
                     <h3 className="text-xl font-bold text-white flex items-center gap-2">
                         <Icon name="Users" className="text-cyan-400" />
@@ -91,12 +90,9 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
                     </button>
                 </div>
 
-                {/* Formulario */}
                 <div className="p-4 overflow-y-auto space-y-3 flex-1 custom-scrollbar">
                     {players.map((player, index) => {
-                        // Obtenemos los datos del icono actual
                         const iconData = DRINK_ICONS[player.iconIdx] || DRINK_ICONS[0];
-
                         return (
                             <div key={player.id} className="flex items-center gap-2 bg-gray-800/30 p-2 rounded-xl border border-white/5">
                                 <span className="text-gray-500 font-bold w-6 text-center">{index + 1}</span>
@@ -107,8 +103,6 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
                                     onChange={(e) => updatePlayer(player.id, 'name', e.target.value)}
                                     className="flex-1 bg-transparent border-none text-white placeholder-gray-600 focus:ring-0 text-sm font-medium focus:outline-none"
                                 />
-
-                                {/* BOTÓN DE ICONO (NUEVO) */}
                                 <button
                                     onClick={() => cycleIcon(player.id, player.iconIdx)}
                                     className={`p-2 rounded-lg transition-colors ${iconData.bg} ${iconData.color} hover:brightness-125`}
@@ -116,7 +110,6 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
                                 >
                                     <Icon name={iconData.name} size={18} />
                                 </button>
-
                                 {players.length > 2 && (
                                     <button onClick={() => removePlayer(player.id)} className="text-gray-600 hover:text-red-400 p-2">
                                         <Icon name="Trash2" size={18} />
@@ -130,7 +123,6 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
                     </Button>
                 </div>
 
-                {/* Footer */}
                 <div className="p-4 border-t border-white/10 bg-gray-800/50">
                     <Button
                         variant="default"
@@ -145,6 +137,7 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
         </div>
     );
 };
+
 // ==========================================
 // 2. COMPONENTE PRINCIPAL: HomeDashboard
 // ==========================================
@@ -152,12 +145,10 @@ const HomeDashboard = () => {
     const navigate = useNavigate();
 
     // --- ESTADOS ---
-    // 'home' | 'setup' | 'menu' | 'playing'
     const [viewState, setViewState] = useState('home');
     const [activeMinigame, setActiveMinigame] = useState(null);
     const [quickPlayers, setQuickPlayers] = useState([]);
 
-    // --- EFECTOS ---
     useEffect(() => {
         const disclaimerAccepted = localStorage.getItem('kamikazeDisclaimerAccepted');
         if (!disclaimerAccepted) {
@@ -167,7 +158,6 @@ const HomeDashboard = () => {
         document.title = 'Kamikaze! - Juego de Beber';
     }, [navigate]);
 
-    // --- LÓGICA DE NAVEGACIÓN ---
     const menuOptions = [
         {
             id: 'play',
@@ -187,7 +177,6 @@ const HomeDashboard = () => {
             color: 'text-pink-400',
             bg: 'bg-pink-500/10',
             border: 'border-pink-500/20',
-            // Lógica inteligente: Si ya hay jugadores, va al menú. Si no, pide nombres.
             action: () => quickPlayers.length > 0 ? setViewState('menu') : setViewState('setup')
         },
         {
@@ -235,8 +224,6 @@ const HomeDashboard = () => {
 
             <PartyAtmosphere />
 
-            {/* --- CONTENIDO PRINCIPAL DEL DASHBOARD --- */}
-            {/* Usamos AnimatePresence para desmontar esto cuando viewState cambie */}
             <AnimatePresence mode="wait">
                 {viewState === 'home' && (
                     <motion.div
@@ -249,10 +236,7 @@ const HomeDashboard = () => {
                     >
                         <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
                             <div className="max-w-2xl mx-auto">
-
                                 <WelcomeHero />
-
-                                {/* GRID INTERACTIVO */}
                                 <div className="grid grid-cols-1 gap-4 mb-8">
                                     {menuOptions.map((option) => (
                                         <button
@@ -261,7 +245,6 @@ const HomeDashboard = () => {
                                             className={`relative group overflow-hidden p-6 rounded-2xl border transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl text-left bg-gray-900 ${option.border}`}
                                         >
                                             <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${option.bg.replace('/10', '/30')}`} />
-
                                             <div className="flex items-center space-x-4 relative z-10">
                                                 <div className={`p-4 rounded-xl ${option.bg} ${option.color} group-hover:scale-110 transition-transform duration-300`}>
                                                     <Icon name={option.icon} size={32} />
@@ -281,11 +264,9 @@ const HomeDashboard = () => {
                                         </button>
                                     ))}
                                 </div>
-
                                 <GameStatsPreview />
                             </div>
                         </main>
-
                         <div className="h-20"></div>
                         <ResponsibilityReminder />
                     </motion.div>
@@ -294,12 +275,10 @@ const HomeDashboard = () => {
 
             {/* --- CAPAS DE MINIJUEGOS Y MENÚS --- */}
 
-            {/* 1. Setup Rápido */}
             {viewState === 'setup' && (
                 <QuickPlayerSetup onClose={closeAll} onStart={handleSetupComplete} />
             )}
 
-            {/* 2. Menú de Selección */}
             <MinigameMenu
                 isOpen={viewState === 'menu'}
                 onClose={closeAll}
@@ -308,7 +287,6 @@ const HomeDashboard = () => {
                 onUpdatePlayers={setQuickPlayers}
             />
 
-            {/* 3. Minijuegos Activos */}
             {viewState === 'playing' && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95">
                     {activeMinigame === 'race' && <AxolotlRaceMinigame players={quickPlayers} onClose={() => setViewState('menu')} />}
@@ -316,8 +294,11 @@ const HomeDashboard = () => {
                     {activeMinigame === 'sniper' && <BlindSniperMinigame currentPlayer={quickPlayers[0]} onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'roulette' && <FingerRouletteMinigame onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'battle' && <TapBattleMinigame players={quickPlayers} onClose={() => setViewState('menu')} />}
-                    {activeMinigame === 'champagne' && <ChampagneShakeMinigame onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'cards' && <HighLowCardMinigame onClose={() => setViewState('menu')} />}
+
+                    {/* 👇 AQUÍ ESTÁN LOS NUEVOS JUEGOS RENDERIZADOS */}
+                    {activeMinigame === 'sequence' && <ToxicSequenceMinigame onClose={() => setViewState('menu')} />}
+                    {activeMinigame === 'traffic' && <DrunkenTrafficLightMinigame onClose={() => setViewState('menu')} />}
                 </div>
             )}
         </div>
