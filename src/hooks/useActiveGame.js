@@ -59,6 +59,8 @@ const initialState = {
     showSniperMinigame: false,
     showFingerRoulette: false,
     showTapBattle: false,
+    showChampagneMinigame: false, // <--- NUEVO
+    showCardsMinigame: false,     // <--- NUEVO
 };
 
 function gameReducer(state, action) {
@@ -84,11 +86,15 @@ function gameReducer(state, action) {
             if (nextNum % 7 === 0) {
                 const event = chaosEventsData[Math.floor(Math.random() * chaosEventsData.length)];
 
+                // Detectar tipos de minijuegos
                 if (event.type === 'MINIGAME_RACE') return { ...state, showRaceMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BOMB') return { ...state, showBombMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_SNIPER') return { ...state, showSniperMinigame: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_ROULETTE') return { ...state, showFingerRoulette: true, currentChallenge: nextNum };
                 if (event.type === 'MINIGAME_BATTLE') return { ...state, showTapBattle: true, currentChallenge: nextNum };
+                // --- NUEVOS CASOS ---
+                if (event.type === 'MINIGAME_CHAMPAGNE') return { ...state, showChampagneMinigame: true, currentChallenge: nextNum };
+                if (event.type === 'MINIGAME_CARDS') return { ...state, showCardsMinigame: true, currentChallenge: nextNum };
 
                 return { ...state, activeChaosEvent: event, currentChallenge: nextNum };
             }
@@ -122,6 +128,18 @@ function gameReducer(state, action) {
             const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
             return { ...state, showTapBattle: false, currentPlayerIndex: nextPlayer };
         }
+        // --- NUEVOS CASOS DE CIERRE ---
+        case 'CLOSE_CHAMPAGNE': {
+            const { settings } = action.payload;
+            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
+            return { ...state, showChampagneMinigame: false, currentPlayerIndex: nextPlayer };
+        }
+        case 'CLOSE_CARDS': {
+            const { settings } = action.payload;
+            const nextPlayer = getNextPlayerIndex(state.currentPlayerIndex, settings.turnOrder, state.players.length, state.turnDirection);
+            return { ...state, showCardsMinigame: false, currentPlayerIndex: nextPlayer };
+        }
+
         case 'CLOSE_CHAOS': {
             const { settings } = action.payload;
             let dir = state.turnDirection;
@@ -232,6 +250,8 @@ export const useActiveGame = (locationState) => {
         closeBomb: () => dispatch({ type: 'CLOSE_BOMB', payload: { settings } }),
         closeSniper: () => dispatch({ type: 'CLOSE_SNIPER', payload: { settings } }),
         closeRoulette: () => dispatch({ type: 'CLOSE_ROULETTE', payload: { settings } }),
+        closeChampagne: () => dispatch({ type: 'CLOSE_CHAMPAGNE', payload: { settings } }),
+        closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
         closeBattle: () => dispatch({ type: 'CLOSE_BATTLE', payload: { settings } }),
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
         endGame: () => dispatch({ type: 'END_GAME' }),

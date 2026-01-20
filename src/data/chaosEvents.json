@@ -82,5 +82,17 @@
         "type": "MINIGAME_BOMB",
         "title": "💣 ¡BOMBA DE TIEMPO!",
         "description": "Pásense el celular RÁPIDO. Al que le explote, PIERDE."
+    },
+    {
+        "id": 15,
+        "type": "MINIGAME_CHAMPAGNE",
+        "title": "🍾 ¡AGITA LA CHAMPAÑA!",
+        "description": "Agita el cel para subir la presión y pásalo rápido. Si explota en tu mano, ¡FONDO!"
+    },
+    {
+        "id": 16,
+        "type": "MINIGAME_CARDS",
+        "title": "🃏 CARTAS DEL DESTINO",
+        "description": "¿Mayor o Menor? Adivina la carta. Si fallas, te tomas toda la racha acumulada."
     }
 ]

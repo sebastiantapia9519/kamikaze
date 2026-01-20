@@ -3,148 +3,270 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
+// Colores neón para los dedos
+const FINGER_COLORS = [
+    { name: 'Azul', hex: '#3B82F6', tw: 'bg-blue-500', shadow: 'shadow-blue-500/50' },
+    { name: 'Rojo', hex: '#EF4444', tw: 'bg-red-500', shadow: 'shadow-red-500/50' },
+    { name: 'Verde', hex: '#22C55E', tw: 'bg-green-500', shadow: 'shadow-green-500/50' },
+    { name: 'Amarillo', hex: '#EAB308', tw: 'bg-yellow-500', shadow: 'shadow-yellow-500/50' },
+    { name: 'Rosa', hex: '#EC4899', tw: 'bg-pink-500', shadow: 'shadow-pink-500/50' },
+    { name: 'Morado', hex: '#A855F7', tw: 'bg-purple-500', shadow: 'shadow-purple-500/50' },
+    { name: 'Cian', hex: '#06B6D4', tw: 'bg-cyan-500', shadow: 'shadow-cyan-500/50' },
+    { name: 'Naranja', hex: '#F97316', tw: 'bg-orange-500', shadow: 'shadow-orange-500/50' },
+];
+
 const FingerRouletteMinigame = ({ onClose }) => {
-    const [touches, setTouches] = useState({});
-    const [gameState, setGameState] = useState('waiting'); // waiting, choosing, result
+    // --- ESTADOS ---
+    const [fingers, setFingers] = useState({}); // { touchId: { x, y, colorIndex } }
+    const [gameState, setGameState] = useState('WAITING'); // 'WAITING', 'COUNTDOWN', 'CHOOSING', 'RESULT'
+    const [countdown, setCountdown] = useState(3);
     const [loserId, setLoserId] = useState(null);
-    const containerRef = useRef(null);
+    const [loserColorName, setLoserColorName] = useState('');
+
+    // Refs para lógica interna sin re-renderizar
     const timerRef = useRef(null);
+    const availableColorsRef = useRef(new Set(FINGER_COLORS.map((_, i) => i))); // Indices disponibles
 
-    // Manejo de toques (Multitouch real)
-    const handleTouch = (e) => {
-        if (gameState === 'result') return;
+    // --- MANEJO DE TOQUES (TOUCH EVENTS) ---
 
-        // Prevenir scroll y zoom
-        e.preventDefault();
+    // Al poner un dedo
+    const handleTouchStart = (e) => {
+        if (gameState === 'RESULT' || gameState === 'CHOOSING') return;
 
-        const newTouches = {};
-        const touchList = e.touches;
+        // Prevenimos scroll y zoom
+        // e.preventDefault(); // Nota: React a veces se queja si no es pasivo, pero intentaremos manejarlo visualmente.
 
-        for (let i = 0; i < touchList.length; i++) {
-            const t = touchList[i];
-            newTouches[t.identifier] = {
-                id: t.identifier,
-                x: t.clientX,
-                y: t.clientY,
-                color: getColor(t.identifier)
+        const newFingers = { ...fingers };
+        const changedTouches = e.changedTouches;
+
+        for (let i = 0; i < changedTouches.length; i++) {
+            const touch = changedTouches[i];
+
+            // Asignar color disponible
+            let colorIndex = 0;
+            if (availableColorsRef.current.size > 0) {
+                const nextColor = availableColorsRef.current.values().next().value;
+                availableColorsRef.current.delete(nextColor);
+                colorIndex = nextColor;
+            } else {
+                // Fallback si se acaban los colores (recicla al azar)
+                colorIndex = Math.floor(Math.random() * FINGER_COLORS.length);
+            }
+
+            newFingers[touch.identifier] = {
+                x: touch.clientX,
+                y: touch.clientY,
+                colorIndex: colorIndex
             };
         }
 
-        setTouches(newTouches);
-        checkGameStatus(Object.keys(newTouches).length);
+        setFingers(newFingers);
+        checkGameStart(Object.keys(newFingers).length);
     };
 
-    // Lógica para asignar colores consistentes
-    const getColor = (id) => {
-        const colors = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
-        return colors[id % colors.length];
-    };
+    // Al mover un dedo (actualizar posición del círculo)
+    const handleTouchMove = (e) => {
+        if (gameState === 'RESULT') return;
 
-    const checkGameStatus = (count) => {
-        // Si hay 2 o más dedos y no estamos eligiendo, iniciar conteo
-        if (count >= 2 && gameState === 'waiting') {
-            if (timerRef.current) clearTimeout(timerRef.current);
+        const newFingers = { ...fingers };
+        const changedTouches = e.changedTouches;
 
-            // Esperar 3 segundos estables para elegir
-            setGameState('choosing');
-            timerRef.current = setTimeout(() => {
-                pickLoser();
-            }, 3000);
+        for (let i = 0; i < changedTouches.length; i++) {
+            const touch = changedTouches[i];
+            if (newFingers[touch.identifier]) {
+                newFingers[touch.identifier] = {
+                    ...newFingers[touch.identifier],
+                    x: touch.clientX,
+                    y: touch.clientY
+                };
+            }
         }
-        // Si alguien quita el dedo antes de tiempo
-        else if (count < 2 && gameState === 'choosing') {
-            if (timerRef.current) clearTimeout(timerRef.current);
-            setGameState('waiting');
+        setFingers(newFingers);
+    };
+
+    // Al quitar un dedo
+    const handleTouchEnd = (e) => {
+        if (gameState === 'RESULT') return;
+
+        const newFingers = { ...fingers };
+        const changedTouches = e.changedTouches;
+
+        for (let i = 0; i < changedTouches.length; i++) {
+            const touch = changedTouches[i];
+            const fingerData = newFingers[touch.identifier];
+
+            if (fingerData) {
+                // Liberar color
+                availableColorsRef.current.add(fingerData.colorIndex);
+                delete newFingers[touch.identifier];
+            }
+        }
+
+        setFingers(newFingers);
+
+        // Si alguien quita el dedo durante la cuenta o elección, cancelamos
+        if (gameState === 'COUNTDOWN' || gameState === 'CHOOSING') {
+            cancelGame();
         }
     };
 
-    const pickLoser = () => {
-        // Obtenemos los IDs actuales directamente del estado ref o actual
-        // (Nota: en closures de setTimeout, es mejor usar ref, pero aquí simplificamos con un truco visual)
-        setGameState('result');
+    // --- LÓGICA DEL JUEGO ---
 
-        // Seleccionar uno al azar
-        const currentTouchIds = Object.keys(touches); // Esto puede estar desactualizado en el closure, pero react actualiza rápido
-        // Truco: Forzamos la lectura de los toques actuales visualmente
-        const ids = document.querySelectorAll('.finger-indicator');
-        if (ids.length > 0) {
-            const randomIdx = Math.floor(Math.random() * ids.length);
-            const selectedId = ids[randomIdx].dataset.touchid; // Usamos data attribute
-            setLoserId(Number(selectedId));
+    const checkGameStart = (fingerCount) => {
+        // Necesitamos al menos 2 dedos para jugar
+        if (fingerCount >= 2 && gameState === 'WAITING') {
+            if (!timerRef.current) {
+                startCountdown();
+            }
         }
     };
 
-    // Prevenir menú contextual (click derecho en móviles)
-    useEffect(() => {
-        const prevent = (e) => e.preventDefault();
-        document.addEventListener('contextmenu', prevent);
-        return () => document.removeEventListener('contextmenu', prevent);
-    }, []);
+    const startCountdown = () => {
+        setGameState('COUNTDOWN');
+        setCountdown(3);
 
+        let count = 3;
+        const interval = setInterval(() => {
+            count--;
+            setCountdown(count);
+            if (count <= 0) {
+                clearInterval(interval);
+                chooseLoser();
+            }
+        }, 1000);
+
+        timerRef.current = interval;
+    };
+
+    const cancelGame = () => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+        setGameState('WAITING');
+        setCountdown(3);
+    };
+
+    const chooseLoser = () => {
+        setGameState('CHOOSING');
+
+        // Simular ruleta (efecto visual rápido)
+        setTimeout(() => {
+            const touchIds = Object.keys(fingers);
+            if (touchIds.length === 0) {
+                cancelGame();
+                return;
+            }
+
+            // Elegir aleatoriamente UN perdedor
+            const randomIndex = Math.floor(Math.random() * touchIds.length);
+            const selectedLoserId = touchIds[randomIndex];
+            const loserFinger = fingers[selectedLoserId];
+            const colorName = FINGER_COLORS[loserFinger.colorIndex].name;
+
+            setLoserId(selectedLoserId);
+            setLoserColorName(colorName);
+            setGameState('RESULT');
+
+        }, 1500); // 1.5 segundos de tensión
+    };
+
+    // --- RENDERIZADO ---
     return (
-        <motion.div
-            ref={containerRef}
-            className="fixed inset-0 z-50 bg-black/95 touch-none select-none flex flex-col items-center justify-center overflow-hidden"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            onTouchStart={handleTouch}
-            onTouchMove={handleTouch}
-            onTouchEnd={handleTouch}
+        <div
+            className="fixed inset-0 z-50 bg-gray-900 touch-none select-none overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
         >
-            {/* UI DE FONDO */}
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                {gameState === 'waiting' && (
-                    <div className="text-center opacity-50 animate-pulse">
-                        <Icon name="Hand" size={64} className="mx-auto mb-4 text-gray-400" />
-                        <h2 className="text-2xl font-bold text-white">PONGAN SUS DEDOS</h2>
-                        <p className="text-gray-400">Mínimo 2 jugadores</p>
-                    </div>
+            {/* INSTRUCCIONES DE FONDO */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center">
+                {gameState === 'WAITING' && (
+                    <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 2 }}>
+                        <Icon name="Hand" size={64} className="text-gray-600 mb-4 mx-auto" />
+                        <h2 className="text-3xl font-bold text-gray-500">Pongan sus dedos</h2>
+                        <p className="text-gray-600 mt-2">Mínimo 2 jugadores</p>
+                    </motion.div>
                 )}
 
-                {gameState === 'choosing' && (
-                    <div className="text-center">
-                        <h2 className="text-4xl font-black text-cyan-400 animate-bounce">ESPEREN...</h2>
-                    </div>
+                {gameState === 'COUNTDOWN' && (
+                    <motion.div
+                        key={countdown}
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1.5, opacity: 1 }}
+                        className="text-8xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                    >
+                        {countdown}
+                    </motion.div>
                 )}
 
-                {gameState === 'result' && (
-                    <div className="bg-gray-900/90 p-8 rounded-2xl text-center z-50 pointer-events-auto border-2 border-red-500">
-                        <h2 className="text-3xl font-black text-white mb-2">¡TENEMOS PERDEDOR!</h2>
-                        <p className="text-red-400 text-xl font-bold mb-6">El dedo seleccionado bebe 2 tragos</p>
-                        <Button onClick={onClose} size="lg" className="w-full">Terminar</Button>
+                {gameState === 'CHOOSING' && (
+                    <div className="text-4xl font-bold text-white animate-pulse">
+                        Eligiendo...
                     </div>
                 )}
             </div>
 
-            {/* CIRCULOS DE LOS DEDOS */}
-            {Object.values(touches).map((touch) => (
-                <motion.div
-                    key={touch.id}
-                    data-touchid={touch.id}
-                    className={`finger-indicator absolute rounded-full flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2 pointer-events-none
-                        ${gameState === 'result' && Number(touch.id) !== loserId ? 'opacity-20' : 'opacity-100'}
-                    `}
-                    initial={{ scale: 0 }}
-                    animate={{
-                        scale: gameState === 'result' && Number(touch.id) === loserId ? 1.5 : 1,
-                        x: touch.x,
-                        y: touch.y
-                    }}
-                    style={{
-                        width: 100,
-                        height: 100,
-                        backgroundColor: touch.color,
-                        boxShadow: `0 0 30px ${touch.color}`
-                    }}
-                >
-                    {gameState === 'choosing' && (
-                        <div className="w-full h-full border-4 border-white/50 rounded-full animate-spin border-t-transparent" />
-                    )}
-                    {gameState === 'result' && Number(touch.id) === loserId && (
-                        <span className="text-4xl">💀</span>
-                    )}
-                </motion.div>
-            ))}
-        </motion.div>
+            {/* CÍRCULOS EN LOS DEDOS */}
+            {Object.entries(fingers).map(([id, finger]) => {
+                const isLoser = gameState === 'RESULT' && id === loserId;
+                const isWinner = gameState === 'RESULT' && id !== loserId;
+                const colorData = FINGER_COLORS[finger.colorIndex];
+
+                return (
+                    <motion.div
+                        key={id}
+                        initial={{ scale: 0 }}
+                        animate={{
+                            scale: isLoser ? 1.5 : (isWinner ? 0 : 1), // El perdedor crece, los otros desaparecen
+                            opacity: isWinner ? 0 : 1,
+                            x: finger.x - 50, // Centrar círculo (100px ancho / 2)
+                            y: finger.y - 50
+                        }}
+                        className="absolute w-[100px] h-[100px] rounded-full flex items-center justify-center pointer-events-none"
+                    >
+                        {/* Anillo exterior animado */}
+                        <div className={`absolute inset-0 rounded-full border-4 ${colorData.tw.replace('bg-', 'border-')} opacity-50 animate-ping`} />
+
+                        {/* Círculo sólido interior */}
+                        <div className={`w-16 h-16 rounded-full ${colorData.tw} ${colorData.shadow} shadow-[0_0_30px_rgba(0,0,0,0.5)] border-2 border-white flex items-center justify-center`}>
+                            {/* Icono de calavera si pierde */}
+                            {isLoser && <Icon name="Skull" className="text-white animate-bounce" size={24} />}
+                        </div>
+                    </motion.div>
+                );
+            })}
+
+            {/* PANTALLA DE RESULTADO FINAL */}
+            <AnimatePresence>
+                {gameState === 'RESULT' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute bottom-10 left-4 right-4 bg-gray-800/90 backdrop-blur-md rounded-2xl border border-white/10 p-6 text-center pointer-events-auto"
+                    >
+                        <h2 className="text-3xl font-bold text-white mb-2">
+                            ¡Perdió el <span className={`uppercase font-black ${fingers[loserId] ? FINGER_COLORS[fingers[loserId].colorIndex].tw.replace('bg-', 'text-') : 'text-white'}`}>{loserColorName}</span>!
+                        </h2>
+                        <p className="text-gray-300 text-lg mb-6">
+                            El dedo seleccionado debe tomar un trago 🥃
+                        </p>
+                        <Button onClick={onClose} className="w-full bg-white/10 hover:bg-white/20">
+                            Cerrar Juego
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Botón de salida de emergencia (siempre visible arriba) */}
+            <button
+                onClick={onClose}
+                className="absolute top-4 right-4 p-2 bg-gray-800/50 rounded-full text-gray-400 hover:text-white pointer-events-auto z-50"
+            >
+                <Icon name="X" size={24} />
+            </button>
+        </div>
     );
 };
 

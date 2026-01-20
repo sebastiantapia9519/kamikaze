@@ -138,8 +138,8 @@ const AxolotlRaceMinigame = ({ players, onClose }) => {
                                 key={ax.id}
                                 onClick={() => setSelectedAxolotlId(ax.id)}
                                 className={`p-2 rounded-xl border-2 transition-all flex flex-col items-center gap-2 relative overflow-hidden ${selectedAxolotlId === ax.id
-                                        ? `border-${ax.border.split('-')[1]}-400 bg-white/10 scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]`
-                                        : 'border-white/5 bg-gray-800/50 hover:bg-gray-800'
+                                    ? `border-${ax.border.split('-')[1]}-400 bg-white/10 scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]`
+                                    : 'border-white/5 bg-gray-800/50 hover:bg-gray-800'
                                     }`}
                             >
                                 <div className="w-16 h-16 relative z-10">
@@ -249,7 +249,7 @@ const AxolotlRaceMinigame = ({ players, onClose }) => {
                             const winningAxolotlInfo = AXOLOTLS.find(a => a.id === winner);
                             return (
                                 <div className="text-center mb-8">
-                                    <span className="text-yellow-400 text-sm font-bold tracking-widest uppercase mb-2 block">Ganador Indiscutible</span>
+                                    <span className="text-yellow-400 text-sm font-bold tracking-widest uppercase mb-2 block">Ganador</span>
                                     {/* APLICAMOS EL COLOR DINÁMICO AQUÍ */}
                                     <h2
                                         className="text-4xl font-black flex items-center justify-center gap-3 transition-colors duration-500"

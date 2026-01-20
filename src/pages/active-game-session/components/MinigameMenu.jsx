@@ -18,24 +18,25 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
 
     if (!isOpen) return null;
 
+    // --- AQUÍ ESTABA EL DETALLE: AGREGAMOS LOS NUEVOS JUEGOS ---
     const minigames = [
         { id: 'race', label: 'Carrera de Ajolotes', icon: 'Trophy', color: 'text-pink-400', border: 'border-pink-500/50' },
         { id: 'sniper', label: 'Francotirador', icon: 'Crosshair', color: 'text-red-400', border: 'border-red-500/50' },
         { id: 'roulette', label: 'Ruleta Dactilar', icon: 'Hand', color: 'text-purple-400', border: 'border-purple-500/50' },
         { id: 'battle', label: 'Batalla de Pulgares', icon: 'Zap', color: 'text-yellow-400', border: 'border-yellow-500/50' },
         { id: 'bomb', label: '¡Córtale! (Bomba)', icon: 'Timer', color: 'text-cyan-400', border: 'border-cyan-500/50' },
+        // 👇 NUEVOS
+        { id: 'champagne', label: 'Agita la Champaña', icon: 'Activity', color: 'text-emerald-400', border: 'border-emerald-500/50' },
+        { id: 'cards', label: 'Cartas del Destino', icon: 'Layers', color: 'text-blue-400', border: 'border-blue-500/50' },
     ];
 
     // --- LOGICA DE JUGADORES ---
-
     const addPlayer = () => {
         const newId = Date.now();
-        // Por defecto asignamos el primer icono (Beer)
         onUpdatePlayers([...players, { id: newId, name: '', iconIdx: 0 }]);
     };
 
     const removePlayer = (id) => {
-        // Permitimos borrar siempre que quede al menos 1 para no romper la UI
         if (players.length > 1) {
             onUpdatePlayers(players.filter(p => p.id !== id));
         }
@@ -46,7 +47,6 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
     };
 
     const cyclePlayerIcon = (id, currentIdx = 0) => {
-        // Calculamos el siguiente icono en la lista rotativa
         const nextIdx = (currentIdx + 1) % DRINK_ICONS.length;
         onUpdatePlayers(players.map(p => p.id === id ? { ...p, iconIdx: nextIdx } : p));
     };
@@ -55,7 +55,6 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
         <AnimatePresence>
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
 
-                {/* Estilos para el scrollbar oscuro */}
                 <style>{`
                     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                     .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
@@ -131,7 +130,6 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
                         {view === 'players' && (
                             <div className="space-y-3">
                                 {players.map((player, index) => {
-                                    // Obtenemos el icono actual basado en el índice guardado, o el 0 por defecto
                                     const currentIconIdx = player.iconIdx !== undefined ? player.iconIdx : 0;
                                     const iconData = DRINK_ICONS[currentIconIdx] || DRINK_ICONS[0];
 
@@ -146,7 +144,6 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
                                         >
                                             <span className="text-gray-500 font-bold w-6 text-center text-xs">{index + 1}</span>
 
-                                            {/* INPUT DE NOMBRE */}
                                             <input
                                                 type="text"
                                                 placeholder={`Jugador ${index + 1}`}
@@ -155,7 +152,6 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
                                                 className="flex-1 bg-transparent border-none text-white placeholder-gray-600 focus:ring-0 text-sm font-medium focus:outline-none"
                                             />
 
-                                            {/* BOTÓN DE ICONO (CICLO) */}
                                             <button
                                                 onClick={() => cyclePlayerIcon(player.id, currentIconIdx)}
                                                 className={`p-2 rounded-lg transition-all ${iconData.bg} ${iconData.color} hover:brightness-125 active:scale-95`}
@@ -164,7 +160,6 @@ const MinigameMenu = ({ isOpen, onClose, onSelectGame, players, onUpdatePlayers 
                                                 <Icon name={iconData.name} size={18} />
                                             </button>
 
-                                            {/* BOTÓN DE ELIMINAR */}
                                             {players.length > 1 && (
                                                 <button
                                                     onClick={() => removePlayer(player.id)}

@@ -20,6 +20,8 @@ import TimeBombMinigame from '../active-game-session/components/TimeBombMinigame
 import BlindSniperMinigame from '../active-game-session/components/BlindSniperMinigame';
 import FingerRouletteMinigame from '../active-game-session/components/FingerRouletteMinigame';
 import TapBattleMinigame from '../active-game-session/components/TapBattleMinigame';
+import ChampagneShakeMinigame from '../active-game-session/components/ChampagneShakeMinigame';
+import HighLowCardMinigame from '../active-game-session/components/HighLowCardMinigame';
 
 // --- LISTA DE ICONOS DE BEBIDA (Igual que en MinigameMenu) ---
 const DRINK_ICONS = [
@@ -314,6 +316,8 @@ const HomeDashboard = () => {
                     {activeMinigame === 'sniper' && <BlindSniperMinigame currentPlayer={quickPlayers[0]} onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'roulette' && <FingerRouletteMinigame onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'battle' && <TapBattleMinigame players={quickPlayers} onClose={() => setViewState('menu')} />}
+                    {activeMinigame === 'champagne' && <ChampagneShakeMinigame onClose={() => setViewState('menu')} />}
+                    {activeMinigame === 'cards' && <HighLowCardMinigame onClose={() => setViewState('menu')} />}
                 </div>
             )}
         </div>
