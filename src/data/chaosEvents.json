@@ -73,9 +73,9 @@
     },
     {
         "id": 13,
-        "type": "MINIGAME_BATTLE",
-        "title": "🥊 BATALLA DE PULGARES",
-        "description": "Duelo 1 vs 1. Toca tu lado de la pantalla más rápido que tu rival."
+        "type": "MINIGAME_PONG",
+        "title": "🏓 PONGTE PEDO",
+        "description": "Duelo mortal de Pong. ¡Cuidado con la muerte súbita!"
     },
     {
         "id": 14,

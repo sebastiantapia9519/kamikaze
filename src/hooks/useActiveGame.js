@@ -289,7 +289,7 @@ export const useActiveGame = (locationState) => {
         closeBomb: () => dispatch({ type: 'CLOSE_BOMB', payload: { settings } }),
         closeSniper: () => dispatch({ type: 'CLOSE_SNIPER', payload: { settings } }),
         closeRoulette: () => dispatch({ type: 'CLOSE_ROULETTE', payload: { settings } }),
-        closeBattle: () => dispatch({ type: 'CLOSE_BATTLE', payload: { settings } }),
+        closePong: () => dispatch({ type: 'CLOSE_PONG', payload: { settings } }),
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
         closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
         closeTraffic: () => dispatch({ type: 'CLOSE_TRAFFIC', payload: { settings } }),

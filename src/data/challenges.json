@@ -209,6 +209,24 @@
         },
         {
             "text": "El Chef Raro: Cada jugador confiesa su gusto culposo o la combinación de comida más rara que le guste. Por votación, el que tenga el gusto más asqueroso, bebe 3 tragos."
+        },
+        {
+            "text": "Confiesa cuál fue la excusa más pendeja que inventaste para zafarte de un plan o bebe 4 tragos."
+        },
+        {
+            "text": "Enséñanos la última foto o video que tienes en el carrete de tu celular. Si te da culo, te chingas 3 tragos."
+        },
+        {
+            "text": "Modo T-Rex: Por los próximos 3 turnos, tus codos deben estar pegados a tus costillas. Si te separas o alguien te cacha, bebes 3 tragos."
+        },
+        {
+            "text": "Haz 10 lagartijas ahorita mismo. Si no aguantas, bebes 4 tragos por falta de condición."
+        },
+        {
+            "text": "Di el nombre de tu primer crush de la primaria o secundaria, o bebe 2 tragos."
+        },
+        {
+            "text": "Traductor humano: Durante 2 rondas, después de cada frase que digas, tienes que repetirla en un inglés muy masticado. Si se te olvida, bebes 2 tragos."
         }
     ],
     "epic": [
@@ -313,6 +331,15 @@
         },
         {
             "text": "El Escultor: Elige a un jugador para que sea tu 'arcilla'. Ponlo en la pose más ridícula que se te ocurra. Debe quedarse congelado en esa pose por 2 rondas completas. Si se mueve o se ríe, bebe 7 tragos. Obviamente, las fotos están permitidas."
+        },
+        {
+            "text": "Shot Ciego de Kamikaze: Los demás preparan un 'shot' mezclando un poquito de las bebidas que haya en la mesa. Te lo tomas sin olerlo o bebes 10 tragos (fondo)."
+        },
+        {
+            "text": "La Gárgola: Llénate la boca con tu bebida y deja que el jugador de enfrente te cuente su mejor chiste. Si te ríes y escupes, te echas 6 tragos de castigo."
+        },
+        {
+            "text": "El Escenario es Tuyo: Tienes que pararte y bailar cumbia o reggaetón hasta el suelo, tú solo y sin música por 30 segundos. Si te rajas, te echas un fondo."
         }
     ],
     "multiplayer": [
@@ -427,6 +454,26 @@
         {
             "text": "El Trío de la Verdad: El jugador en turno dice dos verdades y una mentira sobre sí mismo. Los otros dos deben adivinar cuál es la mentira. Si ambos adivinan, el mentiroso bebe 4. Si ambos fallan, ellos beben 2 cada uno. Si uno adivina y el otro no, el que falló bebe 3.",
             "players": 3
+        },
+        {
+            "text": "El suelo es lava versión peda: A la cuenta de tres, el último en levantar los pies del suelo bebe 4 tragos.",
+            "players": "all"
+        },
+        {
+            "text": "La predicción: A la cuenta de tres, todos señalan al que creen que va a terminar peor hoy (vomitando o dormido). El más votado bebe 4 tragos preventivos.",
+            "players": "all"
+        },
+        {
+            "text": "Guerra de Pulgares: Échate unas fuercitas de pulgares (vencidas de dedos) con el jugador que elijas. El perdedor se toma 3 tragos por débil.",
+            "players": 2
+        },
+        {
+            "text": "Piedra, papel o tijera a muerte súbita. Tú y otros dos jugadores se enfrentan. El ganador absoluto reparte 6 tragos; los perdedores beben 3 cada uno.",
+            "players": 3
+        },
+        {
+            "text": "Conexión mental: Tú y otro jugador cuentan hasta 3 y dicen una palabra al azar. Si tienen relación (ej. perro - gato), los demás beben 2. Si nada que ver, ustedes dos beben 3.",
+            "players": 2
         }
     ]
 }

@@ -19,7 +19,7 @@ import AxolotlRaceMinigame from '../active-game-session/components/AxolotlRaceMi
 import TimeBombMinigame from '../active-game-session/components/TimeBombMinigame';
 import BlindSniperMinigame from '../active-game-session/components/BlindSniperMinigame';
 import FingerRouletteMinigame from '../active-game-session/components/FingerRouletteMinigame';
-import TapBattleMinigame from '../active-game-session/components/TapBattleMinigame';
+import PongtePedoMinigame from '../active-game-session/components/PongtePedoMinigame';
 import HighLowCardMinigame from '../active-game-session/components/HighLowCardMinigame';
 import ToxicSequenceMinigame from '../active-game-session/components/ToxicSequenceMinigame';
 
@@ -303,7 +303,7 @@ const HomeDashboard = () => {
                     {activeMinigame === 'bomb' && <TimeBombMinigame currentPlayer={quickPlayers[0]} onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'sniper' && <BlindSniperMinigame currentPlayer={quickPlayers[0]} onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'roulette' && <FingerRouletteMinigame onClose={() => setViewState('menu')} />}
-                    {activeMinigame === 'battle' && <TapBattleMinigame players={quickPlayers} onClose={() => setViewState('menu')} />}
+                    {activeMinigame === 'pong' && <PongtePedoMinigame players={quickPlayers} onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'cards' && <HighLowCardMinigame onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'sequence' && <ToxicSequenceMinigame onClose={() => setViewState('menu')} />}
                 </div>

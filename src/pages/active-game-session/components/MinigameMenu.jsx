@@ -50,9 +50,9 @@ const GAMES = [
         border: 'border-purple-500/20'
     },
     {
-        id: 'battle',
-        title: 'Batalla de Taps',
-        description: 'Velocidad pura',
+        id: 'pong',
+        title: 'Pongte Pedo',
+        description: 'Peloteo mortal',
         icon: 'Zap',
         color: 'text-blue-400',
         bg: 'bg-blue-500/10',

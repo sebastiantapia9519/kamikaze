@@ -11,7 +11,7 @@ import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
 import TimeBombMinigame from './components/TimeBombMinigame';
 import BlindSniperMinigame from './components/BlindSniperMinigame';
 import FingerRouletteMinigame from './components/FingerRouletteMinigame';
-import TapBattleMinigame from './components/TapBattleMinigame';
+import PongtePedoMinigame from './components/PongtePedoMinigame';
 import HighLowCardMinigame from './components/HighLowCardMinigame';
 import ToxicSequenceMinigame from './components/ToxicSequenceMinigame';
 
@@ -110,8 +110,8 @@ const ActiveGameSession = () => {
                 return <BlindSniperMinigame currentPlayer={gameState.players[gameState.currentPlayerIdx]} onClose={handleMinigameEnd} />;
             case 'roulette':
                 return <FingerRouletteMinigame onClose={handleMinigameEnd} />;
-            case 'battle':
-                return <TapBattleMinigame {...commonProps} />;
+            case 'pong':
+                return <PongtePedoMinigame {...commonProps} />;
             case 'cards':
                 return <HighLowCardMinigame onClose={handleMinigameEnd} />;
             case 'sequence':
