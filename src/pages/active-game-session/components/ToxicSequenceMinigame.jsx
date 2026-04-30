@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
@@ -14,16 +14,20 @@ const GAME_PADS = [
 const TARGET_LEVEL = 5;
 
 const ToxicSequenceMinigame = ({ onClose }) => {
-    const { playSound, vibrate } = useGameEffects();
+    const { playSound, triggerHaptic } = useGameEffects();
 
     const [sequence, setSequence] = useState([]);
-    const [playerInput, setPlayerInput] = useState([]);
     const [gameState, setGameState] = useState('START'); // START, SHOWING, INPUT, WON, LOST
     const [level, setLevel] = useState(1);
     const [activePad, setActivePad] = useState(null);
 
     // CONTROL DE REPRODUCCIÓN (Evita que se trabe)
     const [playbackIdx, setPlaybackIdx] = useState(-1);
+    
+    // Usar una referencia para el input del jugador para evitar problemas de estado obsoleto al hacer clics rápidos
+    const playerInputRef = useRef([]);
+    const timeout1 = useRef(null);
+    const timeout2 = useRef(null);
 
     // --- REPRODUCCIÓN SEGURA ---
     useEffect(() => {
@@ -32,7 +36,7 @@ const ToxicSequenceMinigame = ({ onClose }) => {
             if (playbackIdx >= sequence.length) {
                 const t = setTimeout(() => {
                     setGameState('INPUT');
-                    setPlayerInput([]);
+                    playerInputRef.current = [];
                     setPlaybackIdx(-1);
                 }, 300);
                 return () => clearTimeout(t);
@@ -49,21 +53,24 @@ const ToxicSequenceMinigame = ({ onClose }) => {
             const speed = Math.max(300, 600 - (level * 50));
 
             // 2. Programar apagado y siguiente paso
-            const timer = setTimeout(() => {
+            timeout1.current = setTimeout(() => {
                 setActivePad(null);
                 // Pausa breve entre luces para que se note el parpadeo
-                setTimeout(() => {
+                timeout2.current = setTimeout(() => {
                     setPlaybackIdx(prev => prev + 1);
                 }, 150);
             }, speed);
 
-            return () => clearTimeout(timer);
+            return () => {
+                clearTimeout(timeout1.current);
+                clearTimeout(timeout2.current);
+            };
         }
     }, [gameState, playbackIdx, sequence, level, playSound]);
 
     const startGame = () => {
         setSequence([]);
-        setPlayerInput([]);
+        playerInputRef.current = [];
         setLevel(1);
         addToSequence([]);
     };
@@ -85,20 +92,21 @@ const ToxicSequenceMinigame = ({ onClose }) => {
         playSound(GAME_PADS[padId].sound);
         setTimeout(() => setActivePad(null), 150);
 
-        const newInput = [...playerInput, padId];
-        setPlayerInput(newInput);
+        // Añadir entrada del jugador a la referencia
+        playerInputRef.current.push(padId);
+        const currentInput = playerInputRef.current;
 
         // Verificar corrección
-        const currentIndex = newInput.length - 1;
+        const currentIndex = currentInput.length - 1;
 
-        if (newInput[currentIndex] !== sequence[currentIndex]) {
+        if (currentInput[currentIndex] !== sequence[currentIndex]) {
             // ERROR
             setGameState('LOST');
             playSound('explode');
-            vibrate(500);
+            triggerHaptic(500);
         } else {
             // CORRECTO
-            if (newInput.length === sequence.length) {
+            if (currentInput.length === sequence.length) {
                 // Nivel completado
                 if (level >= TARGET_LEVEL) {
                     setGameState('WON');
