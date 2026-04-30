@@ -6,8 +6,8 @@ import Button from '../../../components/ui/Button';
 const PADDLE_WIDTH = 100;
 const PADDLE_HEIGHT = 15;
 const BALL_RADIUS = 10;
-const BASE_BALL_SPEED = 5;
-const SPEED_INCREMENT = 1.05; // 5% increase on hit
+const BASE_BALL_SPEED = 8; // Más rápido inicialmente
+const SPEED_INCREMENT = 1.08; // Incremento más agresivo (8%)
 
 /**
  * Minijuego "Pongte Pedo".

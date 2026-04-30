@@ -12,7 +12,7 @@ const GAME_PADS = [
     { id: 3, icon: 'Zap', color: 'bg-blue-500', text: 'text-blue-400', sound: 'tick' }
 ];
 
-const TARGET_LEVEL = 5;
+const TARGET_LEVEL = 8;
 
 /**
  * Minijuego de Secuencia Tóxica (Estilo "Simón Dice").
@@ -60,7 +60,7 @@ const ToxicSequenceMinigame = ({ onClose }) => {
             playSound(GAME_PADS[padId].sound);
 
             // Velocidad dinámica (más rápido en niveles altos)
-            const speed = Math.max(300, 600 - (level * 50));
+            const speed = Math.max(150, 450 - (level * 40));
 
             // 2. Programar apagado y siguiente paso
             timeout1.current = setTimeout(() => {
@@ -68,7 +68,7 @@ const ToxicSequenceMinigame = ({ onClose }) => {
                 // Pausa breve entre luces para que se note el parpadeo
                 timeout2.current = setTimeout(() => {
                     setPlaybackIdx(prev => prev + 1);
-                }, 150);
+                }, 100);
             }, speed);
 
             return () => {
