@@ -3,10 +3,25 @@ import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
 
+/**
+ * Formulario para añadir nuevos jugadores a la partida.
+ * Incluye validación de nombres (longitud, duplicados) y una lista de
+ * sugerencias rápidas para agilizar la entrada de datos.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onAddPlayer - Callback invocado con el nombre validado del nuevo jugador.
+ * @param {Array} [props.existingPlayers=[]] - Lista actual de jugadores para validar que no haya duplicados.
+ */
 const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
     const [playerName, setPlayerName] = useState('');
     const [error, setError] = useState('');
 
+    /**
+     * Valida el nombre ingresado por el usuario.
+     * 
+     * @param {string} name - Nombre a validar.
+     * @returns {string|null} Mensaje de error si falla la validación, o null si es válido.
+     */
     const validatePlayerName = (name) => {
         const trimmedName = name?.trim();
 
@@ -31,6 +46,9 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
         return null;
     };
 
+    /**
+     * Maneja el envío del formulario, validando antes de invocar el callback.
+     */
     const handleSubmit = (e) => {
         e?.preventDefault();
 
@@ -45,11 +63,14 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
         setError('');
     };
 
+    /**
+     * Maneja el cambio en el input de texto, limpiando errores previos si los hay.
+     */
     const handleInputChange = (e) => {
         const value = e?.target?.value;
         setPlayerName(value);
 
-        // Clear error when user starts typing
+        // Limpiar el error cuando el usuario empieza a escribir de nuevo
         if (error && value?.trim()) {
             setError('');
         }
@@ -57,6 +78,7 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
 
     return (
         <div className="bg-card p-6 rounded-lg shadow-graffiti-md border border-border">
+            {/* Encabezado del formulario */}
             <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
                     <Icon name="UserPlus" size={20} className="text-white" />
@@ -70,6 +92,8 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
                     </p>
                 </div>
             </div>
+
+            {/* Formulario Principal */}
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1">
@@ -95,7 +119,8 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
                     </Button>
                 </div>
             </form>
-            {/* Quick Add Suggestions */}
+
+            {/* Sugerencias Rápidas */}
             <div className="mt-4 flex flex-wrap gap-2">
                 <span className="text-xs text-text-secondary">Sugerencias rápidas:</span>
                 {['Alejandra', 'Alejandro', 'Diana', 'Carlos', 'María', 'Sebastian', 'Sergio']?.map((suggestion) => (

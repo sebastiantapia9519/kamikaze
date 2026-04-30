@@ -2,8 +2,20 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
-import { motion } from 'framer-motion'; // <-- 1. ÚNICA IMPORTACIÓN NUEVA
+import { motion } from 'framer-motion';
 
+/**
+ * Componente que renderiza los controles principales de la partida.
+ * Incluye el botón para avanzar al siguiente reto, y acciones secundarias
+ * como terminar el juego prematuramente con confirmación de dos pasos.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onNextChallenge - Callback para avanzar al siguiente reto.
+ * @param {Function} props.onEndGame - Callback para terminar la partida y mostrar los resultados.
+ * @param {boolean} props.isLastChallenge - Indica si el reto actual es el último de la fase.
+ * @param {number} props.currentChallenge - Índice del reto actual (para métricas, actualmente oculto).
+ * @param {number} props.totalChallenges - Total de retos en la fase actual.
+ */
 const GameControls = ({
     onNextChallenge,
     onEndGame,
@@ -12,8 +24,13 @@ const GameControls = ({
     totalChallenges
 }) => {
     const navigate = useNavigate();
+    
+    // Estado para la confirmación de doble paso al terminar la partida anticipadamente
     const [showEndConfirm, setShowEndConfirm] = useState(false);
 
+    /**
+     * Avanza al siguiente reto, o termina el juego si es el último.
+     */
     const handleNextChallenge = () => {
         if (isLastChallenge) {
             onEndGame();
@@ -22,6 +39,10 @@ const GameControls = ({
         }
     };
 
+    /**
+     * Maneja la acción de terminar juego.
+     * Requiere dos clics en menos de 5 segundos para confirmar.
+     */
     const handleEndGame = () => {
         if (showEndConfirm) {
             onEndGame();
@@ -33,17 +54,14 @@ const GameControls = ({
         }
     };
 
+    // (Opcional, no usado en el render por ahora) Vuelve al dashboard sin terminar el juego.
     const handleBackToMenu = () => {
         navigate('/home-dashboard');
     };
 
     return (
         <div className="space-y-4">
-            {/* Main Action Button */}
-
-            {/* --- 2. ÚNICA PARTE MODIFICADA --- */}
-            {/* Se cambió el 'div' por 'motion.div' y se agregaron las propiedades de animación. */}
-            {/* El componente <Button> de adentro no se tocó. */}
+            {/* Acción Principal */}
             <motion.div
                 className="flex justify-center"
                 whileTap={{ scale: 0.95 }}
@@ -64,11 +82,10 @@ const GameControls = ({
 
                 </Button>
             </motion.div>
-            {/* --- FIN DE LA PARTE MODIFICADA --- */}
 
-            {/* Secondary Actions */}
+            {/* Acciones Secundarias */}
             <div className="flex justify-center space-x-4">
-                {/* End Game Button */}
+                {/* Botón Terminar Juego (Solo visible si no es el último reto) */}
                 {!isLastChallenge &&
                     <Button
                         variant={showEndConfirm ? "destructive" : "outline"}
@@ -84,7 +101,7 @@ const GameControls = ({
                 }
             </div>
 
-            {/* Game Stats */}
+            {/* Estadísticas Ocultas (Progreso) */}
             <div className="flex justify-center">
                 <div className="bg-surface/50 rounded-lg px-4 py-2 items-center space-x-4 text-sm hidden">
                     <div className="flex items-center space-x-1">
@@ -103,7 +120,7 @@ const GameControls = ({
                 </div>
             </div>
 
-            {/* End Game Confirmation */}
+            {/* Alerta de confirmación de fin de juego */}
             {showEndConfirm &&
                 <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 text-center">
                     <div className="flex items-center justify-center space-x-2 mb-2">

@@ -12,6 +12,14 @@ const VALUES = [
     { label: '10', val: 10 }, { label: 'J', val: 11 }, { label: 'Q', val: 12 }, { label: 'K', val: 13 }
 ];
 
+/**
+ * Minijuego "Cartas del Destino" (Mayor o Menor).
+ * El jugador debe adivinar si la siguiente carta será de mayor o menor valor.
+ * Si acierta, acumula racha. Si falla, bebe el equivalente a su racha + 1.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Función para cerrar el minijuego.
+ */
 const HighLowCardMinigame = ({ onClose }) => {
     const [currentCard, setCurrentCard] = useState(null);
     const [score, setScore] = useState(0); // Racha actual
@@ -23,6 +31,10 @@ const HighLowCardMinigame = ({ onClose }) => {
         drawNewCard();
     }, []);
 
+    /**
+     * Genera una carta aleatoria con palo, valor, etiqueta y color.
+     * @returns {Object} Datos de la carta generada.
+     */
     const getRandomCard = () => {
         const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
         const valueData = VALUES[Math.floor(Math.random() * VALUES.length)];
@@ -30,17 +42,24 @@ const HighLowCardMinigame = ({ onClose }) => {
         return { ...valueData, suit, color };
     };
 
+    /**
+     * Saca una nueva carta inicial.
+     */
     const drawNewCard = () => {
         setCurrentCard(getRandomCard());
     };
 
-    const handleGuess = (guess) => { // 'HIGH' or 'LOW'
-        const nextCard = getRandomCard();
+    /**
+     * Maneja la adivinanza del jugador.
+     * @param {string} guess - 'HIGH' o 'LOW'
+     */
+    const handleGuess = (guess) => {
+        let nextCard = getRandomCard();
 
-        // Evitar empates aburridos (si sale igual, sacamos otra hasta que sea diferente)
-        // Opcional: Dejar el empate como "nadie bebe". Aquí lo forzamos a ser diferente para que fluya.
+        // Evitar empates aburridos: generamos una carta completamente nueva
+        // en lugar de mutar solo el valor (lo que causaba inconsistencia visual).
         while (nextCard.val === currentCard.val) {
-            nextCard.val = VALUES[Math.floor(Math.random() * VALUES.length)].val;
+            nextCard = getRandomCard();
         }
 
         const isHigher = nextCard.val > currentCard.val;
@@ -55,13 +74,15 @@ const HighLowCardMinigame = ({ onClose }) => {
         if (won) {
             setScore(score + 1);
             setMessage('¡Bien! Pasa el cel o sigue arriesgando.');
-            // Animación de éxito sutil
         } else {
             setStatus('LOSE');
             setMessage(`¡FALLASTE! Salió ${nextCard.label} ${nextCard.suit}`);
         }
     };
 
+    /**
+     * Reinicia la ronda (usado después de perder o al retirarse a tiempo).
+     */
     const resetGame = () => {
         setScore(0);
         setStatus('PLAYING');

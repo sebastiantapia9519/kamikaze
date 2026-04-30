@@ -1,9 +1,20 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
-// 👇 IMPORTACIÓN DEL LOGO (Asegúrate que esta ruta coincida con tu carpeta assets)
-import kamikazeLogo from '../../../assets/images/iconKamikaze180x180.png';
 
+/**
+ * Componente que muestra a quién le toca el turno actual y lista al resto de jugadores.
+ * Su diseño se adapta según el tipo de reto (Regular, Epic, Multiplayer).
+ * 
+ * @param {Object} props
+ * @param {Object} props.currentPlayer - El jugador al que le toca el turno principal.
+ * @param {Array} props.players - Lista de todos los jugadores en la partida.
+ * @param {Object} props.challenge - Datos del reto actual (category, assignedPlayers, etc.).
+ */
 const PlayerTurnIndicator = ({ currentPlayer, players = [], challenge }) => {
+    /**
+     * Determina el texto a mostrar dependiendo de si es un reto para un solo jugador,
+     * para múltiples jugadores asignados o para todos.
+     */
     const getAssignmentText = () => {
         if (challenge?.category === 'Multiplayer') {
             if (challenge?.assignedPlayers?.length) {
@@ -16,6 +27,9 @@ const PlayerTurnIndicator = ({ currentPlayer, players = [], challenge }) => {
         return `👉 ${currentPlayer?.name || 'Jugador'}`;
     };
 
+    /**
+     * Devuelve el color de gradiente basado en la categoría del reto.
+     */
     const getCategoryColor = () => {
         switch (challenge?.category) {
             case 'Regular':
@@ -29,6 +43,9 @@ const PlayerTurnIndicator = ({ currentPlayer, players = [], challenge }) => {
         }
     };
 
+    /**
+     * Devuelve el ícono correspondiente basado en la categoría del reto.
+     */
     const getCategoryIcon = () => {
         switch (challenge?.category) {
             case 'Regular':

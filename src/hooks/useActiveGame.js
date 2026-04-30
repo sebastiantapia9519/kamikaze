@@ -4,9 +4,17 @@ import challengesData from '../data/challenges.json';
 import chaosEventsData from '../data/chaosEvents.json';
 
 // --- CONSTANTES ---
+/** @type {Object<string, number>} Mapeo de duración de juego a cantidad de retos */
 const gameLengthMap = { quick: 15, standard: 30, extended: 45 };
 
 // --- ALGORITMO DE BARAJADO PROFESIONAL (Fisher-Yates) ---
+/**
+ * Mezcla aleatoriamente los elementos de un array utilizando el algoritmo de Fisher-Yates.
+ * Modifica el array original y lo devuelve.
+ * 
+ * @param {Array} array - El array a mezclar.
+ * @returns {Array} El array mezclado.
+ */
 const shuffleArray = (array) => {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
@@ -18,6 +26,11 @@ const shuffleArray = (array) => {
 };
 
 // Pre-procesamiento de retos
+/**
+ * Arreglo pre-procesado con todos los retos disponibles, añadiéndoles un ID único
+ * y una etiqueta de categoría para facilitar el seguimiento.
+ * @type {Array<Object>}
+ */
 const challengesWithIds = (() => {
     let idCounter = 1;
     const all = [];
@@ -28,6 +41,15 @@ const challengesWithIds = (() => {
 })();
 
 // --- HELPERS ---
+/**
+ * Determina el índice del siguiente jugador según el orden configurado y la dirección del turno.
+ * 
+ * @param {number} currentIndex - Índice del jugador actual.
+ * @param {string} order - Regla de orden ('random', 'clockwise', 'counterclockwise').
+ * @param {number} playerCount - Cantidad total de jugadores.
+ * @param {number} turnDirection - Dirección del turno (1 o -1, modificado por eventos de caos).
+ * @returns {number} Índice del próximo jugador.
+ */
 const getNextPlayerIndex = (currentIndex, order, playerCount, turnDirection) => {
     if (playerCount <= 1) return 0;
     if (order === 'random') {
@@ -42,6 +64,10 @@ const getNextPlayerIndex = (currentIndex, order, playerCount, turnDirection) => 
 };
 
 // --- REDUCER ---
+/**
+ * Estado inicial de la partida.
+ * @type {Object}
+ */
 const initialState = {
     players: [],
     shuffledChallenges: [],
@@ -64,6 +90,14 @@ const initialState = {
     showTrafficMinigame: false,
 };
 
+/**
+ * Reducer que gestiona el estado principal de la sesión de juego activa,
+ * incluyendo la navegación entre retos, activación de minijuegos y eventos de caos.
+ * 
+ * @param {Object} state - Estado actual.
+ * @param {Object} action - Acción despachada con 'type' y 'payload'.
+ * @returns {Object} El nuevo estado.
+ */
 function gameReducer(state, action) {
     switch (action.type) {
         case 'INITIALIZE':
@@ -166,6 +200,13 @@ function gameReducer(state, action) {
 }
 
 // --- EL HOOK PRINCIPAL ---
+/**
+ * Hook personalizado que encapsula toda la lógica de negocio y estado
+ * para la sesión de juego activa (Kamikaze).
+ * 
+ * @param {Object} locationState - Estado recibido por navegación (react-router-dom) con los jugadores.
+ * @returns {Object} Un objeto con el estado, datos del reto actual, jugador actual, y acciones disponibles.
+ */
 export const useActiveGame = (locationState) => {
     const navigate = useNavigate();
 
@@ -204,7 +245,11 @@ export const useActiveGame = (locationState) => {
         dispatch({ type: 'INITIALIZE', payload: { players: currentPlayers, shuffledChallenges: shuffled } });
     }, [locationState, navigate, totalChallenges]);
 
-    // Obtener datos del reto actual
+    /**
+     * Obtiene y formatea los datos del reto actual.
+     * En el caso de retos multijugador, asigna aleatoriamente qué jugadores deben participar.
+     * @returns {Object|null} El reto actual enriquecido.
+     */
     const getCurrentChallengeData = useCallback(() => {
         if (!state.shuffledChallenges.length) return null;
         const idx = (state.currentChallenge - 1) % state.shuffledChallenges.length;
@@ -226,7 +271,7 @@ export const useActiveGame = (locationState) => {
         return final;
     }, [state.shuffledChallenges, state.currentChallenge, state.players]);
 
-    // Guardado inmediato
+    // Guardado inmediato de retos usados en localStorage para evitar repeticiones en próximas sesiones.
     useEffect(() => {
         const currentData = getCurrentChallengeData();
         if (currentData && currentData.id) {
@@ -248,10 +293,7 @@ export const useActiveGame = (locationState) => {
         closeChaos: () => dispatch({ type: 'CLOSE_CHAOS', payload: { settings } }),
         closeCards: () => dispatch({ type: 'CLOSE_CARDS', payload: { settings } }),
         closeTraffic: () => dispatch({ type: 'CLOSE_TRAFFIC', payload: { settings } }),
-
-        // 👇 FALTABA ESTE AQUÍ TAMBIÉN:
         closeSequence: () => dispatch({ type: 'CLOSE_SEQUENCE', payload: { settings } }),
-
         endGame: () => dispatch({ type: 'END_GAME' }),
         restartGame: () => {
             const reshuffled = shuffleArray([...challengesWithIds]);

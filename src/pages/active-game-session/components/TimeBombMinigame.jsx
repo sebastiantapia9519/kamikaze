@@ -3,6 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
+/**
+ * Minijuego de Bomba de Tiempo ("Papa Caliente").
+ * Un temporizador aleatorio oculto (10 a 35 segundos).
+ * Los jugadores se pasan el dispositivo hasta que la bomba explota.
+ * Al que le explota, pierde y bebe.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Función para cerrar el minijuego tras la explosión.
+ */
 const TimeBombMinigame = ({ onClose }) => {
     const [gameState, setGameState] = useState('intro'); // intro, ticking, exploded
     const [timeLeft, setTimeLeft] = useState(0);
@@ -17,11 +26,17 @@ const TimeBombMinigame = ({ onClose }) => {
     const MIN_DURATION = 10000; // 10 segundos
     const MAX_DURATION = 35000; // 35 segundos
 
-    // Efecto de vibración (Haptic Feedback)
+    /**
+     * Efecto de vibración (Haptic Feedback)
+     * @param {number|number[]} pattern - Patrón de vibración en milisegundos.
+     */
     const vibrate = (pattern) => {
         if (navigator.vibrate) navigator.vibrate(pattern);
     };
 
+    /**
+     * Inicia la cuenta regresiva de la bomba con un tiempo aleatorio.
+     */
     const startBomb = () => {
         const randomDuration = Math.floor(Math.random() * (MAX_DURATION - MIN_DURATION + 1)) + MIN_DURATION;
         durationRef.current = randomDuration;
@@ -49,12 +64,16 @@ const TimeBombMinigame = ({ onClose }) => {
         }, 50);
     };
 
+    /**
+     * Finaliza la cuenta regresiva y muestra la pantalla de explosión.
+     */
     const explode = () => {
         clearInterval(intervalRef.current);
         setGameState('exploded');
         vibrate([500, 100, 500, 100, 1000]); // Vibración de explosión
     };
 
+    // Limpieza de intervalos al desmontar
     useEffect(() => {
         return () => clearInterval(intervalRef.current);
     }, []);

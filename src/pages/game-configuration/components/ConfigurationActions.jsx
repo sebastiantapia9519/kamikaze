@@ -2,6 +2,17 @@ import React from 'react';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
 
+/**
+ * Componente que renderiza los botones de acción para la configuración (Guardar, Restablecer)
+ * y muestra alertas visuales según el estado de los cambios (guardados, sin guardar).
+ * 
+ * @param {Object} props
+ * @param {boolean} props.hasChanges - Indica si hay cambios no guardados en la configuración.
+ * @param {Function} props.onSave - Callback ejecutado al hacer clic en "Guardar Cambios".
+ * @param {Function} props.onReset - Callback ejecutado al hacer clic en "Restablecer".
+ * @param {Function} props.onBackToHome - Callback ejecutado al hacer clic en volver al inicio.
+ * @param {boolean} [props.isSaving=false] - Estado de carga durante el guardado.
+ */
 const ConfigurationActions = ({
     hasChanges,
     onSave,
@@ -11,16 +22,15 @@ const ConfigurationActions = ({
 }) => {
     return (
         <div className="space-y-6">
-            {/* ACCIONES PRINCIPALES (Guardar / Reset) */}
+            {/* Acciones principales (Guardar / Restablecer) */}
             <div className="flex flex-col sm:flex-row gap-4">
 
-                {/* Botón GUARDAR */}
+                {/* Botón Guardar */}
                 <Button
                     variant="default"
                     onClick={onSave}
                     disabled={!hasChanges || isSaving}
                     loading={isSaving}
-                    // Gradiente vibrante y sombra fuerte
                     className={`flex-1 font-bold text-white shadow-lg transition-all transform active:scale-95
                         ${!hasChanges
                             ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-white/5'
@@ -33,11 +43,10 @@ const ConfigurationActions = ({
                     </span>
                 </Button>
 
-                {/* Botón RESTABLECER */}
+                {/* Botón Restablecer */}
                 <Button
                     variant="outline"
                     onClick={onReset}
-                    // Borde rojo sutil y texto rojo que brilla al pasar el mouse
                     className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500 hover:text-red-300 transition-all font-bold"
                 >
                     <Icon name="RotateCcw" size={18} />
@@ -45,7 +54,7 @@ const ConfigurationActions = ({
                 </Button>
             </div>
 
-            {/* Navigation Actions (Ocultos según tu código original, pero estilizados por si acaso) */}
+            {/* Acciones de navegación (Ocultos según el diseño original, pero preservados) */}
             <div className="hidden flex-col sm:flex-row gap-4">
                 <Button
                     variant="ghost"
@@ -57,7 +66,7 @@ const ConfigurationActions = ({
                 </Button>
             </div>
 
-            {/* MENSAJE: CAMBIOS SIN GUARDAR */}
+            {/* Mensaje: Cambios sin guardar */}
             {hasChanges && (
                 <div className="bg-yellow-900/20 border border-yellow-500/30 p-4 rounded-xl animate-pulse-slow">
                     <div className="flex items-center space-x-3">
@@ -76,7 +85,7 @@ const ConfigurationActions = ({
                 </div>
             )}
 
-            {/* MENSAJE: ÉXITO / GUARDADO */}
+            {/* Mensaje: Éxito / Guardado */}
             {!hasChanges && !isSaving && (
                 <div className="bg-green-900/20 border border-green-500/30 p-4 rounded-xl">
                     <div className="flex items-center space-x-3">

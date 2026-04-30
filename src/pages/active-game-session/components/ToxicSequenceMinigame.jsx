@@ -4,6 +4,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useGameEffects } from '../../../hooks/useGameEffects';
 
+// Configuración de los botones/pads del juego de memoria
 const GAME_PADS = [
     { id: 0, icon: 'Beer', color: 'bg-yellow-500', text: 'text-yellow-400', sound: 'tick' },
     { id: 1, icon: 'Wine', color: 'bg-red-500', text: 'text-red-400', sound: 'tick' },
@@ -13,6 +14,15 @@ const GAME_PADS = [
 
 const TARGET_LEVEL = 5;
 
+/**
+ * Minijuego de Secuencia Tóxica (Estilo "Simón Dice").
+ * El juego reproduce una secuencia de luces/sonidos que el jugador debe memorizar
+ * y repetir en el mismo orden. Cada ronda añade un paso a la secuencia.
+ * Si el jugador alcanza el TARGET_LEVEL (5), gana. Si se equivoca, pierde.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Callback ejecutado al salir del minijuego.
+ */
 const ToxicSequenceMinigame = ({ onClose }) => {
     const { playSound, triggerHaptic } = useGameEffects();
 
@@ -29,7 +39,7 @@ const ToxicSequenceMinigame = ({ onClose }) => {
     const timeout1 = useRef(null);
     const timeout2 = useRef(null);
 
-    // --- REPRODUCCIÓN SEGURA ---
+    // --- REPRODUCCIÓN SEGURA DE LA SECUENCIA ---
     useEffect(() => {
         if (gameState === 'SHOWING' && playbackIdx >= 0) {
             // Si ya terminamos de mostrar la secuencia...
@@ -68,6 +78,9 @@ const ToxicSequenceMinigame = ({ onClose }) => {
         }
     }, [gameState, playbackIdx, sequence, level, playSound]);
 
+    /**
+     * Inicia el juego desde el nivel 1.
+     */
     const startGame = () => {
         setSequence([]);
         playerInputRef.current = [];
@@ -75,6 +88,10 @@ const ToxicSequenceMinigame = ({ onClose }) => {
         addToSequence([]);
     };
 
+    /**
+     * Añade un nuevo paso aleatorio a la secuencia y la reproduce.
+     * @param {number[]} currentSeq - La secuencia actual hasta el momento.
+     */
     const addToSequence = (currentSeq) => {
         const nextPad = Math.floor(Math.random() * GAME_PADS.length);
         const newSeq = [...currentSeq, nextPad];
@@ -84,10 +101,14 @@ const ToxicSequenceMinigame = ({ onClose }) => {
         setTimeout(() => setPlaybackIdx(0), 500);
     };
 
+    /**
+     * Maneja el clic del jugador en uno de los botones (pads).
+     * @param {number} padId - El ID numérico del botón pulsado (0-3).
+     */
     const handlePadClick = (padId) => {
         if (gameState !== 'INPUT') return;
 
-        // Feedback visual
+        // Feedback visual y sonoro
         setActivePad(padId);
         playSound(GAME_PADS[padId].sound);
         setTimeout(() => setActivePad(null), 150);
@@ -113,6 +134,7 @@ const ToxicSequenceMinigame = ({ onClose }) => {
                     playSound('win');
                 } else {
                     setLevel(l => l + 1);
+                    // Retraso antes de iniciar la siguiente secuencia
                     setTimeout(() => addToSequence(sequence), 800);
                 }
             }

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 
-// Lista de Juegos Disponibles
+// Lista de Juegos Disponibles en el Arcade
 const GAMES = [
     {
         id: 'race',
@@ -26,7 +26,7 @@ const GAMES = [
         id: 'sequence',
         title: 'Secuencia Tóxica',
         description: 'Memoria o muerte',
-        icon: 'Activity', // Icono de pulso/memoria
+        icon: 'Activity',
         color: 'text-yellow-400',
         bg: 'bg-yellow-500/10',
         border: 'border-yellow-500/20'
@@ -67,9 +67,16 @@ const GAMES = [
         bg: 'bg-emerald-500/10',
         border: 'border-emerald-500/20'
     }
-    // EL SEMÁFORO HA SIDO ELIMINADO DE AQUÍ
 ];
 
+/**
+ * Menú tipo "Arcade" que permite a los usuarios seleccionar un minijuego manualmente.
+ * 
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Controla si el menú está visible u oculto.
+ * @param {Function} props.onClose - Función para cerrar el menú.
+ * @param {Function} props.onSelectGame - Función que recibe el ID del juego seleccionado.
+ */
 const MinigameMenu = ({ isOpen, onClose, onSelectGame }) => {
     return (
         <AnimatePresence>

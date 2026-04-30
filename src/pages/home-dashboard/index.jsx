@@ -36,6 +36,14 @@ const DRINK_ICONS = [
 // ==========================================
 // 1. COMPONENTE INTERNO: QuickPlayerSetup 
 // ==========================================
+/**
+ * Modal rápido para configurar jugadores cuando se accede al modo "Arcade" (Minijuegos).
+ * Permite añadir jugadores rápidamente, asignarles un nombre y un ícono rotativo.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Callback invocado al cerrar el modal.
+ * @param {Function} props.onStart - Callback invocado al presionar continuar, recibe el arreglo de jugadores.
+ */
 const QuickPlayerSetup = ({ onClose, onStart }) => {
     const [players, setPlayers] = useState([
         { id: 1, name: '', iconIdx: 0 },
@@ -137,6 +145,11 @@ const QuickPlayerSetup = ({ onClose, onStart }) => {
 // ==========================================
 // 2. COMPONENTE PRINCIPAL: HomeDashboard
 // ==========================================
+/**
+ * Menú principal de la aplicación.
+ * Actúa como punto de entrada para iniciar partida, modo arcade, configuración e información.
+ * Gestiona la navegación de la aplicación y la validación inicial (disclaimer).
+ */
 const HomeDashboard = () => {
     const navigate = useNavigate();
 
@@ -145,6 +158,7 @@ const HomeDashboard = () => {
     const [activeMinigame, setActiveMinigame] = useState(null);
     const [quickPlayers, setQuickPlayers] = useState([]);
 
+    // Verificar aceptación del disclaimer (responsabilidad de edad) antes de mostrar contenido
     useEffect(() => {
         const disclaimerAccepted = localStorage.getItem('kamikazeDisclaimerAccepted');
         if (!disclaimerAccepted) {

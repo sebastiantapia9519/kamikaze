@@ -2,7 +2,18 @@ import React from 'react';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
 
+/**
+ * Componente que renderiza la lista de jugadores agregados a la partida.
+ * Incluye un estado vacío, la lista de nombres con avatares generados a partir
+ * de la inicial del nombre, y botones para eliminar jugadores individuales.
+ * También muestra advertencias sobre el límite recomendado de jugadores.
+ * 
+ * @param {Object} props
+ * @param {Array} [props.players=[]] - Lista de objetos que representan a los jugadores.
+ * @param {Function} props.onRemovePlayer - Función callback invocada al presionar el botón de eliminar.
+ */
 const PlayerList = ({ players = [], onRemovePlayer }) => {
+    // --- ESTADO VACÍO ---
     if (players?.length === 0) {
         return (
             <div className="bg-card p-8 rounded-lg shadow-graffiti-md border border-border text-center">
@@ -17,6 +28,8 @@ const PlayerList = ({ players = [], onRemovePlayer }) => {
         );
     }
 
+    // --- COLORES DE AVATAR ---
+    // Clases de gradientes para alternar los colores de los avatares generados
     const playerColors = [
         'from-primary to-accent',
         'from-secondary to-warning',
@@ -30,6 +43,7 @@ const PlayerList = ({ players = [], onRemovePlayer }) => {
 
     return (
         <div className="bg-card p-6 rounded-lg shadow-graffiti-md border border-border">
+            {/* ENCABEZADO DE LA LISTA */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-success to-primary rounded-lg flex items-center justify-center">
@@ -45,6 +59,7 @@ const PlayerList = ({ players = [], onRemovePlayer }) => {
                     </div>
                 </div>
 
+                {/* Badge de validación (Mínimo 2 jugadores) */}
                 {players?.length >= 2 && (
                     <div className="flex items-center space-x-2 px-3 py-1 bg-success/20 rounded-full border border-success/30">
                         <Icon name="CheckCircle" size={16} className="text-success" />
@@ -52,13 +67,17 @@ const PlayerList = ({ players = [], onRemovePlayer }) => {
                     </div>
                 )}
             </div>
+
+            {/* LISTA DE JUGADORES */}
             <div className="space-y-3">
                 {players?.map((player, index) => (
                     <div
                         key={player?.id}
                         className="group flex items-center justify-between p-4 bg-surface rounded-lg border border-border hover:shadow-graffiti-sm transition-all duration-200"
                     >
+                        {/* Info del Jugador */}
                         <div className="flex items-center space-x-3">
+                            {/* Avatar generado a partir de la inicial */}
                             <div className={`w-10 h-10 bg-gradient-to-br ${playerColors?.[index % playerColors?.length]} rounded-full flex items-center justify-center shadow-graffiti-sm`}>
                                 <span className="font-heading text-white font-bold">
                                     {player?.name?.charAt(0)?.toUpperCase()}
@@ -74,6 +93,7 @@ const PlayerList = ({ players = [], onRemovePlayer }) => {
                             </div>
                         </div>
 
+                        {/* Acción de Eliminar (Oculto hasta hacer hover) */}
                         <Button
                             variant="ghost"
                             size="sm"
@@ -87,7 +107,8 @@ const PlayerList = ({ players = [], onRemovePlayer }) => {
                     </div>
                 ))}
             </div>
-            {/* Player Limit Warning */}
+
+            {/* ADVERTENCIA DE LÍMITE DE JUGADORES */}
             {players?.length >= 12 && (
                 <div className="mt-4 p-3 bg-warning/10 border border-warning/20 rounded-lg">
                     <div className="flex items-center space-x-2">

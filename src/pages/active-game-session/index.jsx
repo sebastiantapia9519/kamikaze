@@ -4,23 +4,25 @@ import { AnimatePresence } from 'framer-motion';
 
 // --- COMPONENTES DEL TABLERO ---
 import GameBoard from './components/GameBoard';
-import GameControls from './components/GameControls';
-import PlayerTurnOverlay from './components/PlayerTurnOverlay';
-import ChallengeCardModal from './components/ChallengeCardModal';
-import WinnerModal from './components/WinnerModal';
 import PauseMenu from './components/PauseMenu';
 
-// --- MINIJUEGOS (Aquí es donde limpiamos) ---
+// --- MINIJUEGOS ---
 import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
 import TimeBombMinigame from './components/TimeBombMinigame';
 import BlindSniperMinigame from './components/BlindSniperMinigame';
 import FingerRouletteMinigame from './components/FingerRouletteMinigame';
 import TapBattleMinigame from './components/TapBattleMinigame';
 import HighLowCardMinigame from './components/HighLowCardMinigame';
-import ToxicSequenceMinigame from './components/ToxicSequenceMinigame'; // ✅ Se queda
+import ToxicSequenceMinigame from './components/ToxicSequenceMinigame';
 
-// ❌ SEMÁFORO ELIMINADO
-
+/**
+ * Componente Principal de la Sesión de Juego Activa.
+ * 
+ * Actúa como el controlador maestro del estado del juego en curso.
+ * Maneja las fases del juego (Tirar dados, Minijuego, etc.),
+ * controla a los jugadores, y coordina la renderización dinámica
+ * de los minijuegos mediante condicionales.
+ */
 const ActiveGameSession = () => {
     const navigate = useNavigate();
 
@@ -28,17 +30,19 @@ const ActiveGameSession = () => {
     const [gameState, setGameState] = useState({
         players: [],
         currentPlayerIdx: 0,
-        gamePhase: 'SETUP', // SETUP, ROLL, MOVE, CHALLENGE, MINIGAME, WIN
+        gamePhase: 'SETUP', // Fases: SETUP, ROLL, MOVE, CHALLENGE, MINIGAME, WIN
         currentMinigame: null,
         winner: null
     });
 
     const [isPaused, setIsPaused] = useState(false);
 
-    // Cargar jugadores al inicio (simulado o desde contexto)
+    /**
+     * Efecto inicial: Carga los jugadores al iniciar la sesión.
+     * Actualmente inicializa con datos estáticos simulados.
+     */
     useEffect(() => {
-        // Aquí deberías cargar los jugadores reales desde el setup anterior
-        // Por ahora simulamos si no hay datos
+        // TODO: Cargar los jugadores reales desde el contexto global o almacenamiento persistente
         const loadedPlayers = [
             { id: 1, name: 'Jugador 1', position: 0, color: 'red' },
             { id: 2, name: 'Jugador 2', position: 0, color: 'blue' }
@@ -47,13 +51,19 @@ const ActiveGameSession = () => {
         setGameState(prev => ({
             ...prev,
             players: loadedPlayers,
-            gamePhase: 'ROLL' // Iniciamos directo en tirar dados
+            gamePhase: 'ROLL' // Iniciamos directo en tirar dados para pruebas
         }));
     }, []);
 
-    // --- MANEJO DE MINIJUEGOS ---
+    /**
+     * Manejador que se ejecuta cuando un minijuego termina.
+     * Recibe los resultados (quién ganó/perdió), aplica consecuencias
+     * y devuelve el control al tablero principal.
+     * 
+     * @param {Object} results - Resultados obtenidos del minijuego.
+     */
     const handleMinigameEnd = (results) => {
-        // Lógica para aplicar castigos/premios según el resultado
+        // TODO: Lógica para aplicar castigos/premios según el resultado
         console.log('Minigame ended:', results);
 
         // Regresar al tablero
@@ -65,6 +75,11 @@ const ActiveGameSession = () => {
         }));
     };
 
+    /**
+     * Función de utilidad (temporal/debug) para disparar manualmente un minijuego.
+     * 
+     * @param {string} gameId - Identificador del minijuego (ej. 'sequence', 'race').
+     */
     const triggerMinigame = (gameId) => {
         setGameState(prev => ({
             ...prev,
@@ -73,11 +88,14 @@ const ActiveGameSession = () => {
         }));
     };
 
-    // --- RENDERIZADO DE MINIJUEGOS ---
+    /**
+     * Renderiza dinámicamente el minijuego actual basado en el estado `currentMinigame`.
+     * Inyecta propiedades comunes como `onClose` y la lista de jugadores.
+     */
     const renderMinigame = () => {
         const { currentMinigame } = gameState;
 
-        // Pasamos onClose para que el minijuego sepa volver al tablero
+        // Propiedades comunes pasadas a la mayoría de minijuegos
         const commonProps = {
             onClose: handleMinigameEnd,
             players: gameState.players
@@ -98,9 +116,6 @@ const ActiveGameSession = () => {
                 return <HighLowCardMinigame onClose={handleMinigameEnd} />;
             case 'sequence':
                 return <ToxicSequenceMinigame onClose={handleMinigameEnd} />;
-
-            // ELIMINADO: case 'traffic': return <DrunkenTrafficLightMinigame ... />
-
             default:
                 return null;
         }
@@ -141,13 +156,12 @@ const ActiveGameSession = () => {
                 />
             )}
 
-            {/* DEBUG: Botones para probar (puedes borrarlos luego) */}
+            {/* DEBUG: Botones para probar (se eliminarán en producción) */}
             {gameState.gamePhase === 'ROLL' && (
                 <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2">
                     <button onClick={() => triggerMinigame('sequence')} className="bg-yellow-600 text-white p-2 rounded">
                         Test Secuencia
                     </button>
-                    {/* Botón de semáforo eliminado */}
                 </div>
             )}
         </div>

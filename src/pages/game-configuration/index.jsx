@@ -3,23 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import ContextualBackNavigation from '../../components/ui/ContextualBackNavigation';
 import CategoryToggleSection from './components/CategoryToggleSection';
-// Se eliminó ThemeSwitcher
 import GameplaySettings from './components/GameplaySettings';
 import ConfigurationActions from './components/ConfigurationActions';
 import Icon from '../../components/AppIcon';
 import bgImage from '../../assets/images/graffiti-bg.png';
 
+/**
+ * Página de Configuración Global del Juego.
+ * Permite a los usuarios activar/desactivar categorías de retos
+ * y ajustar preferencias de juego (dificultad, sonidos, vibración, etc.).
+ * Los ajustes se persisten localmente usando localStorage.
+ */
 const GameConfiguration = () => {
     const navigate = useNavigate();
 
-    // Configuration state
+    // --- ESTADOS DE CONFIGURACIÓN ---
     const [categories, setCategories] = useState({
         regular: true,
         epic: true,
         multiplayer: true
     });
-
-    // Se eliminó el estado 'theme'
 
     const [gameplaySettings, setGameplaySettings] = useState({
         difficulty: 'medium',
@@ -30,11 +33,14 @@ const GameConfiguration = () => {
         enableVibration: true
     });
 
+    // --- ESTADOS DE LA INTERFAZ ---
     const [hasChanges, setHasChanges] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [originalSettings, setOriginalSettings] = useState(null);
 
-    // Load settings from localStorage on mount
+    /**
+     * Cargar configuraciones desde localStorage al montar el componente.
+     */
     useEffect(() => {
         const savedCategories = localStorage.getItem('kamikazeCategories');
         const savedGameplay = localStorage.getItem('kamikazeGameplaySettings');
@@ -47,14 +53,16 @@ const GameConfiguration = () => {
             setGameplaySettings(JSON.parse(savedGameplay));
         }
 
-        // Store original settings for comparison
+        // Guardar copia original para detectar cambios no guardados
         setOriginalSettings({
             categories: savedCategories ? JSON.parse(savedCategories) : categories,
             gameplay: savedGameplay ? JSON.parse(savedGameplay) : gameplaySettings
         });
     }, []);
 
-    // Track changes
+    /**
+     * Detectar si hay cambios no guardados comparando el estado actual con el original.
+     */
     useEffect(() => {
         if (originalSettings) {
             const currentSettings = {
@@ -67,6 +75,11 @@ const GameConfiguration = () => {
         }
     }, [categories, gameplaySettings, originalSettings]);
 
+    /**
+     * Manejador para activar/desactivar categorías específicas.
+     * @param {string} categoryId - Identificador de la categoría (ej. 'regular', 'epic').
+     * @param {boolean} enabled - Nuevo estado (activado/desactivado).
+     */
     const handleCategoryChange = (categoryId, enabled) => {
         setCategories((prev) => ({
             ...prev,
@@ -74,6 +87,11 @@ const GameConfiguration = () => {
         }));
     };
 
+    /**
+     * Manejador genérico para cambiar cualquier configuración de gameplay.
+     * @param {string} key - Clave del ajuste (ej. 'difficulty', 'enableSounds').
+     * @param {any} value - Nuevo valor del ajuste.
+     */
     const handleGameplaySettingChange = (key, value) => {
         setGameplaySettings((prev) => ({
             ...prev,
@@ -81,13 +99,16 @@ const GameConfiguration = () => {
         }));
     };
 
+    /**
+     * Guarda los ajustes actuales en localStorage y reinicia el estado de cambios.
+     */
     const handleSaveSettings = async () => {
         setIsSaving(true);
         try {
+            // Simular un pequeño retardo para feedback visual (loader)
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             localStorage.setItem('kamikazeCategories', JSON.stringify(categories));
-            // Se eliminó guardado de theme
             localStorage.setItem('kamikazeGameplaySettings', JSON.stringify(gameplaySettings));
 
             setOriginalSettings({
@@ -103,6 +124,9 @@ const GameConfiguration = () => {
         }
     };
 
+    /**
+     * Restablece los ajustes a sus valores por defecto y limpia localStorage.
+     */
     const handleResetSettings = () => {
         const defaultCategories = {
             regular: true,
@@ -123,10 +147,12 @@ const GameConfiguration = () => {
         setGameplaySettings(defaultGameplay);
 
         localStorage.removeItem('kamikazeCategories');
-        // Se eliminó borrado de theme
         localStorage.removeItem('kamikazeGameplaySettings');
     };
 
+    /**
+     * Vuelve al menú principal.
+     */
     const handleBackToHome = () => {
         navigate('/home-dashboard');
     };
@@ -174,7 +200,6 @@ const GameConfiguration = () => {
                                     <span className="text-gray-400">Categorías:</span>
                                     <span className="font-bold text-white">{activeCategoriesCount}/3</span>
                                 </div>
-                                {/* Se eliminó el Badge de Tema */}
                             </div>
                         </div>
                     </div>
@@ -184,8 +209,6 @@ const GameConfiguration = () => {
                         <CategoryToggleSection
                             categories={categories}
                             onCategoryChange={handleCategoryChange} />
-
-                        {/* Se eliminó el componente ThemeSwitcher */}
 
                         <GameplaySettings
                             settings={gameplaySettings}

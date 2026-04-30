@@ -3,29 +3,60 @@ import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
+/**
+ * Minijuego del Francotirador Ciego.
+ * El jugador debe detener el reloj lo más cerca posible de 5.00 segundos.
+ * A partir de los 2.00 segundos, el reloj se vuelve invisible (isBlind).
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Función para cerrar el minijuego.
+ * @param {Object} props.currentPlayer - Información del jugador actual.
+ */
 const BlindSniperMinigame = ({ onClose, currentPlayer }) => {
-    const [gameState, setGameState] = useState('intro');
+    const [gameState, setGameState] = useState('intro'); // 'intro', 'playing', 'result'
     const [timeDisplay, setTimeDisplay] = useState("0.00");
     const [result, setResult] = useState(null);
 
+    // Refs para la lógica del reloj
     const startTimeRef = useRef(null);
-    const timerRef = useRef(null);
+    const requestRef = useRef(null);
+
     const TARGET_TIME = 5.00;
     const BLIND_AT = 2.00;
 
+    /**
+     * Función que actualiza el reloj visualmente en cada frame (loop de animación).
+     * Usar requestAnimationFrame es mucho más óptimo que setInterval.
+     */
+    const updateTime = () => {
+        if (!startTimeRef.current) return;
+        
+        const now = Date.now();
+        const elapsed = (now - startTimeRef.current) / 1000;
+        setTimeDisplay(elapsed.toFixed(2));
+        
+        requestRef.current = requestAnimationFrame(updateTime);
+    };
+
+    /**
+     * Inicia el minijuego y el reloj.
+     */
     const startGame = () => {
         setGameState('playing');
         startTimeRef.current = Date.now();
-
-        timerRef.current = setInterval(() => {
-            const now = Date.now();
-            const elapsed = (now - startTimeRef.current) / 1000;
-            setTimeDisplay(elapsed.toFixed(2));
-        }, 30);
+        requestRef.current = requestAnimationFrame(updateTime);
     };
 
+    /**
+     * Detiene el reloj, calcula la diferencia con el tiempo objetivo
+     * y determina el castigo según el margen de error.
+     */
     const stopGame = () => {
-        clearInterval(timerRef.current);
+        // Detener el loop de animación
+        if (requestRef.current) {
+            cancelAnimationFrame(requestRef.current);
+        }
+
         const now = Date.now();
         const finalTime = (now - startTimeRef.current) / 1000;
 
@@ -69,11 +100,19 @@ const BlindSniperMinigame = ({ onClose, currentPlayer }) => {
         setGameState('result');
     };
 
+    /**
+     * Limpieza: Asegurarse de cancelar el loop si el componente se desmonta.
+     */
     useEffect(() => {
-        return () => clearInterval(timerRef.current);
+        return () => {
+            if (requestRef.current) {
+                cancelAnimationFrame(requestRef.current);
+            }
+        };
     }, []);
 
     const currentTimeFloat = parseFloat(timeDisplay);
+    // Condición de "ceguera": Cuando el tiempo supera BLIND_AT
     const isBlind = currentTimeFloat > BLIND_AT && gameState === 'playing';
 
     return (
@@ -92,7 +131,7 @@ const BlindSniperMinigame = ({ onClose, currentPlayer }) => {
                         <Icon name="Target" size={64} className="text-cyan-400 mx-auto mb-6" />
                         <div className="mb-4">
                             <span className="text-gray-400 text-sm uppercase tracking-widest">Tirador:</span>
-                            <h2 className="text-3xl font-black text-white mt-1">{currentPlayer?.name}</h2>
+                            <h2 className="text-3xl font-black text-white mt-1">{currentPlayer?.name || "Jugador"}</h2>
                         </div>
                         <p className="text-gray-300 text-lg mb-8">
                             Detén el reloj en <span className="text-cyan-400 font-bold text-2xl">5.00s</span>.

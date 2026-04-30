@@ -1,16 +1,40 @@
 import React from "react";
 import Icon from "./AppIcon";
 
+/**
+ * Componente de límite de error (Error Boundary).
+ * Captura errores de JavaScript en cualquier parte de su árbol de componentes hijo,
+ * registra esos errores y muestra una interfaz de usuario de respaldo (fallback UI)
+ * en lugar del árbol de componentes que falló.
+ * 
+ * @extends React.Component
+ */
 class ErrorBoundary extends React.Component {
+    /**
+     * @param {Object} props - Propiedades del componente.
+     */
     constructor(props) {
         super(props);
         this.state = { hasError: false };
     }
 
+    /**
+     * Actualiza el estado para que el próximo renderizado muestre la UI de repuesto.
+     * 
+     * @param {Error} error - El error que fue arrojado.
+     * @returns {Object} El nuevo estado indicando que hubo un error.
+     */
     static getDerivedStateFromError(error) {
         return { hasError: true };
     }
 
+    /**
+     * Se llama después de que un componente hijo arroja un error.
+     * Útil para registrar el error en un servicio de reporte de errores.
+     * 
+     * @param {Error} error - El error que fue arrojado.
+     * @param {Object} errorInfo - Un objeto con información sobre qué componente arrojó el error.
+     */
     componentDidCatch(error, errorInfo) {
         error.__ErrorBoundary = true;
         window.__COMPONENT_ERROR__?.(error, errorInfo);

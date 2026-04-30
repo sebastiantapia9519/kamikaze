@@ -3,7 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-// --- COMPONENTE VISUAL DE AJOLOTE (SVG) ---
+/**
+ * Componente visual que renderiza el SVG de un Ajolote.
+ * @param {Object} props
+ * @param {string} props.color - Color principal del ajolote en formato hexadecimal.
+ * @param {boolean} props.isWinner - Si es verdadero, muestra una animación de destello.
+ */
 const AxolotlCharacter = ({ color, isWinner }) => (
     <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
         {/* Cuerpo */}
@@ -35,9 +40,23 @@ const AXOLOTLS = [
     { id: 'red', name: 'DeadPool', hex: '#F87171', bg: 'bg-red-500', border: 'border-red-400' },
 ];
 
-const AxolotlRaceMinigame = ({ players, onClose }) => {
+/**
+ * Minijuego de Carrera de Ajolotes.
+ * Fases: Apuestas -> Carrera -> Resultados.
+ * 
+ * @param {Object} props
+ * @param {Array} props.players - Lista de jugadores activos en la partida.
+ * @param {Function} props.onClose - Función para cerrar el minijuego y regresar al tablero.
+ */
+const AxolotlRaceMinigame = ({ players = [], onClose }) => {
+    // --- VALIDACIÓN DE SEGURIDAD ---
+    // Si no hay jugadores, evitamos renderizar para no causar un crash al buscar players[0].
+    if (!players || players.length === 0) {
+        return null; 
+    }
+
     // --- ESTADOS DEL JUEGO ---
-    const [phase, setPhase] = useState('BETTING'); // 'BETTING', 'RACING', 'RESULTS'
+    const [phase, setPhase] = useState('BETTING'); // Posibles: 'BETTING', 'RACING', 'RESULTS'
 
     // --- LÓGICA DE APUESTAS ---
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -50,7 +69,10 @@ const AxolotlRaceMinigame = ({ players, onClose }) => {
     const [winner, setWinner] = useState(null);
     const raceIntervalRef = useRef(null);
 
-    // --- 1. CONTROL DE APUESTAS ---
+    /**
+     * Guarda la apuesta del jugador actual.
+     * Si es el último jugador, inicia la carrera.
+     */
     const handlePlaceBet = () => {
         if (!selectedAxolotlId) return;
 
@@ -65,15 +87,21 @@ const AxolotlRaceMinigame = ({ players, onClose }) => {
         }));
 
         if (currentPlayerIndex < players.length - 1) {
+            // Pasar al siguiente jugador
             setCurrentPlayerIndex(prev => prev + 1);
             setSelectedAxolotlId(null);
             setCurrentBetAmount(1);
         } else {
+            // Todos apostaron, comenzar carrera
             setPhase('RACING');
         }
     };
 
-    // --- 2. LÓGICA DE CARRERA (LOOP) ---
+    /**
+     * Loop principal de la carrera.
+     * Se ejecuta cuando la fase cambia a 'RACING'.
+     * Mueve los ajolotes aleatoriamente hasta que uno llega a la meta.
+     */
     useEffect(() => {
         if (phase === 'RACING') {
             raceIntervalRef.current = setInterval(() => {
@@ -83,13 +111,14 @@ const AxolotlRaceMinigame = ({ players, onClose }) => {
                     let winningAxolotl = null;
 
                     AXOLOTLS.forEach(axolotl => {
-                        // Probabilidad de moverse
+                        // Probabilidad de moverse (80% de probabilidad de avanzar un poco)
                         const move = Math.random() > 0.2 ? Math.random() * 2.5 : 0;
 
                         if (newPositions[axolotl.id] === undefined) newPositions[axolotl.id] = 0;
 
                         newPositions[axolotl.id] += move;
 
+                        // Condición de victoria: Llegar al 92% de la pista
                         if (newPositions[axolotl.id] >= 92 && !raceFinished) {
                             raceFinished = true;
                             winningAxolotl = axolotl.id;
@@ -99,14 +128,16 @@ const AxolotlRaceMinigame = ({ players, onClose }) => {
                     if (raceFinished) {
                         clearInterval(raceIntervalRef.current);
                         setWinner(winningAxolotl);
+                        // Pequeña pausa antes de mostrar los resultados
                         setTimeout(() => setPhase('RESULTS'), 2000);
                     }
 
                     return newPositions;
                 });
-            }, 50);
+            }, 50); // Actualización a 20 FPS (50ms)
         }
 
+        // Limpieza del intervalo si el componente se desmonta antes de terminar
         return () => clearInterval(raceIntervalRef.current);
     }, [phase]);
 

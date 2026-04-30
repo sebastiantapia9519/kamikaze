@@ -2,16 +2,29 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../../../components/ui/Button';
 
+/**
+ * Minijuego de Batalla de Taps (Estilo "Tug of War").
+ * Dos jugadores presionan su lado de la pantalla lo más rápido posible 
+ * para empujar la barra hacia el lado contrario.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Función para cerrar el minijuego al terminar.
+ * @param {Array} props.players - Lista de jugadores. Selecciona aleatoriamente a 2 para la batalla.
+ */
 const TapBattleMinigame = ({ onClose, players }) => {
-    const [score, setScore] = useState(50);
-    const [gameState, setGameState] = useState('intro');
+    const [score, setScore] = useState(50); // Empieza en 50%
+    const [gameState, setGameState] = useState('intro'); // 'intro', 'playing', 'winner'
     const [winner, setWinner] = useState(null);
     const [fighter1, setFighter1] = useState(players[0]?.name || 'P1');
     const [fighter2, setFighter2] = useState(players[1]?.name || 'P2');
 
     // FIX: Usamos ref para acceder al score actual sin stale closure
+    // Esto es crucial en juegos de "taps" rápidos porque React hace batching de estados
     const scoreRef = useRef(50);
 
+    /**
+     * Mezcla a los jugadores y elige aleatoriamente a dos contrincantes.
+     */
     useEffect(() => {
         if (players.length >= 2) {
             const shuffled = [...players].sort(() => 0.5 - Math.random());
@@ -20,18 +33,22 @@ const TapBattleMinigame = ({ onClose, players }) => {
         }
     }, [players]);
 
+    /**
+     * Maneja un toque en la pantalla por parte de alguno de los jugadores.
+     * @param {string} player - 'red' (Arriba/Jugador 1) o 'blue' (Abajo/Jugador 2)
+     */
     const handleTap = (player) => {
         if (gameState !== 'playing') return;
 
         setScore(prev => {
             const newScore = player === 'red'
-                ? Math.max(0, prev - 5)
-                : Math.min(100, prev + 5);
+                ? Math.max(0, prev - 5) // Red empuja hacia la izquierda/arriba (0%)
+                : Math.min(100, prev + 5); // Blue empuja hacia la derecha/abajo (100%)
 
-            // FIX: Actualizamos la ref antes de verificar victoria
+            // Actualizamos la ref antes de verificar victoria
             scoreRef.current = newScore;
 
-            // FIX: Verificamos victoria directamente con newScore, no con estado
+            // Verificamos victoria directamente con newScore, no con estado
             if (newScore <= 0) {
                 setGameState('winner');
                 setWinner(fighter1); // red gana

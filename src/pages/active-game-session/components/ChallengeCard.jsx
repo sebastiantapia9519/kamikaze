@@ -1,13 +1,8 @@
-/**
- * @file ChallengeCard.jsx
- * @description Componente que muestra la tarjeta con el reto actual.
- * Versión corregida para igualar el estilo de la imagen de referencia.
- */
 import React from 'react';
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 
-// Las variantes de animación no cambian.
+// Variantes de animación para la entrada y salida de la tarjeta.
 const cardVariants = {
     hidden: { x: "100vw", opacity: 0 },
     visible: {
@@ -29,6 +24,15 @@ const cardVariants = {
     },
 };
 
+/**
+ * Componente que muestra la tarjeta visual con el reto o castigo actual.
+ * Animado con framer-motion para aparecer desde el lateral.
+ * 
+ * @param {Object} props
+ * @param {Object} props.challenge - Objeto con los datos del reto (text, category, assignedPlayers).
+ * @param {number} props.currentChallenge - Índice del reto actual (ej. 1).
+ * @param {number} props.totalChallenges - Total de retos en esta fase (ej. 10).
+ */
 const ChallengeCard = ({ challenge, currentChallenge, totalChallenges }) => {
     if (!challenge) {
         return null;
@@ -47,16 +51,13 @@ const ChallengeCard = ({ challenge, currentChallenge, totalChallenges }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            // --- ¡LÍNEA CORREGIDA PARA IGUALAR TU DISEÑO! ---
-            // Usamos un fondo de zinc oscuro con alta opacidad, un borde blanco muy sutil,
-            // esquinas más redondeadas y un desenfoque de fondo más pronunciado.
+            // Diseño de tarjeta con estilo "glassmorphism" (fondo translúcido oscuro).
             className="bg-zinc-900/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-white/10 min-h-[300px] flex flex-col justify-between"
         >
             {/* --- Contenido de la Tarjeta --- */}
             <div>
                 {/* Encabezado con categoría y contador de retos */}
                 <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-                    {/* El tag de la categoría ahora tiene un estilo más limpio */}
                     <div className="flex items-center space-x-2">
                         <Icon name={categoryIcon} size={20} className={categoryColor} />
                         <span className={`font-heading text-xl ${categoryColor}`}>{category}</span>

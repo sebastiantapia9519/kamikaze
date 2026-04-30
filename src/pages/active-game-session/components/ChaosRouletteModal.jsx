@@ -3,6 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
+/**
+ * Componente Modal para la "Ruleta del Caos".
+ * Muestra un evento aleatorio que afecta la partida.
+ * 
+ * @param {Object} props
+ * @param {Object} props.event - Objeto con los datos del evento de la ruleta (title, description). Si es null, no se muestra.
+ * @param {Function} props.onClose - Función para cerrar el modal y continuar el juego.
+ */
 const ChaosRouletteModal = ({ event, onClose }) => {
     return (
         <AnimatePresence>

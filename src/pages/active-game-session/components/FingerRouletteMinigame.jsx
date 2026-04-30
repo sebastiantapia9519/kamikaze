@@ -14,23 +14,37 @@ const FINGER_COLORS = [
     { name: 'Naranja',  hex: '#F97316', tw: 'bg-orange-500', border: 'border-orange-400' },
 ];
  
+/**
+ * Minijuego de Ruleta de Dedos (estilo Chwazi).
+ * Los jugadores tocan la pantalla simultáneamente. Cuando hay 2 o más dedos, 
+ * inicia una cuenta regresiva. Al finalizar, elige aleatoriamente un perdedor.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClose - Función para cerrar el minijuego.
+ */
 const FingerRouletteMinigame = ({ onClose }) => {
-    const [fingers, setFingers] = useState({});
-    const [gameState, setGameState] = useState('WAITING');
+    // --- ESTADOS ---
+    const [fingers, setFingers] = useState({}); // Mapa de identificadores de touch a objetos con x, y, colorIndex
+    const [gameState, setGameState] = useState('WAITING'); // 'WAITING', 'COUNTDOWN', 'CHOOSING', 'RESULT'
     const [countdown, setCountdown] = useState(3);
     const [loserId, setLoserId] = useState(null);
     const [loserColorName, setLoserColorName] = useState('');
  
-    // FIX: Usamos ref para acceder a fingers actual dentro de closures
+    // --- REFERENCIAS ---
+    // Usamos refs para acceder a los datos actualizados dentro de los event listeners (closures) sin problemas de "stale state"
     const fingersRef = useRef({});
     const timerRef = useRef(null);
     const availableColorsRef = useRef(new Set(FINGER_COLORS.map((_, i) => i)));
  
-    // Sincronizamos el ref con el estado
+    // Sincronizamos el ref con el estado en cada render
     useEffect(() => {
         fingersRef.current = fingers;
     }, [fingers]);
  
+    /**
+     * Maneja cuando un nuevo dedo toca la pantalla.
+     * Le asigna un color único (o aleatorio si se acaban) y lo añade a la lista.
+     */
     const handleTouchStart = (e) => {
         if (gameState === 'RESULT' || gameState === 'CHOOSING') return;
         e.preventDefault();
@@ -39,11 +53,13 @@ const FingerRouletteMinigame = ({ onClose }) => {
         for (let i = 0; i < e.changedTouches.length; i++) {
             const touch = e.changedTouches[i];
             let colorIndex = 0;
+            // Asignar color disponible
             if (availableColorsRef.current.size > 0) {
                 const next = availableColorsRef.current.values().next().value;
                 availableColorsRef.current.delete(next);
                 colorIndex = next;
             } else {
+                // Si hay más de 8 dedos (raro), repetir color
                 colorIndex = Math.floor(Math.random() * FINGER_COLORS.length);
             }
             newFingers[touch.identifier] = { x: touch.clientX, y: touch.clientY, colorIndex };
@@ -52,11 +68,15 @@ const FingerRouletteMinigame = ({ onClose }) => {
         setFingers(newFingers);
         fingersRef.current = newFingers;
  
+        // Si hay al menos 2 dedos, comenzar cuenta regresiva
         if (Object.keys(newFingers).length >= 2 && gameState === 'WAITING' && !timerRef.current) {
             startCountdown();
         }
     };
  
+    /**
+     * Maneja el arrastre de los dedos en la pantalla.
+     */
     const handleTouchMove = (e) => {
         if (gameState === 'RESULT') return;
         e.preventDefault();
@@ -76,6 +96,10 @@ const FingerRouletteMinigame = ({ onClose }) => {
         fingersRef.current = newFingers;
     };
  
+    /**
+     * Maneja cuando un dedo suelta la pantalla.
+     * Libera su color para que otro dedo pueda usarlo.
+     */
     const handleTouchEnd = (e) => {
         if (gameState === 'RESULT') return;
         e.preventDefault();
@@ -92,11 +116,15 @@ const FingerRouletteMinigame = ({ onClose }) => {
         setFingers(newFingers);
         fingersRef.current = newFingers;
  
+        // Si alguien suelta el dedo antes de tiempo, se cancela el juego
         if (gameState === 'COUNTDOWN' || gameState === 'CHOOSING') {
             cancelGame();
         }
     };
  
+    /**
+     * Inicia el temporizador de 3 segundos.
+     */
     const startCountdown = () => {
         setGameState('COUNTDOWN');
         setCountdown(3);
@@ -114,6 +142,9 @@ const FingerRouletteMinigame = ({ onClose }) => {
         timerRef.current = interval;
     };
  
+    /**
+     * Cancela la cuenta regresiva si un jugador retira el dedo prematuramente.
+     */
     const cancelGame = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
@@ -123,14 +154,18 @@ const FingerRouletteMinigame = ({ onClose }) => {
         setCountdown(3);
     };
  
+    /**
+     * Selecciona aleatoriamente a un perdedor de los dedos actualmente en pantalla.
+     */
     const chooseLoser = () => {
         setGameState('CHOOSING');
  
         setTimeout(() => {
-            // FIX: Leemos de fingersRef (actual) no de fingers (puede ser stale)
+            // Leemos de fingersRef (actualizado) y no del estado para evitar "stale state"
             const currentFingers = fingersRef.current;
             const touchIds = Object.keys(currentFingers);
  
+            // Si por alguna razón quitaron todos los dedos en el último milisegundo
             if (touchIds.length === 0) {
                 cancelGame();
                 return;
@@ -147,7 +182,9 @@ const FingerRouletteMinigame = ({ onClose }) => {
         }, 1500);
     };
  
-    // Obtenemos el color del perdedor de forma segura
+    /**
+     * Obtiene los datos del color del perdedor para mostrar el modal de resultado.
+     */
     const getLoserColor = () => {
         if (!loserId || !fingers[loserId]) return null;
         return FINGER_COLORS[fingers[loserId].colorIndex];

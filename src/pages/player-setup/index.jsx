@@ -7,11 +7,18 @@ import PlayerList from './components/PlayerList';
 import GameStartButton from './components/GameStartButton';
 import bgImage from '../../assets/images/graffiti-bg.png';
 
+/**
+ * Página de Configuración de Jugadores.
+ * Permite añadir, listar y eliminar a los jugadores que participarán en la sesión.
+ * Mantiene sincronizado el estado con localStorage para persistencia entre recargas.
+ */
 const PlayerSetup = () => {
     const [players, setPlayers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Load existing players from localStorage on mount
+    /**
+     * Cargar jugadores existentes desde localStorage al inicializar el componente.
+     */
     useEffect(() => {
         const savedPlayers = localStorage.getItem('kamikazeGamePlayers');
         if (savedPlayers) {
@@ -27,7 +34,9 @@ const PlayerSetup = () => {
         }
     }, []);
 
-    // Save players to localStorage whenever players change
+    /**
+     * Sincronizar el estado actual de jugadores con localStorage cada vez que cambia.
+     */
     useEffect(() => {
         if (players?.length > 0) {
             localStorage.setItem('kamikazeGamePlayers', JSON.stringify(players));
@@ -36,16 +45,26 @@ const PlayerSetup = () => {
         }
     }, [players]);
 
+    /**
+     * Genera un identificador único para un nuevo jugador basado en el tiempo y un hash aleatorio.
+     * @returns {string} El ID generado.
+     */
     const generatePlayerId = () => {
         return `player_${Date.now()}_${Math.random()?.toString(36)?.substr(2, 9)}`;
     };
 
+    /**
+     * Añade un nuevo jugador a la lista actual.
+     * Muestra un pequeño retardo simulado para dar feedback visual al usuario.
+     * 
+     * @param {string} playerName - El nombre del nuevo jugador.
+     */
     const handleAddPlayer = (playerName) => {
         if (!playerName?.trim()) return;
 
         setIsLoading(true);
 
-        // Simulate a brief loading state for better UX
+        // Simular una carga breve para mejorar la experiencia de usuario (UX)
         setTimeout(() => {
             const newPlayer = {
                 id: generatePlayerId(),
@@ -58,12 +77,20 @@ const PlayerSetup = () => {
         }, 200);
     };
 
+    /**
+     * Elimina un jugador específico de la lista.
+     * 
+     * @param {string} playerId - El ID del jugador a eliminar.
+     */
     const handleRemovePlayer = (playerId) => {
         setPlayers((prevPlayers) =>
             prevPlayers?.filter((player) => player?.id !== playerId)
         );
     };
 
+    /**
+     * Limpia completamente la lista de jugadores y el localStorage asociado.
+     */
     const handleClearAllPlayers = () => {
         setPlayers([]);
         localStorage.removeItem('kamikazeGamePlayers');
@@ -77,7 +104,7 @@ const PlayerSetup = () => {
             </Helmet>
             <div className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden" style={{ backgroundImage: `url(${bgImage})` }}>
 
-                {/* Background overlay for readability */}
+                {/* Capa de oscurecimiento del fondo para legibilidad */}
                 <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
 
                 <main className="relative z-10 pb-24 pt-2.5">
@@ -89,43 +116,42 @@ const PlayerSetup = () => {
                             className="mb-6" />
 
 
-                        {/* Header Section */}
+                        {/* Header de la sección */}
                         <PlayerSetupHeader playerCount={players?.length} />
 
-                        {/* Main Content */}
+                        {/* Contenido principal */}
                         <div className="space-y-6">
-                            {/* Player Input Form */}
+                            {/* Formulario de entrada de jugador */}
                             <PlayerInputForm
                                 onAddPlayer={handleAddPlayer}
                                 existingPlayers={players} />
 
 
-                            {/* Player List */}
+                            {/* Lista de jugadores agregados */}
                             <PlayerList
                                 players={players}
                                 onRemovePlayer={handleRemovePlayer} />
 
 
-                            {/* Clear All Button (only show if players exist) */}
+                            {/* Botón para limpiar todos (solo visible si hay jugadores) */}
                             {players?.length > 0 &&
                                 <div className="text-center">
                                     <button
                                         onClick={handleClearAllPlayers}
                                         className="text-sm text-error hover:text-error/80 underline transition-colors">
-
                                         Limpiar todos los jugadores
                                     </button>
                                 </div>
                             }
 
-                            {/* Game Start Button */}
+                            {/* Botón de Iniciar Juego */}
                             <GameStartButton
                                 players={players}
                                 disabled={isLoading} />
 
                         </div>
 
-                        {/* Tips Section */}
+                        {/* Sección de consejos rápidos */}
                         <div className="mt-12 p-6 bg-card/50 backdrop-blur-sm rounded-lg border border-border">
                             <h3 className="font-heading text-lg text-text-primary mb-3 text-center">
                                 💡 Consejos para una mejor experiencia

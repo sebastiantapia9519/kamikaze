@@ -1,16 +1,8 @@
 import React from 'react';
-import { motion } from 'framer-motion'; // <-- 1. IMPORTAMOS MOTION PARA LAS ANIMACIONES
+import { motion } from 'framer-motion';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
 
-/**
- * GameCompletionModal
- * ------------------
- * Modal que aparece al finalizar la partida.
- * Ahora recibe `gameDuration` en segundos para mostrar la duración total del juego.
- */
-
-// --- 2. DEFINIMOS LAS VARIANTES (ESTADOS) DE NUESTRA ANIMACIÓN ---
 // Animación para el fondo oscuro (aparece gradualmente)
 const backdropVariants = {
     hidden: { opacity: 0 },
@@ -29,24 +21,32 @@ const modalVariants = {
     exit: { scale: 0.7, opacity: 0, transition: { duration: 0.2 } },
 };
 
-
+/**
+ * Modal que aparece al finalizar la partida de Kamikaze.
+ * Muestra un resumen de estadísticas: número de jugadores, retos completados y duración total.
+ * Debe estar envuelto en un componente <AnimatePresence> de framer-motion para que sus animaciones
+ * de salida funcionen correctamente.
+ *
+ * @param {Object} props
+ * @param {Array} props.players - Lista de jugadores que participaron en la partida.
+ * @param {number} props.challengesCompleted - Número de retos completados exitosamente.
+ * @param {number} props.gameDuration - Duración total de la partida en segundos.
+ * @param {Function} props.onClose - Función para cerrar el modal.
+ * @param {Function} props.onRestartGame - Función para reiniciar el tablero con los mismos jugadores.
+ * @param {Function} props.onNewGame - Función para reiniciar la aplicación e ir a la configuración de jugadores.
+ */
 const GameCompletionModal = ({
-    isVisible,            // Boolean: si el modal debe mostrarse (AHORA MANEJADO POR ANIMATEPRESENCE)
-    onClose,              // Función: cerrar modal
-    players = [],         // Array: jugadores
-    challengesCompleted = 0, // Número de retos completados
-    onRestartGame,        // Función: reiniciar la partida con los mismos jugadores
-    onNewGame,            // Función: iniciar nueva partida
-    gameDuration = 0      // Duración de la partida en segundos
+    onClose,
+    players = [],
+    challengesCompleted = 0,
+    onRestartGame,
+    onNewGame,
+    gameDuration = 0
 }) => {
-
-    // YA NO NECESITAMOS ESTA LÍNEA. AnimatePresence en el componente padre se encarga de la visibilidad.
-    // if (!isVisible) return null;
-
     /**
-     * formatDuration
-     * --------------
      * Convierte segundos a formato mm:ss
+     * @param {number} seconds - Segundos a formatear.
+     * @returns {string} - Cadena con el formato de tiempo (ej. "05:30").
      */
     const formatDuration = (seconds) => {
         const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -54,21 +54,19 @@ const GameCompletionModal = ({
         return `${mins}:${secs}`;
     };
 
-    // Reiniciar juego con los mismos jugadores
+    // Reinicia el juego manteniendo los jugadores
     const handleRestartGame = () => {
-        onRestartGame?.(); // Llama la función pasada
-        onClose?.();       // Cierra el modal
+        onRestartGame?.();
+        onClose?.();
     };
 
-    // Iniciar nueva partida desde el setup
+    // Vuelve al inicio para configurar un nuevo juego
     const handleNewGame = () => {
-        onNewGame?.(); // Llama la función pasada
-        onClose?.();   // Cierra el modal
+        onNewGame?.();
+        onClose?.();
     };
 
     return (
-        // --- 3. APLICAMOS LAS ANIMACIONES ---
-        // Reemplazamos los 'div' por 'motion.div' y les pasamos las variantes que definimos.
         <motion.div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-300 flex items-center justify-center p-4"
             variants={backdropVariants}
@@ -80,8 +78,7 @@ const GameCompletionModal = ({
                 className="bg-card rounded-xl shadow-graffiti-xl border border-border max-w-md w-full mx-4 overflow-hidden"
                 variants={modalVariants}
             >
-
-                {/* Header del modal (sin cambios de funcionalidad) */}
+                {/* Header del modal */}
                 <div className="bg-gradient-to-r from-primary to-accent p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
                         <Icon name="Trophy" size={32} className="text-white" />
@@ -94,12 +91,10 @@ const GameCompletionModal = ({
                     </p>
                 </div>
 
-                {/* Contenido del modal (sin cambios de funcionalidad) */}
+                {/* Contenido del modal */}
                 <div className="p-6 space-y-6">
-
                     {/* Estadísticas del juego */}
                     <div className="grid grid-cols-3 gap-4 text-center">
-                        {/* Número de jugadores */}
                         <div className="p-4 bg-surface/50 rounded-lg border border-border">
                             <div className="font-data text-2xl text-primary mb-1">
                                 {players?.length}
@@ -109,7 +104,6 @@ const GameCompletionModal = ({
                             </div>
                         </div>
 
-                        {/* Retos completados */}
                         <div className="p-4 bg-surface/50 rounded-lg border border-border">
                             <div className="font-data text-2xl text-secondary mb-1">
                                 {challengesCompleted}
@@ -119,10 +113,9 @@ const GameCompletionModal = ({
                             </div>
                         </div>
 
-                        {/* Duración de la partida */}
                         <div className="p-4 bg-surface/50 rounded-lg border border-border">
                             <div className="font-data text-2xl text-accent mb-1">
-                                {formatDuration(gameDuration)} {/* Formatea segundos a mm:ss */}
+                                {formatDuration(gameDuration)}
                             </div>
                             <div className="text-sm text-text-secondary">
                                 Duración
@@ -149,7 +142,6 @@ const GameCompletionModal = ({
 
                     {/* Botones de acción */}
                     <div className="space-y-3">
-                        {/* Volver a jugar con los mismos jugadores */}
                         <Button
                             variant="default"
                             size="lg"
@@ -162,7 +154,6 @@ const GameCompletionModal = ({
                             🔄 Volver a Jugar
                         </Button>
 
-                        {/* Nuevo juego */}
                         <Button
                             variant="outline"
                             size="lg"
@@ -185,7 +176,6 @@ const GameCompletionModal = ({
                             ¡La diversión no tiene límites, pero la responsabilidad sí!
                         </p>
                     </div>
-
                 </div>
             </motion.div>
         </motion.div>
