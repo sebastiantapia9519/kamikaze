@@ -28,11 +28,11 @@ const AxolotlCharacter = ({ color, isWinner }) => (
 
 // --- CONFIGURACIÓN DE LOS CORREDORES ---
 const AXOLOTLS = [
-    { id: 'pink', name: 'Rosita', hex: '#F472B6', bg: 'bg-pink-500', border: 'border-pink-400' },
-    { id: 'cyan', name: 'Azulito', hex: '#22D3EE', bg: 'bg-cyan-500', border: 'border-cyan-400' },
-    { id: 'green', name: 'Limón', hex: '#A3E635', bg: 'bg-lime-500', border: 'border-lime-400' },
-    { id: 'purple', name: 'Uva', hex: '#C084FC', bg: 'bg-purple-500', border: 'border-purple-400' },
-    { id: 'red', name: 'Rojito', hex: '#F87171', bg: 'bg-red-500', border: 'border-red-400' },
+    { id: 'pink', name: 'Barbie acuática', hex: '#F472B6', bg: 'bg-pink-500', border: 'border-pink-400' },
+    { id: 'cyan', name: 'Sonic', hex: '#22D3EE', bg: 'bg-cyan-500', border: 'border-cyan-400' },
+    { id: 'green', name: 'No soy sapo', hex: '#A3E635', bg: 'bg-lime-500', border: 'border-lime-400' },
+    { id: 'purple', name: 'Thanos', hex: '#C084FC', bg: 'bg-purple-500', border: 'border-purple-400' },
+    { id: 'red', name: 'DeadPool', hex: '#F87171', bg: 'bg-red-500', border: 'border-red-400' },
 ];
 
 const AxolotlRaceMinigame = ({ players, onClose }) => {

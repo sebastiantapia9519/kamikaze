@@ -94,11 +94,5 @@
         "type": "MINIGAME_SEQUENCE",
         "title": "🧠 SECUENCIA TÓXICA",
         "description": "Pon a prueba tu memoria. Repite la secuencia de colores. Si fallas antes del Nivel 5, ¡bebes por cada error!"
-    },
-    {
-        "id": 17,
-        "type": "MINIGAME_TRAFFIC",
-        "title": "🚦 SEMÁFORO BORRACHO",
-        "description": "Verde = Sigue la flecha. Rojo = Lado contrario. ¡No te confundas o bebes!"
     }
 ]

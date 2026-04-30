@@ -20,14 +20,10 @@ import TimeBombMinigame from '../active-game-session/components/TimeBombMinigame
 import BlindSniperMinigame from '../active-game-session/components/BlindSniperMinigame';
 import FingerRouletteMinigame from '../active-game-session/components/FingerRouletteMinigame';
 import TapBattleMinigame from '../active-game-session/components/TapBattleMinigame';
-// (Champaña eliminada)
 import HighLowCardMinigame from '../active-game-session/components/HighLowCardMinigame';
-
-// 👇 IMPORTAMOS LOS NUEVOS JUEGOS
 import ToxicSequenceMinigame from '../active-game-session/components/ToxicSequenceMinigame';
-import DrunkenTrafficLightMinigame from '../active-game-session/components/DrunkenTrafficLightMinigame';
 
-// --- LISTA DE ICONOS DE BEBIDA (Igual que en MinigameMenu) ---
+// --- LISTA DE ICONOS DE BEBIDA ---
 const DRINK_ICONS = [
     { name: 'Beer', color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
     { name: 'Wine', color: 'text-red-400', bg: 'bg-red-500/10' },
@@ -295,10 +291,7 @@ const HomeDashboard = () => {
                     {activeMinigame === 'roulette' && <FingerRouletteMinigame onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'battle' && <TapBattleMinigame players={quickPlayers} onClose={() => setViewState('menu')} />}
                     {activeMinigame === 'cards' && <HighLowCardMinigame onClose={() => setViewState('menu')} />}
-
-                    {/* 👇 AQUÍ ESTÁN LOS NUEVOS JUEGOS RENDERIZADOS */}
                     {activeMinigame === 'sequence' && <ToxicSequenceMinigame onClose={() => setViewState('menu')} />}
-                    {activeMinigame === 'traffic' && <DrunkenTrafficLightMinigame onClose={() => setViewState('menu')} />}
                 </div>
             )}
         </div>

@@ -1,209 +1,154 @@
-/**
- * @file ActiveGameSession.js
- * @description Vista principal. Lógica movida a hooks/useActiveGame.js
- */
-
-// 👇 1. Agregamos useEffect aquí
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
-// --- LOGIC HOOK ---
-import { useActiveGame } from '../../hooks/useActiveGame';
-// 👇 2. Importamos el hook de efectos de sonido/vibración
-import { useGameEffects } from '../../hooks/useGameEffects';
-
-// --- COMPONENTS ---
-import ChallengeCard from './components/ChallengeCard';
+// --- COMPONENTES DEL TABLERO ---
+import GameBoard from './components/GameBoard';
 import GameControls from './components/GameControls';
-import GameCompletionModal from './components/GameCompletionModal';
-import PlayerTurnIndicator from './components/PlayerTurnIndicator';
-import ChaosRouletteModal from './components/ChaosRouletteModal';
-import Icon from '../../components/AppIcon';
-import kamikazeLogo from '../../assets/images/iconKamikaze180x180.png';
+import PlayerTurnOverlay from './components/PlayerTurnOverlay';
+import ChallengeCardModal from './components/ChallengeCardModal';
+import WinnerModal from './components/WinnerModal';
+import PauseMenu from './components/PauseMenu';
 
-// --- MINIGAMES ---
+// --- MINIJUEGOS (Aquí es donde limpiamos) ---
 import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
 import TimeBombMinigame from './components/TimeBombMinigame';
 import BlindSniperMinigame from './components/BlindSniperMinigame';
 import FingerRouletteMinigame from './components/FingerRouletteMinigame';
 import TapBattleMinigame from './components/TapBattleMinigame';
 import HighLowCardMinigame from './components/HighLowCardMinigame';
-import ToxicSequenceMinigame from './components/ToxicSequenceMinigame';
-import DrunkenTrafficLightMinigame from './components/DrunkenTrafficLightMinigame';
+import ToxicSequenceMinigame from './components/ToxicSequenceMinigame'; // ✅ Se queda
 
-// --- ASSETS ---
-import bgImage from '../../assets/images/graffiti-bg.png';
+// ❌ SEMÁFORO ELIMINADO
 
 const ActiveGameSession = () => {
-    const location = useLocation();
+    const navigate = useNavigate();
 
-    // Invocamos el Hook de lógica del juego
-    const {
-        state,
-        totalChallenges,
-        currentPlayer,
-        currentChallengeData,
-        isLastChallenge,
-        actions
-    } = useActiveGame(location.state);
+    // --- ESTADOS DEL JUEGO ---
+    const [gameState, setGameState] = useState({
+        players: [],
+        currentPlayerIdx: 0,
+        gamePhase: 'SETUP', // SETUP, ROLL, MOVE, CHALLENGE, MINIGAME, WIN
+        currentMinigame: null,
+        winner: null
+    });
 
-    // 👇 3. Invocamos el Hook de efectos
-    const { playSound } = useGameEffects();
+    const [isPaused, setIsPaused] = useState(false);
 
-    const {
-        isLoading,
-        gameCompleted,
-        showRaceMinigame,
-        showBombMinigame,
-        showSniperMinigame,
-        showFingerRoulette,
-        showTapBattle,
-        showHighLowCard,
-        showSequenceMinigame,
-        activeChaosEvent,
-        currentChallenge,
-        showTrafficMinigame,
-        players,
-        gameDuration
-    } = state;
-
-    // 👇 4. EFECTO: Sonido al cambiar de carta ("Slashhh!")
+    // Cargar jugadores al inicio (simulado o desde contexto)
     useEffect(() => {
-        // Reproducir sonido solo si ya cargó el juego y hay un reto activo
-        if (!isLoading && currentChallenge > 0) {
-            playSound('whoosh'); // Asegúrate de tener whoosh.mp3 en public/sounds/
-        }
-    }, [currentChallenge, isLoading, playSound]);
+        // Aquí deberías cargar los jugadores reales desde el setup anterior
+        // Por ahora simulamos si no hay datos
+        const loadedPlayers = [
+            { id: 1, name: 'Jugador 1', position: 0, color: 'red' },
+            { id: 2, name: 'Jugador 2', position: 0, color: 'blue' }
+        ];
 
-    if (isLoading) {
-        return (
-            <div className="min-h-screen bg-background flex items-center justify-center p-4">
-                <div className="text-center">
-                    <Icon name="Loader" size={48} className="text-primary mx-auto mb-4 animate-spin" />
-                    <p className="text-text-secondary">Preparando la partida...</p>
-                </div>
-            </div>
-        );
-    }
+        setGameState(prev => ({
+            ...prev,
+            players: loadedPlayers,
+            gamePhase: 'ROLL' // Iniciamos directo en tirar dados
+        }));
+    }, []);
+
+    // --- MANEJO DE MINIJUEGOS ---
+    const handleMinigameEnd = (results) => {
+        // Lógica para aplicar castigos/premios según el resultado
+        console.log('Minigame ended:', results);
+
+        // Regresar al tablero
+        setGameState(prev => ({
+            ...prev,
+            gamePhase: 'ROLL', // Siguiente turno
+            currentMinigame: null,
+            currentPlayerIdx: (prev.currentPlayerIdx + 1) % prev.players.length
+        }));
+    };
+
+    const triggerMinigame = (gameId) => {
+        setGameState(prev => ({
+            ...prev,
+            gamePhase: 'MINIGAME',
+            currentMinigame: gameId
+        }));
+    };
+
+    // --- RENDERIZADO DE MINIJUEGOS ---
+    const renderMinigame = () => {
+        const { currentMinigame } = gameState;
+
+        // Pasamos onClose para que el minijuego sepa volver al tablero
+        const commonProps = {
+            onClose: handleMinigameEnd,
+            players: gameState.players
+        };
+
+        switch (currentMinigame) {
+            case 'race':
+                return <AxolotlRaceMinigame {...commonProps} />;
+            case 'bomb':
+                return <TimeBombMinigame currentPlayer={gameState.players[gameState.currentPlayerIdx]} onClose={handleMinigameEnd} />;
+            case 'sniper':
+                return <BlindSniperMinigame currentPlayer={gameState.players[gameState.currentPlayerIdx]} onClose={handleMinigameEnd} />;
+            case 'roulette':
+                return <FingerRouletteMinigame onClose={handleMinigameEnd} />;
+            case 'battle':
+                return <TapBattleMinigame {...commonProps} />;
+            case 'cards':
+                return <HighLowCardMinigame onClose={handleMinigameEnd} />;
+            case 'sequence':
+                return <ToxicSequenceMinigame onClose={handleMinigameEnd} />;
+
+            // ELIMINADO: case 'traffic': return <DrunkenTrafficLightMinigame ... />
+
+            default:
+                return null;
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden" style={{ backgroundImage: `url(${bgImage})` }}>
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+        <div className="relative min-h-screen bg-gray-900 overflow-hidden">
 
-            {/* Header */}
-            <header className="relative z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3 shadow-lg">
-                <div className="flex items-center justify-between max-w-2xl mx-auto">
-                    <div className="flex items-center space-x-3">
+            {/* TABLERO DE FONDO */}
+            <GameBoard players={gameState.players} />
 
-                        <img
-                            src={kamikazeLogo}
-                            alt="Kamikaze Logo"
-                            className="w-12 h-12 object-contain rounded-lg shadow-md bg-black/20"
-                        />
-                        <div className="flex flex-col">
-                            <h1 className="font-heading text-xl text-primary leading-none italic tracking-tighter shadow-black drop-shadow-sm">
-                                Kamikaze!
-                            </h1>
-                            <p className="text-xs text-text-secondary font-medium uppercase tracking-widest">
-                                Partida en progreso
-                            </p>
-                        </div>
-                    </div>
-
+            {/* UI SUPERIOR */}
+            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start pointer-events-none">
+                <div className="pointer-events-auto">
+                    <button
+                        onClick={() => setIsPaused(true)}
+                        className="bg-gray-800/80 p-3 rounded-full text-white hover:bg-gray-700 backdrop-blur-sm"
+                    >
+                        ⏸️
+                    </button>
                 </div>
-            </header>
+            </div>
 
-            {/* Main Board */}
-            <main className="relative z-10 pt-8 pb-32 px-4 max-w-2xl mx-auto space-y-6">
-                <PlayerTurnIndicator
-                    currentPlayer={currentPlayer}
-                    players={players}
-                    challenge={currentChallengeData}
-                />
-
-                <AnimatePresence mode="wait">
-                    <ChallengeCard
-                        key={currentChallenge}
-                        challenge={currentChallengeData}
-                        currentChallenge={currentChallenge}
-                        totalChallenges={totalChallenges}
-                    />
-                </AnimatePresence>
-
-                <GameControls
-                    onNextChallenge={actions.nextChallenge}
-                    onEndGame={actions.endGame}
-                    isLastChallenge={isLastChallenge}
-                    currentChallenge={currentChallenge}
-                    totalChallenges={totalChallenges}
-                />
-            </main>
-
-            {/* Modals */}
+            {/* CAPA DE MINIJUEGOS */}
             <AnimatePresence>
-                {gameCompleted && (
-                    <GameCompletionModal
-                        onClose={() => actions.setGameCompleted(false)}
-                        players={players}
-                        challengesCompleted={currentChallenge >= totalChallenges ? totalChallenges : currentChallenge - 1}
-                        onRestartGame={actions.restartGame}
-                        onNewGame={actions.newGame}
-                        gameDuration={gameDuration}
-                    />
+                {gameState.gamePhase === 'MINIGAME' && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95">
+                        {renderMinigame()}
+                    </div>
                 )}
             </AnimatePresence>
 
-            <ChaosRouletteModal event={activeChaosEvent} onClose={actions.closeChaos} />
-
-            {/* --- MINIJUEGOS --- */}
-
-            {showRaceMinigame && (
-                <AxolotlRaceMinigame players={players} onClose={actions.closeMinigame} />
-            )}
-
-            {showBombMinigame && (
-                <TimeBombMinigame onClose={actions.closeBomb} currentPlayer={currentPlayer} />
-            )}
-
-            {/* ✅ FRANCOTIRADOR */}
-            {showSniperMinigame && (
-                <BlindSniperMinigame onClose={actions.closeSniper} currentPlayer={currentPlayer} />
-            )}
-            {/* Minijuego: Ruleta de Dedos*/}
-            {showFingerRoulette && (
-                <FingerRouletteMinigame
-                    onClose={actions.closeRoulette}
+            {/* MENÚ DE PAUSA */}
+            {isPaused && (
+                <PauseMenu
+                    onResume={() => setIsPaused(false)}
+                    onQuit={() => navigate('/')}
                 />
             )}
 
-            {/* Minijuego: Batalla de Taps*/}
-            {showTapBattle && (
-                <TapBattleMinigame
-                    onClose={actions.closeBattle}
-                    players={players}
-                />
-            )}
-
-            {/* Minijuego: Cartas del Destino */}
-            {showHighLowCard && (
-                <HighLowCardMinigame
-                    onClose={actions.closeCards}
-                    currentPlayer={currentPlayer}
-                />
-            )}
-
-            {/* Minijuego: Semáforo Borracho */}
-            {showTrafficLightMinigame && (
-                <DrunkenTrafficLightMinigame onClose={actions.closeTrafficLight} />
-            )}
-
-            {/* Minijuego: Secuencia Tóxica */}
-            {showSequenceMinigame && (
-                <ToxicSequenceMinigame
-                    onClose={actions.closeSequence}
-                    currentPlayer={currentPlayer}
-                />
+            {/* DEBUG: Botones para probar (puedes borrarlos luego) */}
+            {gameState.gamePhase === 'ROLL' && (
+                <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2">
+                    <button onClick={() => triggerMinigame('sequence')} className="bg-yellow-600 text-white p-2 rounded">
+                        Test Secuencia
+                    </button>
+                    {/* Botón de semáforo eliminado */}
+                </div>
             )}
         </div>
     );
