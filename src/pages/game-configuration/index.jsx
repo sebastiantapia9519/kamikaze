@@ -60,20 +60,12 @@ const GameConfiguration = () => {
         });
     }, []);
 
-    /**
-     * Detectar si hay cambios no guardados comparando el estado actual con el original.
-     */
-    useEffect(() => {
-        if (originalSettings) {
-            const currentSettings = {
-                categories,
-                gameplay: gameplaySettings
-            };
-
-            const hasChanged = JSON.stringify(currentSettings) !== JSON.stringify(originalSettings);
-            setHasChanges(hasChanged);
-        }
-    }, [categories, gameplaySettings, originalSettings]);
+    const checkChanges = (newCats, newGameplay) => {
+        if (!originalSettings) return;
+        const catsChanged = Object.keys(newCats).some(k => newCats[k] !== originalSettings.categories[k]);
+        const gameplayChanged = Object.keys(newGameplay).some(k => newGameplay[k] !== originalSettings.gameplay[k]);
+        setHasChanges(catsChanged || gameplayChanged);
+    };
 
     /**
      * Manejador para activar/desactivar categorías específicas.
@@ -81,10 +73,11 @@ const GameConfiguration = () => {
      * @param {boolean} enabled - Nuevo estado (activado/desactivado).
      */
     const handleCategoryChange = (categoryId, enabled) => {
-        setCategories((prev) => ({
-            ...prev,
-            [categoryId]: enabled
-        }));
+        setCategories((prev) => {
+            const next = { ...prev, [categoryId]: enabled };
+            checkChanges(next, gameplaySettings);
+            return next;
+        });
     };
 
     /**
@@ -93,10 +86,11 @@ const GameConfiguration = () => {
      * @param {any} value - Nuevo valor del ajuste.
      */
     const handleGameplaySettingChange = (key, value) => {
-        setGameplaySettings((prev) => ({
-            ...prev,
-            [key]: value
-        }));
+        setGameplaySettings((prev) => {
+            const next = { ...prev, [key]: value };
+            checkChanges(categories, next);
+            return next;
+        });
     };
 
     /**
@@ -112,8 +106,8 @@ const GameConfiguration = () => {
             localStorage.setItem('kamikazeGameplaySettings', JSON.stringify(gameplaySettings));
 
             setOriginalSettings({
-                categories,
-                gameplay: gameplaySettings
+                categories: { ...categories },
+                gameplay: { ...gameplaySettings }
             });
 
             setHasChanges(false);

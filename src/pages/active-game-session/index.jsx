@@ -9,7 +9,7 @@ import bgImage from '../../assets/images/graffiti-bg.png';
 import PauseMenu from './components/PauseMenu';
 import ChallengeCard from './components/ChallengeCard';
 import GameControls from './components/GameControls';
-import { sampleChallenges } from './data/challenges';
+import challengesData from '../../data/challenges.json';
 
 // --- MINIJUEGOS ---
 import AxolotlRaceMinigame from './components/AxolotlRaceMinigame';
@@ -49,11 +49,13 @@ const ActiveGameSession = () => {
     const [gameState, setGameState] = useState({
         players: [],
         currentPlayerIdx: 0,
-        gamePhase: 'ROLL', // ROLL, CHALLENGE, MINIGAME_INTRO, MINIGAME, GAME_OVER
+        gamePhase: 'CHALLENGE', // Empezamos directo en CHALLENGE
         currentMinigame: null,
         currentChallengeData: null,
         challengesDrawn: 0,
-        totalChallenges: 30
+        totalChallenges: 30,
+        deck: [],
+        turnsSinceMinigame: 0
     });
 
     const [isPaused, setIsPaused] = useState(false);
@@ -65,34 +67,65 @@ const ActiveGameSession = () => {
         return 0.20; // medium
     };
 
-    const getRandomChallenge = (activeCategories) => {
-        // Mapeo: regular -> Normal, epic -> Epic, multiplayer -> Fiesta
-        const allowedCategories = [];
-        if (activeCategories.regular) allowedCategories.push('Normal');
-        if (activeCategories.epic) allowedCategories.push('Epic');
-        if (activeCategories.multiplayer) allowedCategories.push('Fiesta');
+    const createDeck = (activeCategories) => {
+        let newDeck = [];
+        if (activeCategories.regular && challengesData.regular) {
+            newDeck = [...newDeck, ...challengesData.regular.map(c => ({...c, category: 'Normal'}))];
+        }
+        if (activeCategories.epic && challengesData.epic) {
+            newDeck = [...newDeck, ...challengesData.epic.map(c => ({...c, category: 'Epic'}))];
+        }
+        if (activeCategories.multiplayer && challengesData.multiplayer) {
+            newDeck = [...newDeck, ...challengesData.multiplayer.map(c => ({...c, category: 'Fiesta'}))];
+        }
 
-        // Fallback si desactivó todas
-        if (allowedCategories.length === 0) allowedCategories.push('Normal');
+        // Fallback
+        if (newDeck.length === 0) {
+            newDeck = [...challengesData.regular.map(c => ({...c, category: 'Normal'}))];
+        }
 
-        const filtered = sampleChallenges.filter(ch => allowedCategories.includes(ch.category));
-        if (filtered.length === 0) return sampleChallenges[0]; // fallback extremo
-        return filtered[Math.floor(Math.random() * filtered.length)];
+        // Shuffle (Fisher-Yates)
+        for (let i = newDeck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+        }
+        return newDeck;
     };
 
-    const determineNextState = (cats, settings) => {
+    const getNextChallenge = (currentDeck, activeCategories) => {
+        let deck = [...currentDeck];
+        if (deck.length === 0) {
+            deck = createDeck(activeCategories);
+        }
+        const challenge = deck.pop();
+        return { challenge, newDeck: deck };
+    };
+
+    const determineNextState = (cats, settings, currentDeck, turnsSinceMinigame) => {
         const chance = getMinigameChance(settings.difficulty);
-        const isMinigame = Math.random() < chance;
+        // Cooldown: mínimo 2 turnos de descanso
+        const actualChance = turnsSinceMinigame < 2 ? 0 : chance;
         
-        return isMinigame ? {
-            gamePhase: 'MINIGAME_INTRO',
-            currentMinigame: MINIGAMES[Math.floor(Math.random() * MINIGAMES.length)],
-            currentChallengeData: null,
-        } : {
-            gamePhase: 'CHALLENGE',
-            currentMinigame: null,
-            currentChallengeData: getRandomChallenge(cats),
-        };
+        const isMinigame = Math.random() < actualChance;
+        
+        if (isMinigame) {
+            return {
+                gamePhase: 'MINIGAME_INTRO',
+                currentMinigame: MINIGAMES[Math.floor(Math.random() * MINIGAMES.length)],
+                currentChallengeData: null,
+                deck: currentDeck,
+                turnsSinceMinigame: 0
+            };
+        } else {
+            const { challenge, newDeck } = getNextChallenge(currentDeck, cats);
+            return {
+                gamePhase: 'CHALLENGE',
+                currentMinigame: null,
+                currentChallengeData: challenge,
+                deck: newDeck,
+                turnsSinceMinigame: turnsSinceMinigame + 1
+            };
+        }
     };
 
     useEffect(() => {
@@ -135,7 +168,7 @@ const ActiveGameSession = () => {
         }
 
         setGameState(prev => {
-            const nextState = determineNextState(loadedCats, loadedGameplay);
+            const nextState = determineNextState(loadedCats, loadedGameplay, [], 2); // Start at 2 so minigames can trigger early
             return {
                 ...prev,
                 players: loadedPlayers,
@@ -158,7 +191,7 @@ const ActiveGameSession = () => {
                 } while (nextIdx === prev.currentPlayerIdx);
             }
 
-            const nextState = determineNextState(categories, gameplaySettings);
+            const nextState = determineNextState(categories, gameplaySettings, prev.deck, prev.turnsSinceMinigame);
 
             return {
                 ...prev,
@@ -182,7 +215,7 @@ const ActiveGameSession = () => {
 
     const handlePlayAgain = () => {
         setGameState(prev => {
-            const nextState = determineNextState(categories, gameplaySettings);
+            const nextState = determineNextState(categories, gameplaySettings, prev.deck, 2);
             return {
                 ...prev,
                 currentPlayerIdx: 0,
@@ -320,15 +353,17 @@ const ActiveGameSession = () => {
             </AnimatePresence>
 
             {/* CONTROLES INFERIORES */}
-            <div className="relative z-10 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                <GameControls 
-                    onNextChallenge={nextTurn}
-                    onEndGame={handleEndGame}
-                    isLastChallenge={isLastChallenge && gameState.gamePhase === 'CHALLENGE'}
-                    currentChallenge={gameState.challengesDrawn}
-                    totalChallenges={gameState.totalChallenges}
-                />
-            </div>
+            {gameState.gamePhase !== 'GAME_OVER' && gameState.gamePhase !== 'MINIGAME' && (
+                <div className="relative z-10 p-6 bg-gradient-to-t from-black/80 to-transparent">
+                    <GameControls 
+                        onNextChallenge={nextTurn}
+                        onEndGame={handleEndGame}
+                        isLastChallenge={isLastChallenge && gameState.gamePhase === 'CHALLENGE'}
+                        currentChallenge={gameState.challengesDrawn}
+                        totalChallenges={gameState.totalChallenges}
+                    />
+                </div>
+            )}
 
             {/* CAPA DE MINIJUEGOS */}
             <AnimatePresence>

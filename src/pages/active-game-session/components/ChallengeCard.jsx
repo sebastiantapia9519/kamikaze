@@ -56,15 +56,12 @@ const ChallengeCard = ({ challenge, currentChallenge, totalChallenges }) => {
         >
             {/* --- Contenido de la Tarjeta --- */}
             <div>
-                {/* Encabezado con categoría y contador de retos */}
+                {/* Encabezado con categoría */}
                 <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                     <div className="flex items-center space-x-2">
                         <Icon name={categoryIcon} size={20} className={categoryColor} />
                         <span className={`font-heading text-xl ${categoryColor}`}>{category}</span>
                     </div>
-                    <span className="font-mono text-text-secondary text-sm">
-                        {currentChallenge} / {totalChallenges}
-                    </span>
                 </div>
 
                 {/* Texto principal del reto */}
