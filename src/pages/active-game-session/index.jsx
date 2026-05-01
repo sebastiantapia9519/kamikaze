@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
+// --- IMÁGENES ---
+import bgImage from '../../assets/images/graffiti-bg.png';
+
 // --- COMPONENTES DEL TABLERO ---
 import GameBoard from './components/GameBoard';
 import PauseMenu from './components/PauseMenu';
@@ -42,11 +45,24 @@ const ActiveGameSession = () => {
      * Actualmente inicializa con datos estáticos simulados.
      */
     useEffect(() => {
-        // TODO: Cargar los jugadores reales desde el contexto global o almacenamiento persistente
-        const loadedPlayers = [
-            { id: 1, name: 'Jugador 1', position: 0, color: 'red' },
-            { id: 2, name: 'Jugador 2', position: 0, color: 'blue' }
-        ];
+        // Cargar jugadores desde localStorage si existen, de lo contrario usar simulados
+        const savedPlayers = localStorage.getItem('kamikazeGamePlayers');
+        let loadedPlayers = [];
+        
+        if (savedPlayers) {
+            try {
+                loadedPlayers = JSON.parse(savedPlayers);
+            } catch (e) {
+                console.error('Error parsing players', e);
+            }
+        }
+
+        if (!loadedPlayers || loadedPlayers.length === 0) {
+            loadedPlayers = [
+                { id: 1, name: 'Jugador 1', position: 0, color: 'red' },
+                { id: 2, name: 'Jugador 2', position: 0, color: 'blue' }
+            ];
+        }
 
         setGameState(prev => ({
             ...prev,
@@ -122,27 +138,39 @@ const ActiveGameSession = () => {
     };
 
     return (
-        <div className="relative min-h-screen bg-gray-900 overflow-hidden">
+        <div className="relative min-h-screen bg-cover bg-center bg-no-repeat overflow-hidden" style={{ backgroundImage: `url(${bgImage})` }}>
+            
+            {/* Capa de oscurecimiento del fondo */}
+            <div className="absolute inset-0 bg-background/85 backdrop-blur-sm z-0"></div>
 
             {/* TABLERO DE FONDO */}
-            <GameBoard players={gameState.players} />
+            <div className="relative z-10 w-full h-full">
+                <GameBoard players={gameState.players} />
+            </div>
 
             {/* UI SUPERIOR */}
-            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start pointer-events-none">
+            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start pointer-events-none z-20">
                 <div className="pointer-events-auto">
                     <button
                         onClick={() => setIsPaused(true)}
-                        className="bg-gray-800/80 p-3 rounded-full text-white hover:bg-gray-700 backdrop-blur-sm"
+                        className="bg-black/40 p-3 rounded-xl border border-white/20 text-white hover:bg-black/60 hover:border-primary/50 backdrop-blur-md shadow-graffiti-sm transition-all group"
                     >
-                        ⏸️
+                        <span className="text-xl group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">⏸️</span>
                     </button>
+                </div>
+                
+                {/* HUD info (ejemplo) */}
+                <div className="pointer-events-auto bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 shadow-graffiti-sm">
+                    <span className="text-white font-heading tracking-wider drop-shadow-md">
+                        TURNO: <span className="text-primary">{gameState.players[gameState.currentPlayerIdx]?.name || '...'}</span>
+                    </span>
                 </div>
             </div>
 
             {/* CAPA DE MINIJUEGOS */}
             <AnimatePresence>
                 {gameState.gamePhase === 'MINIGAME' && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-lg">
                         {renderMinigame()}
                     </div>
                 )}
@@ -150,16 +178,18 @@ const ActiveGameSession = () => {
 
             {/* MENÚ DE PAUSA */}
             {isPaused && (
-                <PauseMenu
-                    onResume={() => setIsPaused(false)}
-                    onQuit={() => navigate('/')}
-                />
+                <div className="z-[60] relative">
+                    <PauseMenu
+                        onResume={() => setIsPaused(false)}
+                        onQuit={() => navigate('/')}
+                    />
+                </div>
             )}
 
             {/* DEBUG: Botones para probar (se eliminarán en producción) */}
             {gameState.gamePhase === 'ROLL' && (
-                <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2">
-                    <button onClick={() => triggerMinigame('sequence')} className="bg-yellow-600 text-white p-2 rounded">
+                <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2 z-20">
+                    <button onClick={() => triggerMinigame('sequence')} className="bg-warning/80 hover:bg-warning text-white font-bold py-2 px-4 rounded-xl backdrop-blur-md border border-warning/50 shadow-[0_0_15px_rgba(255,165,0,0.5)] transition-all">
                         Test Secuencia
                     </button>
                 </div>

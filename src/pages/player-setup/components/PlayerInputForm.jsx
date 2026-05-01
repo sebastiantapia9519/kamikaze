@@ -77,17 +77,20 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
     };
 
     return (
-        <div className="bg-card p-6 rounded-lg shadow-graffiti-md border border-border">
+        <div className="bg-black/40 backdrop-blur-md p-6 rounded-2xl shadow-graffiti-lg border border-white/10 relative overflow-hidden">
+            {/* Ambient glow */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary opacity-50"></div>
+
             {/* Encabezado del formulario */}
-            <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-                    <Icon name="UserPlus" size={20} className="text-white" />
+            <div className="flex items-center space-x-4 mb-5">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,128,255,0.6)]">
+                    <Icon name="UserPlus" size={24} className="text-white drop-shadow-md" />
                 </div>
                 <div>
-                    <h2 className="font-heading text-xl text-text-primary">
+                    <h2 className="font-heading text-2xl text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
                         Agregar Jugadores
                     </h2>
-                    <p className="text-sm text-text-secondary">
+                    <p className="text-sm text-white/70 font-medium mt-1">
                         Mínimo 2 jugadores para comenzar
                     </p>
                 </div>
@@ -95,15 +98,15 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
 
             {/* Formulario Principal */}
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 relative">
                         <Input
                             type="text"
                             placeholder="Nombre del jugador..."
                             value={playerName}
                             onChange={handleInputChange}
                             error={error}
-                            className="font-body"
+                            className="font-body text-white bg-black/50 border-white/20 focus:border-primary focus:ring-primary shadow-inner placeholder:text-white/40 h-12 text-lg rounded-xl"
                             maxLength={20}
                         />
                     </div>
@@ -111,7 +114,7 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
                         type="submit"
                         variant="default"
                         disabled={!playerName?.trim()}
-                        className="bg-gradient-to-r from-secondary to-warning hover:from-secondary/90 hover:to-warning/90 text-secondary-foreground font-heading whitespace-nowrap"
+                        className="bg-gradient-to-r from-secondary to-warning hover:from-secondary/90 hover:to-warning/90 text-secondary-foreground font-heading whitespace-nowrap h-12 rounded-xl shadow-[0_0_15px_rgba(255,20,147,0.5)] hover:shadow-[0_0_25px_rgba(255,20,147,0.8)] transition-all"
                         iconName="Plus"
                         iconPosition="left"
                     >
@@ -121,8 +124,8 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
             </form>
 
             {/* Sugerencias Rápidas */}
-            <div className="mt-4 flex flex-wrap gap-2">
-                <span className="text-xs text-text-secondary">Sugerencias rápidas:</span>
+            <div className="mt-5 flex flex-wrap gap-2 items-center">
+                <span className="text-xs text-white/60 font-medium mr-1">Sugerencias rápidas:</span>
                 {['Alejandra', 'Alejandro', 'Diana', 'Carlos', 'María', 'Sebastian', 'Sergio']?.map((suggestion) => (
                     <button
                         key={suggestion}
@@ -134,7 +137,7 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
                             }
                         }}
                         disabled={existingPlayers?.some(p => p?.name?.toLowerCase() === suggestion?.toLowerCase())}
-                        className="px-2 py-1 text-xs bg-surface hover:bg-surface/80 text-text-secondary hover:text-text-primary rounded border border-border disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1.5 text-xs bg-white/5 hover:bg-white/15 text-white/80 hover:text-white rounded-full border border-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-[0_0_8px_rgba(255,255,255,0.3)] backdrop-blur-sm"
                     >
                         {suggestion}
                     </button>
