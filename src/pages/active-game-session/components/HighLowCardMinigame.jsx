@@ -20,10 +20,11 @@ const VALUES = [
  * @param {Object} props
  * @param {Function} props.onClose - Función para cerrar el minijuego.
  */
-const HighLowCardMinigame = ({ onClose }) => {
+const HighLowCardMinigame = ({ currentPlayer, onClose }) => {
     const [currentCard, setCurrentCard] = useState(null);
-    const [score, setScore] = useState(0); // Racha actual
-    const [status, setStatus] = useState('PLAYING'); // 'PLAYING', 'WIN', 'LOSE'
+    const [turnsLeft, setTurnsLeft] = useState(10);
+    const [drinks, setDrinks] = useState(0);
+    const [status, setStatus] = useState('PLAYING'); // 'PLAYING', 'FINISHED'
     const [message, setMessage] = useState('¿La siguiente es MAYOR o MENOR?');
 
     // Inicializar primera carta
@@ -33,7 +34,6 @@ const HighLowCardMinigame = ({ onClose }) => {
 
     /**
      * Genera una carta aleatoria con palo, valor, etiqueta y color.
-     * @returns {Object} Datos de la carta generada.
      */
     const getRandomCard = () => {
         const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
@@ -51,13 +51,13 @@ const HighLowCardMinigame = ({ onClose }) => {
 
     /**
      * Maneja la adivinanza del jugador.
-     * @param {string} guess - 'HIGH' o 'LOW'
      */
     const handleGuess = (guess) => {
+        if (status !== 'PLAYING') return;
+
         let nextCard = getRandomCard();
 
-        // Evitar empates aburridos: generamos una carta completamente nueva
-        // en lugar de mutar solo el valor (lo que causaba inconsistencia visual).
+        // Evitar empates aburridos
         while (nextCard.val === currentCard.val) {
             nextCard = getRandomCard();
         }
@@ -69,25 +69,23 @@ const HighLowCardMinigame = ({ onClose }) => {
         if (guess === 'HIGH' && isHigher) won = true;
         if (guess === 'LOW' && isLower) won = true;
 
-        setCurrentCard(nextCard); // Mostramos la nueva carta
+        setCurrentCard(nextCard);
 
-        if (won) {
-            setScore(score + 1);
-            setMessage('¡Bien! Pasa el cel o sigue arriesgando.');
-        } else {
-            setStatus('LOSE');
+        let newDrinks = drinks;
+        if (!won) {
+            newDrinks += 1;
+            setDrinks(newDrinks);
             setMessage(`¡FALLASTE! Salió ${nextCard.label} ${nextCard.suit}`);
+        } else {
+            setMessage('¡ACERTASTE!');
         }
-    };
 
-    /**
-     * Reinicia la ronda (usado después de perder o al retirarse a tiempo).
-     */
-    const resetGame = () => {
-        setScore(0);
-        setStatus('PLAYING');
-        setMessage('¿La siguiente es MAYOR o MENOR?');
-        drawNewCard();
+        const newTurns = turnsLeft - 1;
+        setTurnsLeft(newTurns);
+
+        if (newTurns <= 0) {
+            setStatus('FINISHED');
+        }
     };
 
     return (
@@ -98,17 +96,21 @@ const HighLowCardMinigame = ({ onClose }) => {
                     <Icon name="Layers" className="text-purple-400" />
                     <span className="font-bold text-white">Cartas del Destino</span>
                 </div>
-                <button onClick={onClose} className="text-gray-400 hover:text-white">
-                    <Icon name="X" size={24} />
-                </button>
+                {/* No cerramos prematuramente, deben terminar sus 10 turnos */}
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm">
 
-                {/* MARCADOR DE RACHA */}
-                <div className="mb-6 bg-gray-800 px-6 py-2 rounded-full border border-white/10">
-                    <span className="text-gray-400 text-sm uppercase mr-2">Racha Segura:</span>
-                    <span className="text-2xl font-black text-green-400">{score}</span>
+                {/* MARCADOR */}
+                <div className="mb-6 flex space-x-4">
+                    <div className="bg-gray-800 px-6 py-2 rounded-full border border-white/10">
+                        <span className="text-gray-400 text-sm uppercase mr-2">Turnos:</span>
+                        <span className="text-2xl font-black text-white">{turnsLeft}</span>
+                    </div>
+                    <div className="bg-gray-800 px-6 py-2 rounded-full border border-white/10">
+                        <span className="text-gray-400 text-sm uppercase mr-2">Tragos:</span>
+                        <span className="text-2xl font-black text-red-500">{drinks}</span>
+                    </div>
                 </div>
 
                 {/* CARTA GIGANTE */}
@@ -116,7 +118,7 @@ const HighLowCardMinigame = ({ onClose }) => {
                     <AnimatePresence mode='wait'>
                         {currentCard && (
                             <motion.div
-                                key={currentCard.val + currentCard.suit + score} // Key única para animar cambio
+                                key={currentCard.val + currentCard.suit + turnsLeft} // Animamos el cambio en cada turno
                                 initial={{ rotateY: 90, opacity: 0 }}
                                 animate={{ rotateY: 0, opacity: 1 }}
                                 exit={{ rotateY: -90, opacity: 0 }}
@@ -155,30 +157,23 @@ const HighLowCardMinigame = ({ onClose }) => {
                                 MAYOR 👆
                             </Button>
                         </div>
-                        {score > 0 && (
-                            <button
-                                onClick={resetGame}
-                                className="w-full text-gray-500 text-sm hover:text-white underline mt-4"
-                            >
-                                Retirarse y pasar turno (Guardar {score})
-                            </button>
-                        )}
                     </div>
                 ) : (
                     <div className="text-center w-full">
                         <motion.div
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1.1 }}
-                            className="mb-6"
+                            className="mb-6 bg-gray-800 p-6 rounded-2xl border-2 border-red-500/50"
                         >
-                            <h2 className="text-5xl font-black text-red-500 mb-2">¡PERDISTE!</h2>
+                            <h2 className="text-3xl font-black text-red-400 mb-2">¡RONDA TERMINADA!</h2>
                             <p className="text-xl text-white">
-                                Te toca beber <span className="text-yellow-400 font-bold text-3xl">{score + 1}</span> tragos.
+                                {drinks === 0 
+                                    ? '¡Increíble! Adivinaste todas. Te salvaste.' 
+                                    : <>Te toca beber <span className="text-yellow-400 font-bold text-4xl mx-2">{drinks}</span> tragos.</>}
                             </p>
-                            <p className="text-gray-400 text-sm mt-1">(Tu racha + el castigo)</p>
                         </motion.div>
-                        <Button onClick={resetGame} className="w-full py-4 text-lg">
-                            Siguiente Víctima
+                        <Button onClick={onClose} className="w-full py-4 text-lg bg-cyan-600 hover:bg-cyan-500">
+                            Finalizar Minijuego
                         </Button>
                     </div>
                 )}

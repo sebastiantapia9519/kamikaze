@@ -12,7 +12,7 @@ import Button from '../../../components/ui/Button';
  * @param {Object} props
  * @param {Function} props.onClose - Función para cerrar el minijuego tras la explosión.
  */
-const TimeBombMinigame = ({ onClose }) => {
+const TimeBombMinigame = ({ onClose, enableVibration = true }) => {
     const [gameState, setGameState] = useState('intro'); // intro, ticking, exploded
     const [timeLeft, setTimeLeft] = useState(0);
     const [fuseProgress, setFuseProgress] = useState(100);
@@ -22,44 +22,50 @@ const TimeBombMinigame = ({ onClose }) => {
     const intervalRef = useRef(null);
     const durationRef = useRef(0);
 
-    // Configuración de la bomba
-    const MIN_DURATION = 10000; // 10 segundos
-    const MAX_DURATION = 35000; // 35 segundos
-
     /**
      * Efecto de vibración (Haptic Feedback)
-     * @param {number|number[]} pattern - Patrón de vibración en milisegundos.
      */
     const vibrate = (pattern) => {
-        if (navigator.vibrate) navigator.vibrate(pattern);
+        if (enableVibration && navigator.vibrate) navigator.vibrate(pattern);
     };
 
     /**
-     * Inicia la cuenta regresiva de la bomba con un tiempo aleatorio.
+     * Inicia la cuenta regresiva con velocidad variable.
      */
     const startBomb = () => {
-        const randomDuration = Math.floor(Math.random() * (MAX_DURATION - MIN_DURATION + 1)) + MIN_DURATION;
-        durationRef.current = randomDuration;
-        explosionTimeRef.current = Date.now() + randomDuration;
+        // Duración base "falsa" entre 12 y 22 segundos.
+        // Como la velocidad varía, el tiempo real será impredecible pero no durará demasiado.
+        let fakeRemaining = Math.floor(Math.random() * 10000) + 12000; 
+        const initialDuration = fakeRemaining;
+        
+        let currentSpeedMultiplier = 1;
 
         setGameState('ticking');
-        vibrate(200); // Vibración inicial
+        vibrate(200);
 
-        // Loop del reloj
         intervalRef.current = setInterval(() => {
-            const now = Date.now();
-            const remaining = explosionTimeRef.current - now;
-            const progress = (remaining / durationRef.current) * 100;
+            // 5% de probabilidad en cada tick de cambiar drásticamente la velocidad
+            if (Math.random() < 0.05) {
+                // Multiplicador de velocidad: 0.2x (muy lento) hasta 3.5x (muy rápido)
+                currentSpeedMultiplier = Math.random() * 3.3 + 0.2;
+            }
 
-            if (remaining <= 0) {
+            // Reducimos el tiempo falso según el multiplicador actual
+            const decrement = 50 * currentSpeedMultiplier;
+            fakeRemaining -= decrement;
+
+            if (fakeRemaining <= 0) {
                 explode();
             } else {
-                setTimeLeft(remaining);
-                setFuseProgress(progress);
+                setTimeLeft(fakeRemaining);
+                setFuseProgress((fakeRemaining / initialDuration) * 100);
 
-                // Vibración progresiva: entre menos tiempo, más vibra
-                if (remaining < 5000 && Math.random() > 0.5) vibrate(50);
-                else if (remaining < 3000) vibrate(100);
+                // La vibración se vuelve más caótica si va muy rápido o si queda poco tiempo
+                if (currentSpeedMultiplier > 2.5 && Math.random() > 0.5) {
+                    vibrate(50);
+                } else if (fakeRemaining < 3000) {
+                    vibrate(100);
+                }
             }
         }, 50);
     };

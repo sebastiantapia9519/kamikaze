@@ -6,8 +6,8 @@ import Button from '../../../components/ui/Button';
 const PADDLE_WIDTH = 100;
 const PADDLE_HEIGHT = 15;
 const BALL_RADIUS = 10;
-const BASE_BALL_SPEED = 8; // Más rápido inicialmente
-const SPEED_INCREMENT = 1.08; // Incremento más agresivo (8%)
+const BASE_BALL_SPEED = 7; // Ligeramente más lento al inicio para que el aumento se note más
+const SPEED_INCREMENT = 1.15; // Incremento más agresivo (15% por toque)
 
 /**
  * Minijuego "Pongte Pedo".
@@ -39,14 +39,29 @@ const PongtePedoMinigame = ({ onClose, players }) => {
         canvasH: 500,
     });
 
+    const getUnpredictableVelocity = (speed, forceDirection = 0) => {
+        let vx = (Math.random() - 0.5) * 2;
+        let vy = (Math.random() - 0.5) * 2;
+        
+        if (forceDirection === 1) vy = Math.abs(vy); // Hacia P2 (abajo)
+        if (forceDirection === -1) vy = -Math.abs(vy); // Hacia P1 (arriba)
+        
+        // Prevenir que salga muy horizontal
+        if (Math.abs(vy) < 0.4) vy = vy < 0 ? -0.4 : 0.4;
+        
+        const mag = Math.sqrt(vx*vx + vy*vy);
+        return { vx: (vx / mag) * speed, vy: (vy / mag) * speed };
+    };
+
     const initBalls = (canvasW, canvasH, count = 1) => {
         const balls = [];
         for(let i=0; i<count; i++) {
+             const vel = getUnpredictableVelocity(BASE_BALL_SPEED);
              balls.push({
                  x: canvasW / 2,
                  y: canvasH / 2,
-                 vx: (Math.random() > 0.5 ? 1 : -1) * BASE_BALL_SPEED,
-                 vy: (Math.random() > 0.5 ? 1 : -1) * BASE_BALL_SPEED,
+                 vx: vel.vx,
+                 vy: vel.vy,
                  radius: BALL_RADIUS,
                  speed: BASE_BALL_SPEED
              });
@@ -99,8 +114,9 @@ const PongtePedoMinigame = ({ onClose, players }) => {
             const newBall = initBalls(data.canvasW, data.canvasH, 1)[0];
             // Hacer la nueva pelota un poco más rápida para aumentar el caos
             newBall.speed = BASE_BALL_SPEED * 1.5;
-            newBall.vx = (Math.random() > 0.5 ? 1 : -1) * newBall.speed;
-            newBall.vy = (Math.random() > 0.5 ? 1 : -1) * newBall.speed;
+            const vel = getUnpredictableVelocity(newBall.speed);
+            newBall.vx = vel.vx;
+            newBall.vy = vel.vy;
             data.balls.push(newBall);
         }
 
@@ -188,8 +204,10 @@ const PongtePedoMinigame = ({ onClose, players }) => {
             ball.x = W / 2;
             ball.y = H / 2;
             ball.speed = BASE_BALL_SPEED;
-            ball.vx = (Math.random() > 0.5 ? 1 : -1) * BASE_BALL_SPEED;
-            ball.vy = (loser === 'p1' ? 1 : -1) * BASE_BALL_SPEED; // va hacia el que perdió
+            const dir = loser === 'p1' ? 1 : -1; // Va hacia el que perdió
+            const vel = getUnpredictableVelocity(BASE_BALL_SPEED, dir);
+            ball.vx = vel.vx;
+            ball.vy = vel.vy;
         }
     };
 

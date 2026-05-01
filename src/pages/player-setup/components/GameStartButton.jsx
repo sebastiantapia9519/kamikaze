@@ -13,6 +13,13 @@ const GameStartButton = ({ players = [], disabled = false }) => {
     const [validationError, setValidationError] = useState('');
     const [selectedLength, setSelectedLength] = useState('standard'); // 🆕 duración elegida
 
+    // === Mapeo visual de duración del juego ===
+    const lengthLabels = {
+        quick: { retos: 15, minutos: '10-15' },
+        standard: { retos: 30, minutos: '20-30' },
+        extended: { retos: 45, minutos: '40-50' }
+    };
+
     // === Validaciones previas antes de iniciar el juego ===
     const validatePlayers = () => {
         if (players?.length < 2) {
@@ -71,113 +78,78 @@ const GameStartButton = ({ players = [], disabled = false }) => {
 
     // === Texto dinámico del botón ===
     const getButtonText = () => {
-        if (isStarting) return 'Iniciando juego...';
-        if (playerCount === 0) return 'Agrega jugadores para comenzar';
-        if (playerCount === 1) return 'Necesitas al menos 2 jugadores';
-        return `🚀 Iniciar Juego (${playerCount} jugadores)`;
+        if (isStarting) return 'INICIANDO JUEGO...';
+        if (players?.length < 2) return `FALTAN ${2 - players?.length} JUGADORES`;
+        return 'INICIAR PARTIDA';
     };
 
-    // === Mensajes de estado debajo del botón ===
-    const getStatusMessage = () => {
-        if (validationError) {
-            return {
-                icon: 'AlertTriangle',
-                text: validationError,
-                color: 'text-error'
-            };
-        }
-        if (playerCount === 0) {
-            return {
-                icon: 'UserPlus',
-                text: 'Agrega al menos 2 jugadores para comenzar',
-                color: 'text-text-secondary'
-            };
-        }
-        if (playerCount === 1) {
-            return {
-                icon: 'AlertCircle',
-                text: 'Necesitas 1 jugador más',
-                color: 'text-warning'
-            };
-        }
-        return {
-            icon: 'CheckCircle',
-            text: '¡Todo listo para la diversión!',
-            color: 'text-success'
-        };
-    };
-
-    const status = getStatusMessage();
-
-    // === Mapeo visual de duración del juego ===
-    const lengthLabels = {
-        quick: { retos: 15, minutos: '10-15' },
-        standard: { retos: 30, minutos: '20-30' },
-        extended: { retos: 45, minutos: '40-50' }
-    };
-
-    // === Render del componente ===
     return (
-        <div className="space-y-5">
-            {/* 🧠 Mensaje de validación */}
-            <div className={`flex items-center justify-center space-x-2 p-4 rounded-xl border backdrop-blur-md shadow-graffiti-sm ${validationError ? 'bg-error/20 border-error/50 shadow-[0_0_10px_rgba(255,0,0,0.3)]' : 'bg-black/40 border-white/10'
-                }`}>
-                <Icon name={status?.icon} size={20} className={`${status?.color} drop-shadow-md`} />
-                <span className={`font-body font-bold ${status?.color} text-center text-sm drop-shadow-sm`}>
-                    {status?.text}
-                </span>
-            </div>
+        <div className="w-full flex flex-col items-center mt-8">
 
-
-
-            {/* 🚀 Botón principal */}
-            <div className="relative group">
-                <div className={`absolute -inset-1 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 ${canStartGame && !isStarting ? 'bg-gradient-to-r from-primary via-accent to-secondary animate-pulse-glow' : 'hidden'}`}></div>
-                <Button
-                    variant="default"
-                    size="lg"
-                    fullWidth
-                    disabled={!canStartGame}
-                    onClick={handleStartGame}
-                    className={`relative h-16 font-heading text-xl shadow-graffiti-lg transition-all duration-300 rounded-xl ${canStartGame && !isStarting
-                            ? 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 hover:shadow-[0_0_30px_rgba(255,20,147,0.8)] text-white'
-                            : 'bg-white/10 text-white/40 cursor-not-allowed border border-white/5 backdrop-blur-md'
-                        }`}
-                    iconName={isStarting ? 'Loader' : canStartGame ? 'Play' : 'Lock'}
-                    iconPosition="left"
-                    iconSize={28}
-                    iconClassName={isStarting ? 'animate-spin' : 'drop-shadow-md'}
-                >
-                    <span className="drop-shadow-md">{getButtonText()}</span>
-                </Button>
-            </div>
-
-            {/* 📊 Info del juego antes de empezar */}
-            {canStartGame && !isStarting && (
-                <div className="grid grid-cols-3 gap-4 text-center text-sm mt-6">
-                    <div className="p-3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 hover:border-primary/50 transition-colors shadow-inner">
-                        <Icon name="Users" size={20} className="text-primary mx-auto mb-2 drop-shadow-[0_0_5px_rgba(0,128,255,0.8)]" />
-                        <div className="font-data text-white font-bold text-lg drop-shadow-sm">{playerCount}</div>
-                        <div className="text-white/60 font-medium text-xs uppercase tracking-wider">Jugadores</div>
+            {/* Panel Superior: Información Resumida */}
+            <div className="w-full max-w-md bg-zinc-900/60 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-6 shadow-lg flex justify-around">
+                {/* Info Jugadores */}
+                <div className="flex flex-col items-center">
+                    <div className="flex items-center space-x-1 mb-1">
+                        <Icon name="Users" size={14} className="text-emerald-400" />
+                        <span className="text-xs text-white/70 uppercase tracking-wider font-bold">Jugadores</span>
                     </div>
-
-                    <div className="p-3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 hover:border-secondary/50 transition-colors shadow-inner">
-                        <Icon name="Target" size={20} className="text-secondary mx-auto mb-2 drop-shadow-[0_0_5px_rgba(255,20,147,0.8)]" />
-                        <div className="font-data text-white font-bold text-lg drop-shadow-sm">
-                            {lengthLabels[selectedLength].retos}
-                        </div>
-                        <div className="text-white/60 font-medium text-xs uppercase tracking-wider">Retos</div>
-                    </div>
-
-                    <div className="p-3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 hover:border-accent/50 transition-colors shadow-inner">
-                        <Icon name="Clock" size={20} className="text-accent mx-auto mb-2 drop-shadow-[0_0_5px_rgba(138,43,226,0.8)]" />
-                        <div className="font-data text-white font-bold text-lg drop-shadow-sm">
-                            {lengthLabels[selectedLength].minutos}
-                        </div>
-                        <div className="text-white/60 font-medium text-xs uppercase tracking-wider">Minutos</div>
+                    <div className="font-heading text-white font-bold text-lg">
+                        {players?.length}
                     </div>
                 </div>
-            )}
+
+                {/* Info Retos (Basado en duración) */}
+                <div className="flex flex-col items-center border-l border-white/10 pl-6">
+                    <div className="flex items-center space-x-1 mb-1">
+                        <Icon name="Target" size={14} className="text-cyan-400" />
+                        <span className="text-xs text-white/70 uppercase tracking-wider font-bold">Retos</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="font-heading text-white font-bold text-lg">
+                            {lengthLabels[selectedLength].retos}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Info Tiempo (Estimado) */}
+                <div className="flex flex-col items-center border-l border-white/10 pl-6">
+                    <div className="flex items-center space-x-1 mb-1">
+                        <Icon name="Clock" size={14} className="text-purple-400" />
+                        <span className="text-xs text-white/70 uppercase tracking-wider font-bold">Minutos</span>
+                    </div>
+                    <div className="font-heading text-white font-bold text-lg">
+                        ~{lengthLabels[selectedLength].minutos}
+                    </div>
+                </div>
+            </div>
+
+            {/* BOTÓN PRINCIPAL DE INICIO */}
+            <div className="relative group w-full max-w-sm">
+                <Button
+                    variant="default"
+                    disabled={!canStartGame}
+                    onClick={handleStartGame}
+                    className={`relative w-full h-16 font-heading text-xl transition-all duration-300 rounded-xl shadow-lg ${canStartGame && !isStarting
+                            ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                            : 'bg-zinc-800 text-white/40 cursor-not-allowed border border-white/10'
+                        }`}
+                >
+                    {isStarting && (
+                        <Icon name="Loader" className="animate-spin mr-3" size={24} />
+                    )}
+
+                    {!isStarting && canStartGame && (
+                        <Icon name="Play" className="mr-2" size={24} />
+                    )}
+
+                    {!canStartGame && !isStarting && (
+                        <Icon name="Lock" className="mr-2 opacity-50" size={20} />
+                    )}
+
+                    <span>{getButtonText()}</span>
+                </Button>
+            </div>
         </div>
     );
 };

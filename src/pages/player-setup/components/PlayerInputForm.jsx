@@ -77,17 +77,15 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
     };
 
     return (
-        <div className="bg-black/40 backdrop-blur-md p-6 rounded-2xl shadow-graffiti-lg border border-white/10 relative overflow-hidden">
-            {/* Ambient glow */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary opacity-50"></div>
+        <div className="bg-zinc-900/60 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/10 relative overflow-hidden">
 
             {/* Encabezado del formulario */}
             <div className="flex items-center space-x-4 mb-5">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,128,255,0.6)]">
-                    <Icon name="UserPlus" size={24} className="text-white drop-shadow-md" />
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                    <Icon name="UserPlus" size={24} className="text-white drop-shadow-sm" />
                 </div>
                 <div>
-                    <h2 className="font-heading text-2xl text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                    <h2 className="font-heading text-2xl text-white">
                         Agregar Jugadores
                     </h2>
                     <p className="text-sm text-white/70 font-medium mt-1">
@@ -106,7 +104,7 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
                             value={playerName}
                             onChange={handleInputChange}
                             error={error}
-                            className="font-body text-white bg-black/50 border-white/20 focus:border-primary focus:ring-primary shadow-inner placeholder:text-white/40 h-12 text-lg rounded-xl"
+                            className="font-body text-white bg-zinc-800/80 border-white/20 focus:border-cyan-500 focus:ring-cyan-500 shadow-inner placeholder:text-white/40 h-12 text-lg rounded-xl"
                             maxLength={20}
                         />
                     </div>
@@ -114,7 +112,7 @@ const PlayerInputForm = ({ onAddPlayer, existingPlayers = [] }) => {
                         type="submit"
                         variant="default"
                         disabled={!playerName?.trim()}
-                        className="bg-gradient-to-r from-secondary to-warning hover:from-secondary/90 hover:to-warning/90 text-secondary-foreground font-heading whitespace-nowrap h-12 rounded-xl shadow-[0_0_15px_rgba(255,20,147,0.5)] hover:shadow-[0_0_25px_rgba(255,20,147,0.8)] transition-all"
+                        className="bg-cyan-600 hover:bg-cyan-500 text-white font-heading whitespace-nowrap h-12 rounded-xl shadow-md transition-all"
                         iconName="Plus"
                         iconPosition="left"
                     >
